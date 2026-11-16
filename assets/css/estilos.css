@@ -1,0 +1,424 @@
+/*
+ * ESTILOS DE STYLEME
+ * ------------------
+ * Diseño pensado primero para celular (mobile first).
+ * Letra grande y buen contraste para personas de todas las edades.
+ * Para cambiar los colores de toda la página, edita solo las variables de :root.
+ */
+
+:root {
+  --color-marca: #b03a6a;        /* rosa ciruela: botones y detalles */
+  --color-marca-oscuro: #8a2b52;
+  --color-marca-suave: #fbe9f0;
+  --color-texto: #222222;
+  --color-texto-suave: #5c5c5c;
+  --color-fondo: #fffaf7;
+  --color-superficie: #ffffff;
+  --color-borde: #ead9d2;
+  --color-exito: #1f7a4d;
+  --color-aviso: #8a5a00;
+  --color-aviso-fondo: #fff4d6;
+
+  --radio: 14px;
+  --sombra: 0 2px 10px rgba(0, 0, 0, 0.06);
+  --ancho-maximo: 1100px;
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* ---------- Base ---------- */
+
+* { box-sizing: border-box; }
+
+html { font-size: 18px; }
+
+body {
+  margin: 0;
+  font-family: var(--fuente);
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  line-height: 1.5;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--color-marca-oscuro); }
+
+h1, h2, h3 { line-height: 1.2; margin: 0 0 0.5rem; }
+h1 { font-size: 1.8rem; }
+h2 { font-size: 1.4rem; }
+h3 { font-size: 1.05rem; }
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+main { padding: 24px 0 48px; }
+
+section { margin-bottom: 40px; }
+
+.texto-suave { color: var(--color-texto-suave); font-size: 0.9rem; margin: 0.2rem 0; }
+
+/* Enfoque visible para quien navega con teclado */
+:focus-visible { outline: 3px solid var(--color-marca); outline-offset: 2px; }
+
+/* ---------- Encabezado ---------- */
+
+#encabezado {
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  min-height: 64px;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--color-texto);
+}
+.logo span { color: var(--color-marca); }
+
+.boton-menu {
+  font: inherit;
+  background: none;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+nav { width: 100%; }
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 12px;
+  display: none;
+  flex-direction: column;
+}
+.menu.abierto { display: flex; }
+
+.menu a {
+  display: block;
+  padding: 12px 8px;
+  text-decoration: none;
+  color: var(--color-texto);
+  border-radius: 8px;
+}
+.menu a:hover { background: var(--color-marca-suave); }
+.menu a[aria-current="page"] { color: var(--color-marca); font-weight: 700; }
+
+/* ---------- Botones y formularios ---------- */
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;           /* tamaño cómodo para tocar con el dedo */
+  padding: 10px 20px;
+  border-radius: var(--radio);
+  border: 2px solid var(--color-marca);
+  background: var(--color-marca);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.boton:hover { background: var(--color-marca-oscuro); border-color: var(--color-marca-oscuro); }
+.boton:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.boton-secundario { background: var(--color-superficie); color: var(--color-marca-oscuro); }
+.boton-secundario:hover { background: var(--color-marca-suave); }
+
+.boton-whatsapp { background: #1f7a4d; border-color: #1f7a4d; }
+.boton-whatsapp:hover { background: #16603c; border-color: #16603c; }
+
+.boton-pequeno { min-height: 40px; padding: 6px 14px; font-size: 0.9rem; margin-top: 8px; }
+
+.grupo-botones { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+
+label { font-weight: 600; display: block; margin-bottom: 4px; }
+
+input[type="search"],
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  font: inherit;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.filtros {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.casilla { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+.casilla input { width: 22px; height: 22px; margin-top: 3px; flex-shrink: 0; }
+
+/* ---------- Portada ---------- */
+
+.portada {
+  background: var(--color-marca-suave);
+  border-radius: var(--radio);
+  padding: 32px 20px;
+  margin-bottom: 40px;
+}
+.portada p { font-size: 1.1rem; }
+
+.buscador { display: flex; gap: 8px; margin-top: 16px; }
+.buscador input { flex: 1; }
+
+/* ---------- Tarjetas y cuadrículas ---------- */
+
+.cuadricula {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+  box-shadow: var(--sombra);
+  text-decoration: none;
+  color: inherit;
+}
+a.tarjeta:hover { border-color: var(--color-marca); }
+
+.tarjeta-imagen {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--color-marca-suave);
+}
+.tarjeta-imagen img { width: 100%; height: 100%; object-fit: cover; }
+
+.marcador-imagen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.sello {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--color-aviso-fondo);
+  color: var(--color-aviso);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.tarjeta-cuerpo { padding: 12px; display: flex; flex-direction: column; gap: 2px; }
+
+.etiqueta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-marca);
+}
+
+.precio { font-weight: 700; margin: 4px 0; }
+
+.categorias {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.categoria {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 12px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  text-decoration: none;
+  color: var(--color-texto);
+  font-weight: 600;
+  text-align: center;
+}
+.categoria:hover { border-color: var(--color-marca); }
+.categoria span { font-size: 2.2rem; }
+
+/* ---------- Avisos ---------- */
+
+.aviso {
+  background: var(--color-aviso-fondo);
+  color: var(--color-aviso);
+  border-radius: var(--radio);
+  padding: 12px 16px;
+  margin: 16px 0;
+}
+
+.vacio { text-align: center; padding: 32px 16px; color: var(--color-texto-suave); }
+
+/* ---------- Perfil de tienda ---------- */
+
+.perfil-cabecera { display: grid; gap: 20px; margin-bottom: 32px; }
+.perfil-foto { border-radius: var(--radio); overflow: hidden; aspect-ratio: 4 / 3; background: var(--color-marca-suave); }
+.perfil-foto img { width: 100%; height: 100%; object-fit: cover; }
+.datos { list-style: none; padding: 0; margin: 12px 0; }
+.datos li { margin-bottom: 6px; }
+
+/* ---------- Mapas ---------- */
+
+.mapa {
+  height: 420px;
+  border-radius: var(--radio);
+  border: 1px solid var(--color-borde);
+  z-index: 0;
+}
+.mapa-pequeno { height: 240px; }
+
+/* Número en los marcadores de la salida de compras */
+.marcador-numero {
+  background: var(--color-marca);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: var(--sombra);
+}
+
+/* ---------- Salida de compras ---------- */
+
+.ruta { list-style: none; padding: 0; margin: 16px 0; counter-reset: parada; }
+.ruta li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.ruta .numero {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-marca);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Probador ---------- */
+
+.probador { display: grid; gap: 20px; }
+.lienzo-contenedor {
+  background: var(--color-marca-suave);
+  border-radius: var(--radio);
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#lienzo { max-width: 100%; height: auto; }
+.controles { display: grid; gap: 12px; }
+.controles input[type="range"] { width: 100%; }
+.estado { font-weight: 600; min-height: 1.5em; }
+
+/* ---------- Recomendador ---------- */
+
+.pestanas { display: flex; gap: 10px; margin: 16px 0; }
+.pestanas .boton { flex: 1; }
+
+.cuestionario { display: grid; gap: 20px; margin-bottom: 32px; }
+.cuestionario fieldset {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  padding: 12px 16px;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.cuestionario legend { font-weight: 700; padding: 0 6px; }
+
+.recomendacion {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  padding: 10px;
+  margin: 8px 0;
+}
+.recomendacion-imagen {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--color-marca-suave);
+}
+.recomendacion-imagen img { width: 100%; height: 100%; object-fit: cover; }
+.recomendacion-imagen .marcador-imagen { font-size: 2rem; }
+.sello-linea { position: static; display: inline-block; }
+
+/* ---------- Pie de página ---------- */
+
+#pie {
+  background: var(--color-superficie);
+  border-top: 1px solid var(--color-borde);
+  padding: 24px 0;
+  font-size: 0.9rem;
+}
+
+/* ---------- Pantallas medianas y grandes ---------- */
+
+@media (min-width: 720px) {
+  h1 { font-size: 2.3rem; }
+  .boton-menu { display: none; }
+  nav { width: auto; }
+  .menu { display: flex; flex-direction: row; gap: 4px; padding: 0; }
+  .menu a { padding: 8px 10px; font-size: 0.9rem; }
+  .categorias { grid-template-columns: repeat(4, 1fr); }
+  .cuadricula { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .filtros { grid-template-columns: 2fr 1fr 1fr 1fr; align-items: end; }
+  .perfil-cabecera { grid-template-columns: 1fr 1fr; }
+  .probador { grid-template-columns: 3fr 2fr; align-items: start; }
+  .portada { padding: 48px 40px; }
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa de tiendas · StyleMe</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="assets/css/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+
+  <main class="contenedor">
+    <h1>Mapa de tiendas</h1>
+
+    <div class="filtros">
+      <div>
+        <label for="filtro-tipo">Tipo de tienda</label>
+        <select id="filtro-tipo">
+          <option value="">Todas</option>
+          <option value="ropa">Ropa y moda</option>
+          <option value="maquillaje">Maquillaje y belleza</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="mapa" class="mapa"></div>
+    <p class="texto-suave" id="sin-ubicacion"></p>
+  </main>
+
+  <footer id="pie"></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="data/tiendas.js"></script>
+  <script src="data/productos.js"></script>
+  <script src="assets/js/comun.js"></script>
+  <script src="assets/js/mapa.js"></script>
+</body>
+</html>

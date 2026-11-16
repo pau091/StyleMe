@@ -1,0 +1,4 @@
+Imágenes de StyleMe
+- productos/  → fotos de productos (p001.png, p002.jpg...). Para el probador: PNG sin fondo.
+- tiendas/    → foto de fachada o logo de cada tienda (samylu-boutique.jpg...).
+Luego pon la ruta en data/productos.js o data/tiendas.js, por ejemplo: "assets/img/productos/p001.png"

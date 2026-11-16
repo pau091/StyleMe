@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salida de compras · StyleMe</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="assets/css/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+
+  <main class="contenedor">
+    <h1>🛍️ Planea tu salida de compras</h1>
+    <p>¿No sabes qué hacer hoy? Elige qué quieres ver y te armamos un recorrido por tiendas cercanas entre sí.</p>
+
+    <form id="formulario-salida" class="filtros">
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend><strong>¿Qué quieres ver?</strong></legend>
+        <label class="casilla"><input type="checkbox" name="tipo" value="ropa" checked> Ropa y moda</label>
+        <label class="casilla"><input type="checkbox" name="tipo" value="maquillaje" checked> Maquillaje y belleza</label>
+      </fieldset>
+      <div>
+        <label for="zona">Zona</label>
+        <select id="zona"><option value="">Cualquier zona</option></select>
+      </div>
+      <div>
+        <label for="paradas">Número de tiendas</label>
+        <select id="paradas">
+          <option value="2">2 tiendas</option>
+          <option value="3">3 tiendas</option>
+          <option value="4" selected>4 tiendas</option>
+          <option value="5">5 tiendas</option>
+        </select>
+      </div>
+      <div>
+        <label for="inicio">¿Desde dónde sales?</label>
+        <select id="inicio">
+          <option value="tienda">Desde la primera tienda</option>
+          <option value="ubicacion">Desde mi ubicación actual</option>
+        </select>
+      </div>
+      <div>
+        <button class="boton" type="submit">Armar mi salida</button>
+      </div>
+    </form>
+
+    <div id="resultado" aria-live="polite"></div>
+    <div id="mapa" class="mapa" hidden></div>
+  </main>
+
+  <footer id="pie"></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="data/tiendas.js"></script>
+  <script src="data/productos.js"></script>
+  <script src="assets/js/comun.js"></script>
+  <script src="assets/js/salida.js"></script>
+</body>
+</html>

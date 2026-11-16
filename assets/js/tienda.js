@@ -1,0 +1,56 @@
+/* PERFIL DE TIENDA: datos, botones de contacto, mini mapa y productos */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const contenedor = document.getElementById("perfil");
+  const tienda = buscarTienda(parametroURL("id"));
+
+  if (!tienda) {
+    contenedor.innerHTML = `
+      <p class="vacio">No encontramos esta tienda.</p>
+      <p style="text-align:center"><a class="boton" href="tiendas.html">Ver todas las tiendas</a></p>`;
+    return;
+  }
+
+  document.title = `${tienda.nombre} · StyleMe`;
+
+  const mensaje = `Hola, los encontré en StyleMe. Quisiera más información sobre su tienda.`;
+  const whatsapp = enlaceWhatsapp(tienda.whatsapp, mensaje);
+  const instagram = enlaceInstagram(tienda.instagram);
+  const productos = productosDeTienda(tienda.id);
+
+  contenedor.innerHTML = `
+    <div class="perfil-cabecera">
+      <div class="perfil-foto">${imagenOMarcador(tienda.foto, tienda.nombre, tienda.tipo)}</div>
+      <div>
+        <span class="etiqueta">${escaparHTML(TIPOS_TIENDA[tienda.tipo])}</span>
+        <h1>${escaparHTML(tienda.nombre)}</h1>
+        <p>${escaparHTML(tienda.descripcion)}</p>
+        <ul class="datos">
+          <li>📍 ${escaparHTML(tienda.direccion)}, Bucaramanga</li>
+          <li>🕒 ${escaparHTML(tienda.horario)}</li>
+        </ul>
+        <div class="grupo-botones">
+          ${whatsapp ? `<a class="boton boton-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">💬 Escribir por WhatsApp</a>` : ""}
+          <a class="boton" href="${enlaceComoLlegar(tienda)}" target="_blank" rel="noopener">🧭 Cómo llegar</a>
+          ${instagram ? `<a class="boton boton-secundario" href="${instagram}" target="_blank" rel="noopener">📷 Instagram</a>` : ""}
+        </div>
+        ${tienda.verificado ? "" : '<p class="aviso">Información tomada de fuentes públicas. Confírmala con la tienda antes de ir.</p>'}
+      </div>
+    </div>
+
+    ${tieneUbicacion(tienda) ? '<section><h2>Ubicación</h2><div id="mini-mapa" class="mapa mapa-pequeno"></div></section>' : ""}
+
+    <section>
+      <h2>Productos</h2>
+      ${
+        productos.length
+          ? `<div class="cuadricula">${productos.map(tarjetaProducto).join("")}</div>`
+          : '<p class="vacio">Esta tienda aún no tiene productos publicados.</p>'
+      }
+    </section>`;
+
+  if (tieneUbicacion(tienda)) {
+    const mapa = crearMapa("mini-mapa", [tienda.lat, tienda.lng], 16);
+    L.marker([tienda.lat, tienda.lng]).addTo(mapa).bindPopup(escaparHTML(tienda.nombre));
+  }
+});

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recomendador · StyleMe</title>
+  <link rel="stylesheet" href="assets/css/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+
+  <main class="contenedor" style="max-width:860px">
+    <h1>✨ ¿Qué producto es para mí?</h1>
+    <p>Responde unas preguntas y te sugerimos una rutina con productos de tiendas de Bucaramanga.</p>
+    <p class="aviso">
+      Estas sugerencias son <strong>orientativas</strong>. No son un diagnóstico y no reemplazan a un dermatólogo.
+      Si tienes alergias, confirma los ingredientes con la tienda.
+    </p>
+
+    <div class="pestanas" role="tablist">
+      <button class="boton" type="button" role="tab" aria-selected="true" data-panel="panel-piel">🧴 Mi piel</button>
+      <button class="boton boton-secundario" type="button" role="tab" aria-selected="false" data-panel="panel-cabello">💇 Mi cabello</button>
+    </div>
+
+    <!-- ===== SKINCARE ===== -->
+    <form id="panel-piel" class="cuestionario" role="tabpanel">
+      <fieldset>
+        <legend>1. ¿Cómo es tu piel?</legend>
+        <label class="casilla"><input type="radio" name="tipoPiel" value="seca" required> Seca: se siente tirante o con descamación</label>
+        <label class="casilla"><input type="radio" name="tipoPiel" value="grasa"> Grasa: brilla en todo el rostro</label>
+        <label class="casilla"><input type="radio" name="tipoPiel" value="mixta"> Mixta: brilla en frente, nariz y mentón</label>
+        <label class="casilla"><input type="radio" name="tipoPiel" value="normal"> Normal: ni muy seca ni muy grasa</label>
+        <label class="casilla"><input type="radio" name="tipoPiel" value="sensible"> Sensible: se enrojece o irrita con facilidad</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. ¿Qué quieres lograr? (puedes elegir varias)</legend>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="hidratar"> Hidratar</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="grasa"> Controlar el brillo</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="imperfecciones"> Reducir granitos e imperfecciones</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="manchas"> Cuidar manchas</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="proteger"> Protegerme del sol</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="antiedad"> Líneas de expresión</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. ¿Quieres evitar algo? (opcional)</legend>
+        <label class="casilla"><input type="checkbox" name="evitar" value="fragancia"> Fragancia o perfume</label>
+        <label class="casilla"><input type="checkbox" name="evitar" value="alcohol"> Alcohol</label>
+        <label class="casilla"><input type="checkbox" name="evitar" value="parabenos"> Parabenos</label>
+      </fieldset>
+
+      <div>
+        <label for="presupuesto-piel">4. Presupuesto máximo por producto (opcional)</label>
+        <input type="number" id="presupuesto-piel" name="presupuesto" min="0" step="5000" placeholder="Ej: 60000">
+      </div>
+
+      <label class="casilla">
+        <input type="checkbox" name="condicion">
+        <span>Tengo acné fuerte, dermatitis, rosácea o una irritación que no se quita.</span>
+      </label>
+
+      <button class="boton" type="submit">Ver mi rutina</button>
+    </form>
+
+    <!-- ===== CUIDADO CAPILAR ===== -->
+    <form id="panel-cabello" class="cuestionario" role="tabpanel" hidden>
+      <fieldset>
+        <legend>1. ¿Cómo es tu cabello?</legend>
+        <label class="casilla"><input type="radio" name="tipoCabello" value="liso" required> Liso</label>
+        <label class="casilla"><input type="radio" name="tipoCabello" value="ondulado"> Ondulado</label>
+        <label class="casilla"><input type="radio" name="tipoCabello" value="rizado"> Rizado</label>
+        <label class="casilla"><input type="radio" name="tipoCabello" value="afro"> Afro o crespo</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. ¿Cómo es tu cuero cabelludo?</legend>
+        <label class="casilla"><input type="radio" name="cuero" value="graso" required> Graso: el cabello se ensucia rápido</label>
+        <label class="casilla"><input type="radio" name="cuero" value="seco"> Seco: tirante o con resequedad</label>
+        <label class="casilla"><input type="radio" name="cuero" value="normal"> Normal</label>
+        <label class="casilla"><input type="radio" name="cuero" value="sensible"> Sensible: pica o se irrita</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. ¿Qué quieres lograr? (puedes elegir varias)</legend>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="hidratar"> Hidratar</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="frizz"> Controlar el frizz</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="reparar"> Reparar daño (tinte, plancha, secador)</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="rizos"> Definir rizos</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="fortalecer"> Fortalecer</label>
+        <label class="casilla"><input type="checkbox" name="objetivos" value="grasa"> Controlar la grasa</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. ¿Quieres evitar algo? (opcional)</legend>
+        <label class="casilla"><input type="checkbox" name="evitar" value="sulfatos"> Sulfatos</label>
+        <label class="casilla"><input type="checkbox" name="evitar" value="siliconas"> Siliconas</label>
+        <label class="casilla"><input type="checkbox" name="evitar" value="parabenos"> Parabenos</label>
+      </fieldset>
+
+      <div>
+        <label for="presupuesto-cabello">5. Presupuesto máximo por producto (opcional)</label>
+        <input type="number" id="presupuesto-cabello" name="presupuesto" min="0" step="5000" placeholder="Ej: 50000">
+      </div>
+
+      <label class="casilla">
+        <input type="checkbox" name="condicion">
+        <span>Se me está cayendo mucho el cabello, o tengo heridas o descamación fuerte en el cuero cabelludo.</span>
+      </label>
+
+      <button class="boton" type="submit">Ver mi rutina</button>
+    </form>
+
+    <div id="resultado" aria-live="polite"></div>
+  </main>
+
+  <footer id="pie"></footer>
+
+  <script src="data/tiendas.js"></script>
+  <script src="data/productos.js"></script>
+  <script src="assets/js/comun.js"></script>
+  <script src="assets/js/recomendador.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Probador virtual · StyleMe</title>
+  <link rel="stylesheet" href="assets/css/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+
+  <main class="contenedor">
+    <h1>👗 Probador virtual</h1>
+    <p>Sube una foto tuya de cuerpo entero o de medio cuerpo, de frente, y mira cómo se vería la prenda.</p>
+    <p class="aviso">
+      🔒 <strong>Tu foto no sale de tu dispositivo.</strong> La inteligencia artificial funciona dentro de tu navegador
+      y la foto no se envía ni se guarda en ningún servidor.<br>
+      El resultado es <strong>aproximado</strong>: no reemplaza probarse la prenda ni indica la talla.
+    </p>
+
+    <div class="probador">
+      <div>
+        <div class="lienzo-contenedor">
+          <canvas id="lienzo" width="600" height="400" aria-label="Vista previa del probador virtual"></canvas>
+        </div>
+        <p class="estado" id="estado" aria-live="polite"></p>
+      </div>
+
+      <div class="controles">
+        <div>
+          <label for="prenda">1. Elige una prenda</label>
+          <select id="prenda"></select>
+        </div>
+
+        <label class="casilla">
+          <input type="checkbox" id="consentimiento">
+          <span>2. Soy mayor de 18 años y la foto es mía o tengo permiso de la persona que aparece.</span>
+        </label>
+
+        <div>
+          <label for="foto">3. Sube tu foto</label>
+          <input type="file" id="foto" accept="image/*" disabled>
+        </div>
+
+        <fieldset id="ajustes" disabled style="border:0;padding:0;margin:0;display:grid;gap:12px">
+          <legend><strong>4. Ajusta si hace falta</strong></legend>
+          <div>
+            <label for="escala">Tamaño</label>
+            <input type="range" id="escala" min="50" max="200" value="100">
+          </div>
+          <div>
+            <label for="mover-x">Mover a los lados</label>
+            <input type="range" id="mover-x" min="-50" max="50" value="0">
+          </div>
+          <div>
+            <label for="mover-y">Mover arriba o abajo</label>
+            <input type="range" id="mover-y" min="-50" max="50" value="0">
+          </div>
+          <label class="casilla">
+            <input type="checkbox" id="quitar-blanco">
+            <span>Quitar el fondo blanco de la prenda</span>
+          </label>
+          <div class="grupo-botones">
+            <button class="boton boton-secundario" type="button" id="reubicar">Ubicar automáticamente</button>
+            <button class="boton boton-secundario" type="button" id="borrar">🗑️ Borrar mi foto</button>
+          </div>
+        </fieldset>
+
+        <div id="info-prenda"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="pie"></footer>
+
+  <script src="data/tiendas.js"></script>
+  <script src="data/productos.js"></script>
+  <script src="assets/js/comun.js"></script>
+  <script type="module" src="assets/js/probador.js"></script>
+</body>
+</html>

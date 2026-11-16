@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos · StyleMe</title>
+  <link rel="stylesheet" href="assets/css/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+
+  <main class="contenedor">
+    <h1>Productos</h1>
+    <p class="aviso">Los precios y la disponibilidad pueden cambiar. Confírmalos con la tienda por WhatsApp.</p>
+
+    <div class="filtros">
+      <div>
+        <label for="filtro-texto">Buscar</label>
+        <input type="search" id="filtro-texto" placeholder="Producto o tienda">
+      </div>
+      <div>
+        <label for="filtro-categoria">Categoría</label>
+        <select id="filtro-categoria">
+          <option value="">Todas</option>
+          <option value="ropa">Ropa y moda</option>
+          <option value="maquillaje">Maquillaje</option>
+          <option value="skincare">Skincare</option>
+          <option value="capilar">Cuidado capilar</option>
+        </select>
+      </div>
+      <div>
+        <label for="filtro-precio">Precio máximo</label>
+        <input type="number" id="filtro-precio" min="0" step="5000" placeholder="Ej: 80000">
+      </div>
+      <div>
+        <label for="filtro-tienda">Tienda</label>
+        <select id="filtro-tienda">
+          <option value="">Todas</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="texto-suave" id="contador"></p>
+    <div class="cuadricula" id="lista-productos"></div>
+  </main>
+
+  <footer id="pie"></footer>
+
+  <script src="data/tiendas.js"></script>
+  <script src="data/productos.js"></script>
+  <script src="assets/js/comun.js"></script>
+  <script src="assets/js/productos.js"></script>
+</body>
+</html>
