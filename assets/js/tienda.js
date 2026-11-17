@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mensaje = `Hola, los encontré en StyleMe. Quisiera más información sobre su tienda.`;
   const whatsapp = enlaceWhatsapp(tienda.whatsapp, mensaje);
   const instagram = enlaceInstagram(tienda.instagram);
+  const web = enlaceWeb(tienda.web);
   const productos = productosDeTienda(tienda.id);
 
   contenedor.innerHTML = `
@@ -26,13 +27,15 @@ document.addEventListener("DOMContentLoaded", () => {
         <h1>${escaparHTML(tienda.nombre)}</h1>
         <p>${escaparHTML(tienda.descripcion)}</p>
         <ul class="datos">
-          <li>📍 ${escaparHTML(tienda.direccion)}, Bucaramanga</li>
-          <li>🕒 ${escaparHTML(tienda.horario)}</li>
+          <li><strong>Dirección:</strong> ${escaparHTML(tienda.direccion)}, Bucaramanga</li>
+          <li><strong>Horario:</strong> ${escaparHTML(tienda.horario)}</li>
         </ul>
         <div class="grupo-botones">
-          ${whatsapp ? `<a class="boton boton-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">💬 Escribir por WhatsApp</a>` : ""}
-          <a class="boton" href="${enlaceComoLlegar(tienda)}" target="_blank" rel="noopener">🧭 Cómo llegar</a>
-          ${instagram ? `<a class="boton boton-secundario" href="${instagram}" target="_blank" rel="noopener">📷 Instagram</a>` : ""}
+          ${whatsapp ? `<a class="boton boton-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">Escribir por WhatsApp</a>` : ""}
+          ${!whatsapp && tienda.telefono ? `<a class="boton boton-whatsapp" href="tel:+57${escaparHTML(tienda.telefono)}">Llamar</a>` : ""}
+          <a class="boton" href="${enlaceComoLlegar(tienda)}" target="_blank" rel="noopener">Cómo llegar</a>
+          ${instagram ? `<a class="boton boton-secundario" href="${instagram}" target="_blank" rel="noopener">Instagram</a>` : ""}
+          ${web ? `<a class="boton boton-secundario" href="${escaparHTML(web)}" target="_blank" rel="noopener">Página web</a>` : ""}
         </div>
         ${tienda.verificado ? "" : '<p class="aviso">Información tomada de fuentes públicas. Confírmala con la tienda antes de ir.</p>'}
       </div>

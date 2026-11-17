@@ -34,6 +34,7 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-028 | 2026-11-16 | La autora maneja GitHub y hace todos los commits; el asesor no toca git | ✅ Confirmada | Decisión de la autora |
 | D-029 | 2026-11-16 | Documentación separada del código, en la carpeta `planeacion/` | ✅ Confirmada | Orden del proyecto |
 | D-030 | 2026-11-16 | El **recomendador de skincare y cuidado capilar** entra en la entrega, basado en reglas (aprueba P-004 para esta versión) | ✅ Confirmada | Decisión de la autora |
+| D-031 | 2026-11-16 | **Queen** (Cra 35 #52-146, Cabecera) reemplaza a Sea & Seams | ✅ Confirmada | Sea & Seams no aparece en Google Maps |
 
 ## Propuestas en espera de aprobación 💡
 

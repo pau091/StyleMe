@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("lista-categorias").innerHTML = Object.entries(CATEGORIAS)
     .map(
       ([clave, cat]) =>
-        `<a class="categoria" href="productos.html?categoria=${clave}"><span aria-hidden="true">${cat.icono}</span>${cat.nombre}</a>`
+        `<a class="categoria" href="productos.html?categoria=${clave}">${cat.nombre}</a>`
     )
     .join("");
 

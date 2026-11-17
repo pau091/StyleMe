@@ -109,9 +109,9 @@ function mostrarInfoPrenda(producto) {
   infoPrenda.innerHTML = `
     <h2>${escaparHTML(producto.nombre)}</h2>
     <p class="precio">${formatoPrecio(producto.precio)}</p>
-    <p>🏬 ${escaparHTML(tienda.nombre)} · 📍 ${escaparHTML(tienda.direccion)}</p>
+    <p>${escaparHTML(tienda.nombre)} · ${escaparHTML(tienda.direccion)}</p>
     <div class="grupo-botones">
-      ${whatsapp ? `<a class="boton boton-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">💬 Preguntar por WhatsApp</a>` : ""}
+      ${whatsapp ? `<a class="boton boton-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">Preguntar por WhatsApp</a>` : ""}
       <a class="boton boton-secundario" href="tienda.html?id=${encodeURIComponent(tienda.id)}">Ver tienda</a>
     </div>`;
 }

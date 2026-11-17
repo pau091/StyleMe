@@ -7,10 +7,10 @@
  */
 
 const CATEGORIAS = {
-  ropa: { nombre: "Ropa y moda", icono: "👗" },
-  maquillaje: { nombre: "Maquillaje", icono: "💄" },
-  skincare: { nombre: "Skincare", icono: "🧴" },
-  capilar: { nombre: "Cuidado capilar", icono: "💇" }
+  ropa: { nombre: "Ropa y moda" },
+  maquillaje: { nombre: "Maquillaje" },
+  skincare: { nombre: "Skincare" },
+  capilar: { nombre: "Cuidado capilar" }
 };
 
 const TIPOS_TIENDA = {
@@ -74,6 +74,12 @@ function enlaceInstagram(usuario) {
   return usuario ? `https://www.instagram.com/${usuario}/` : "";
 }
 
+// Acepta "bohor.com.co" o "https://bohor.com.co" y siempre devuelve una dirección completa
+function enlaceWeb(direccion) {
+  if (!direccion) return "";
+  return /^https?:\/\//.test(direccion) ? direccion : `https://${direccion}`;
+}
+
 /* ---------- Mapas (solo en páginas que cargan Leaflet) ---------- */
 
 function crearMapa(idElemento, centro = CENTRO_BUCARAMANGA, zoom = 14) {
@@ -95,13 +101,13 @@ function popupTienda(tienda) {
 
 /* ---------- Piezas visuales ---------- */
 
-// Muestra la foto, o un recuadro con ícono si todavía no hay foto
+// Muestra la foto, o un recuadro con el nombre de la categoría si todavía no hay foto
 function imagenOMarcador(src, alt, categoria) {
   if (src) {
     return `<img src="${escaparHTML(src)}" alt="${escaparHTML(alt)}" loading="lazy">`;
   }
-  const icono = CATEGORIAS[categoria]?.icono ?? "🛍️";
-  return `<div class="marcador-imagen" aria-hidden="true">${icono}</div>`;
+  const texto = CATEGORIAS[categoria]?.nombre ?? TIPOS_TIENDA[categoria] ?? "Sin foto";
+  return `<div class="marcador-imagen" aria-hidden="true">${escaparHTML(texto)}</div>`;
 }
 
 function tarjetaTienda(tienda) {
@@ -112,7 +118,7 @@ function tarjetaTienda(tienda) {
       <div class="tarjeta-cuerpo">
         <span class="etiqueta">${escaparHTML(TIPOS_TIENDA[tienda.tipo])}</span>
         <h3>${escaparHTML(tienda.nombre)}</h3>
-        <p class="texto-suave">📍 ${escaparHTML(tienda.direccion)}</p>
+        <p class="texto-suave">${escaparHTML(tienda.direccion)}</p>
         <p class="texto-suave">${cantidad} producto${cantidad === 1 ? "" : "s"}</p>
       </div>
     </a>`;
@@ -134,7 +140,7 @@ function tarjetaProducto(producto) {
         <span class="etiqueta">${escaparHTML(CATEGORIAS[producto.categoria]?.nombre)}</span>
         <h3>${escaparHTML(producto.nombre)}</h3>
         <p class="precio">${formatoPrecio(producto.precio)}</p>
-        ${tienda ? `<a class="texto-suave" href="tienda.html?id=${encodeURIComponent(tienda.id)}">🏬 ${escaparHTML(tienda.nombre)}</a>` : ""}
+        ${tienda ? `<a class="texto-suave" href="tienda.html?id=${encodeURIComponent(tienda.id)}">${escaparHTML(tienda.nombre)}</a>` : ""}
         ${botonProbador}
       </div>
     </article>`;
@@ -210,8 +216,8 @@ function revisarDatos() {
     if (idsTiendas.has(t.id)) agregar("tiendas.js", t.id, "❌ id repetido");
     idsTiendas.add(t.id);
     if (!tieneUbicacion(t)) agregar("tiendas.js", t.id, "Falta lat y lng (no sale en el mapa)");
-    if (!t.whatsapp) agregar("tiendas.js", t.id, "Falta WhatsApp");
-    if (!t.instagram) agregar("tiendas.js", t.id, "Falta Instagram");
+    if (!t.whatsapp && !t.telefono) agregar("tiendas.js", t.id, "Falta WhatsApp o teléfono");
+    if (!t.instagram && !t.web) agregar("tiendas.js", t.id, "Falta Instagram o página web");
     if (!t.horario || t.horario === "Por confirmar") agregar("tiendas.js", t.id, "Falta horario");
     if (!t.verificado) agregar("tiendas.js", t.id, "Sin verificar");
   });

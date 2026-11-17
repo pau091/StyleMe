@@ -57,7 +57,7 @@ Ver el [README](../README.md#estructura-del-proyecto). En resumen, las páginas 
 |---|---|---|---|---|
 | 1 | Samylu Boutique | Ropa | Carrera 37 #42-75, Cabecera del Llano | — |
 | 2 | BOHOR | Ropa | Carrera 36 #53-32 | — |
-| 3 | Sea & Seams | Ropa (segunda mano) | Carrera 17B1 #57-70, Ricaurte | — |
+| 3 | Queen | Ropa (segunda mano) | Carrera 35 #52-146, Cabecera del Llano ✅ | Tel. fijo 607 657 1340 |
 | 4 | Henar's y Eleganzza | Ropa (tallas grandes y pequeñas) | Carrera 22 #45-13, La Concordia | — |
 | 5 | Mattelsa | Ropa (marca nacional) | Carrera 31 #32-45 | — |
 | 6 | Pandora Makeup | Maquillaje | Carrera 33 #46-59, Cabecera | WhatsApp 321 327 3357 |
@@ -67,7 +67,8 @@ Ver el [README](../README.md#estructura-del-proyecto). En resumen, las páginas 
 | 10 | Mirada de Ángel | Maquillaje y cuidado capilar | Carrera 23 #35-14, local 1, Edificio Zentri | 322 220 9159 |
 
 **Cambio:** HairClinic Store (cuidado capilar) salió para cumplir 5 de ropa y 5 de maquillaje. Entró So Beauty.
-**Suplentes:** HairClinic Store, Color Club (Cra 35 #52-84), Cosméticos Cabecera (Cra 33 #48-51).
+**Cambio 2:** Sea & Seams salió porque no aparece en Google Maps. Entró Queen.
+**Suplentes:** HairClinic Store, Sea & Seams (sin ubicación), Color Club (Cra 35 #52-84), Cosméticos Cabecera (Cra 33 #48-51).
 
 ## 7. Datos que tienes que completar
 

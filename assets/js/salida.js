@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div>
               <strong>${escaparHTML(t.nombre)}</strong>
               <span class="etiqueta">· ${escaparHTML(TIPOS_TIENDA[t.tipo])}</span>
-              <p class="texto-suave">📍 ${escaparHTML(t.direccion)} · 🕒 ${escaparHTML(t.horario)}</p>
+              <p class="texto-suave">${escaparHTML(t.direccion)} · ${escaparHTML(t.horario)}</p>
               <a href="tienda.html?id=${encodeURIComponent(t.id)}">Ver tienda</a>
             </div>
           </li>`
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .join("")}
       </ol>
       <div class="grupo-botones">
-        <a class="boton" href="${enlaceRutaGoogleMaps(ruta, ubicacionPersona)}" target="_blank" rel="noopener">🧭 Abrir recorrido en Google Maps</a>      </div>
+        <a class="boton" href="${enlaceRutaGoogleMaps(ruta, ubicacionPersona)}" target="_blank" rel="noopener">Abrir recorrido en Google Maps</a>      </div>
       <p class="texto-suave">Consejo: confirma el horario de cada tienda antes de salir.</p>`;
 
     // Dibujar el recorrido en el mapa

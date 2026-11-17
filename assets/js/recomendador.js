@@ -114,10 +114,10 @@ function tarjetaRecomendacion(item) {
       <div>
         <strong>${escaparHTML(p.nombre)}</strong> ${p.pendiente ? '<span class="sello sello-linea">Ejemplo</span>' : ""}
         <p class="precio">${formatoPrecio(p.precio)}</p>
-        ${tienda ? `<p class="texto-suave">🏬 <a href="tienda.html?id=${encodeURIComponent(tienda.id)}">${escaparHTML(tienda.nombre)}</a></p>` : ""}
-        <p class="texto-suave">✔ ${escaparHTML(item.razones.join(" · "))}</p>
-        ${item.avisos.map((a) => `<p class="texto-suave">⚠️ ${escaparHTML(a)}</p>`).join("")}
-        ${whatsapp ? `<a class="boton boton-whatsapp boton-pequeno" href="${whatsapp}" target="_blank" rel="noopener">💬 Preguntar</a>` : ""}
+        ${tienda ? `<p class="texto-suave"><a href="tienda.html?id=${encodeURIComponent(tienda.id)}">${escaparHTML(tienda.nombre)}</a></p>` : ""}
+        <p class="texto-suave"><strong>Por qué:</strong> ${escaparHTML(item.razones.join(" · "))}</p>
+        ${item.avisos.map((a) => `<p class="texto-suave">${escaparHTML(a)}</p>`).join("")}
+        ${whatsapp ? `<a class="boton boton-whatsapp boton-pequeno" href="${whatsapp}" target="_blank" rel="noopener">Preguntar</a>` : ""}
       </div>
     </div>`;
 }
@@ -141,7 +141,7 @@ function mostrarResultado(formulario, categoria) {
   const otros = evaluados.filter((e) => !usados.has(e.producto.id));
 
   const avisoMedico = r.condicion
-    ? `<p class="aviso">🩺 Por lo que nos cuentas, te recomendamos <strong>consultar a un dermatólogo</strong> antes de usar productos nuevos.
+    ? `<p class="aviso">Por lo que nos cuentas, te recomendamos <strong>consultar a un dermatólogo</strong> antes de usar productos nuevos.
        Las sugerencias de abajo son solo de referencia.</p>`
     : "";
 
@@ -156,7 +156,7 @@ function mostrarResultado(formulario, categoria) {
           <span class="numero">${i + 1}</span>
           <div style="flex:1">
             <strong>${paso.nombre}</strong>
-            <p class="texto-suave">🕒 ${paso.cuando}</p>
+            <p class="texto-suave"><strong>Cuándo:</strong> ${paso.cuando}</p>
             ${mejor ? tarjetaRecomendacion(mejor) : '<p class="texto-suave">Aún no tenemos un producto para este paso en las tiendas registradas.</p>'}
           </div>
         </li>`
