@@ -73,7 +73,7 @@ dibujarMensaje("Aquí verás el resultado");
 function dibujarMensaje(texto) {
   lienzo.width = 600;
   lienzo.height = 400;
-  ctx.fillStyle = "#8a2b52";
+  ctx.fillStyle = "#7d4253";
   ctx.font = "20px system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(texto, lienzo.width / 2, lienzo.height / 2);

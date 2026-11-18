@@ -130,7 +130,7 @@ const TIENDAS = [
     whatsapp: "",
     instagram: "",
     web: "guacamayacolors.com",
-    foto: "",
+    foto: "assets/img/tiendas/guacamaya-colors.png",
     verificado: false
   },
   {

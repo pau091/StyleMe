@@ -146,6 +146,27 @@ function tarjetaProducto(producto) {
     </article>`;
 }
 
+/* ---------- Íconos de línea (SVG) ---------- */
+
+// Dibujos simples que reemplazan a los emojis. Toman el color del texto.
+const ICONOS = {
+  buscar: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  ubicacion: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  tienda: '<path d="M4 9h16l-1.5-5h-13L4 9z"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  gancho: '<path d="M10 6.5a2 2 0 1 1 2 2v1.5"/><path d="M12 10 3.6 15.6A1.3 1.3 0 0 0 4.3 18h15.4a1.3 1.3 0 0 0 .7-2.4L12 10z"/>',
+  labial: '<path d="M9 21h6v-7H9z"/><path d="M10 14V8.5L14 5v9"/>',
+  frasco: '<path d="M10 3h4v3h-4z"/><path d="M9 6h6l1 3v10a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9z"/><path d="M8 13h8"/>',
+  peine: '<path d="M4 7h16v4H4z"/><path d="M6 11v7M9 11v7M12 11v7M15 11v7M18 11v7"/>',
+  ruta: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6"/>',
+  destello: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16v4M17 18h4"/>',
+  candado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'
+};
+
+function icono(nombre) {
+  return `<svg class="icono" viewBox="0 0 24 24" aria-hidden="true">${ICONOS[nombre] ?? ""}</svg>`;
+}
+
 /* ---------- Encabezado y pie de página ---------- */
 
 const ENLACES_MENU = [
@@ -159,6 +180,10 @@ const ENLACES_MENU = [
   { href: "acerca.html", texto: "Acerca de" }
 ];
 
+const LOGO = `
+  <span class="logo-nombre">Style<span>Me</span></span>
+  <span class="logo-lema">Bucaramanga</span>`;
+
 function pintarEncabezado() {
   const contenedor = document.getElementById("encabezado");
   if (!contenedor) return;
@@ -170,9 +195,14 @@ function pintarEncabezado() {
   ).join("");
 
   contenedor.innerHTML = `
+    <div class="anuncio">Tiendas locales de moda y belleza · Contacto directo con cada tienda</div>
     <div class="contenedor barra">
-      <a class="logo" href="index.html">Style<span>Me</span></a>
-      <button class="boton-menu" aria-expanded="false" aria-controls="menu-principal">☰ Menú</button>
+      <a class="logo" href="index.html" aria-label="StyleMe, ir al inicio">${LOGO}</a>
+      <div class="acciones-encabezado">
+        <a class="accion-icono" href="productos.html" aria-label="Buscar productos">${icono("buscar")}</a>
+        <a class="accion-icono" href="mapa.html" aria-label="Ver el mapa de tiendas">${icono("ubicacion")}</a>
+        <button class="boton-menu" aria-expanded="false" aria-controls="menu-principal">Menú</button>
+      </div>
       <nav aria-label="Principal">
         <ul id="menu-principal" class="menu">${enlaces}</ul>
       </nav>
@@ -191,11 +221,35 @@ function pintarPie() {
   if (!contenedor) return;
   contenedor.innerHTML = `
     <div class="contenedor">
-      <p><strong>StyleMe</strong>: tiendas de moda y belleza de Bucaramanga en un solo lugar.</p>
-      <p class="texto-suave">
-        Proyecto académico. StyleMe no tiene acuerdos comerciales con las tiendas mostradas.
+      <div class="pie-columnas">
+        <div>
+          <a class="logo" href="index.html">${LOGO}</a>
+          <p>Las tiendas de moda y belleza de Bucaramanga en un solo lugar.</p>
+        </div>
+        <div>
+          <h4>Explorar</h4>
+          <ul>
+            <li><a href="tiendas.html">Tiendas</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Herramientas</h4>
+          <ul>
+            <li><a href="salida.html">Salida de compras</a></li>
+            <li><a href="probador.html">Probador virtual</a></li>
+            <li><a href="recomendador.html">Recomendador</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>¿Tienes una tienda?</h4>
+          <p>Si quieres aparecer, corregir tu información o que la retiremos, <a href="acerca.html#contacto">escríbenos</a>.</p>
+        </div>
+      </div>
+      <p class="pie-legal">
+        © 2026 StyleMe · Proyecto académico. StyleMe no tiene acuerdos comerciales con las tiendas mostradas.
         La información puede cambiar: confírmala directamente con cada tienda.
-        ¿Eres una tienda y quieres corregir o retirar tu información? <a href="acerca.html#contacto">Escríbenos</a>.
       </p>
     </div>`;
 }
@@ -240,7 +294,7 @@ function revisarDatos() {
   const graves = problemas.filter((p) => p.problema.startsWith("❌")).length;
   console.groupCollapsed(
     `%cStyleMe · revisión de datos: ${problemas.length} pendientes (${graves} errores)`,
-    "color:#b03a6a;font-weight:bold"
+    "color:#a35d6d;font-weight:bold"
   );
   console.table(problemas);
   console.groupEnd();

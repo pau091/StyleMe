@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const icono = L.divIcon({ className: "", html: `<div class="marcador-numero">${i + 1}</div>`, iconSize: [32, 32], iconAnchor: [16, 16] });
       L.marker([t.lat, t.lng], { icon: icono }).addTo(capa).bindPopup(popupTienda(t));
     });
-    L.polyline(puntos, { color: "#b03a6a", weight: 4, dashArray: "6 8" }).addTo(capa);
+    L.polyline(puntos, { color: "#a35d6d", weight: 4, dashArray: "6 8" }).addTo(capa);
     mapa.invalidateSize();
     mapa.fitBounds(puntos, { padding: [40, 40], maxZoom: 17 });
   });

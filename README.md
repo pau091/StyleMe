@@ -62,6 +62,7 @@ StyleMe/
 | [08 - Plan de validación](planeacion/08-validacion.md) | Encuesta y entrevistas para comprobar los problemas planteados |
 | [09 - Plan de entrega](planeacion/09-plan-entrega.md) | ⭐ **Versión sencilla** que se construye para la entrega de esta semana |
 | [10 - Proyecto completo](planeacion/10-proyecto-completo.md) | Visión original: qué buscar, implementar y mejorar después |
+| [11 - Contexto visual](planeacion/11-contexto-visual.md) | Resumen del proyecto + dirección visual, animaciones y fluidez (lo usan las skills de `.claude/skills/`) |
 
 ### Convención usada en los documentos
 
