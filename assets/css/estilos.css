@@ -24,13 +24,16 @@
 
   /* Estados */
   --color-exito: #3f7a5a;
+  --color-exito-oscuro: #2f5f45;   /* verde oscuro: hover del botón de WhatsApp */
   --color-aviso: #85571a;
   --color-aviso-fondo: #fbf1de;
 
   --radio: 10px;
   --radio-grande: 18px;
   --sombra: 0 4px 18px rgba(79, 44, 58, 0.07);
+  --sombra-elevada: 0 14px 34px rgba(79, 44, 58, 0.14); /* tarjeta "levantada" en hover */
   --ancho-maximo: 1180px;
+  --alto-anuncio: 36px;            /* ✏️ alto de la barra rosa de arriba */
   --fuente-titulos: "Cormorant Garamond", Georgia, serif;
   --fuente: "Jost", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
@@ -123,14 +126,25 @@ section { margin-bottom: 48px; }
 
 /* ---------- Barra de anuncio ---------- */
 
+/* ✏️ Alto de la barra de anuncio. El encabezado usa este número para que,
+   al bajar, la barra se vaya con el scroll y quede pegado solo el menú. */
 .anuncio {
+  height: var(--alto-anuncio, 36px);
   background: var(--color-marca);
   color: #fff;
   font-size: 0.8rem;
   letter-spacing: 0.03em;
   text-align: center;
-  padding: 7px 16px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
 }
+/* Sin animación (o si falla movimiento.js) se ve solo la primera copia del texto, centrada.
+   La cinta que corre está en movimiento.css. */
+.anuncio-cinta span + span { display: none; }
 
 /* ---------- Encabezado ---------- */
 
@@ -138,7 +152,7 @@ section { margin-bottom: 48px; }
   background: var(--color-superficie);
   border-bottom: 1px solid var(--color-borde);
   position: sticky;
-  top: 0;
+  top: calc(-1 * var(--alto-anuncio, 36px)); /* la barra de anuncio se esconde al bajar */
   z-index: 1000;
 }
 
@@ -184,7 +198,7 @@ section { margin-bottom: 48px; }
   border-radius: 50%;
   color: var(--color-texto);
 }
-.accion-icono:hover { background: var(--color-marca-suave); color: var(--color-marca-oscuro); }
+/* El círculo rosa del hover está en movimiento.css */
 
 .boton-menu {
   font: inherit;
@@ -202,14 +216,26 @@ section { margin-bottom: 48px; }
 
 nav { width: 100%; }
 
+/* En celular el menú es un panel que baja debajo del encabezado.
+   Cerrado usa visibility: hidden, así no se puede enfocar con Tab.
+   Cómo se abre (fundido + bajar) está en movimiento.css. */
 .menu {
   list-style: none;
   margin: 0;
-  padding: 0 0 12px;
-  display: none;
+  display: flex;
   flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 8px 16px 16px;
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+  box-shadow: var(--sombra);
+  visibility: hidden;
+  opacity: 0;
 }
-.menu.abierto { display: flex; }
+.menu.abierto { visibility: visible; opacity: 1; }
 
 .menu a {
   display: block;
@@ -220,10 +246,10 @@ nav { width: 100%; }
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border-bottom: 2px solid transparent;
+  position: relative; /* para la línea animada de abajo (movimiento.css) */
 }
 .menu a:hover { color: var(--color-marca); }
-.menu a[aria-current="page"] { color: var(--color-marca); border-bottom-color: var(--color-marca); }
+.menu a[aria-current="page"] { color: var(--color-marca); }
 
 /* ---------- Botones y formularios ---------- */
 
@@ -245,19 +271,15 @@ nav { width: 100%; }
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-.boton:hover { background: var(--color-marca-oscuro); border-color: var(--color-marca-oscuro); }
+/* El hover de los botones (un relleno que sube desde abajo) está en movimiento.css */
 .boton:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .boton-secundario { background: transparent; color: var(--color-marca-oscuro); }
-.boton-secundario:hover { background: var(--color-marca-suave); color: var(--color-marca-oscuro); }
 
 .boton-claro { background: #fff; color: var(--color-ciruela); border-color: #fff; }
-.boton-claro:hover { background: var(--color-marca-suave); border-color: var(--color-marca-suave); color: var(--color-ciruela); }
 
 .boton-whatsapp { background: var(--color-exito); border-color: var(--color-exito); }
-.boton-whatsapp:hover { background: #2f5f45; border-color: #2f5f45; }
 
 .boton-pequeno { min-height: 40px; padding: 6px 14px; font-size: 0.75rem; margin-top: 8px; }
 
@@ -461,18 +483,19 @@ select {
   background: var(--color-superficie);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
-  overflow: hidden;
+  position: relative;
   text-decoration: none;
   color: inherit;
   text-align: center;
-  transition: box-shadow 0.2s, transform 0.2s;
 }
-.tarjeta:hover { box-shadow: var(--sombra); transform: translateY(-2px); }
+/* El hover de las tarjetas ("acercamiento de vitrina") está en movimiento.css */
 
 .tarjeta-imagen {
   position: relative;
   aspect-ratio: 1 / 1;
   background: var(--color-beige);
+  overflow: hidden; /* la foto se acerca en hover sin salirse del marco */
+  border-radius: calc(var(--radio) - 1px) calc(var(--radio) - 1px) 0 0;
 }
 .tarjeta-imagen img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -681,7 +704,7 @@ select {
   font-size: 0.9rem;
 }
 #pie a { color: #fff; text-decoration: none; }
-#pie a:hover { text-decoration: underline; }
+/* El subrayado animado de los enlaces del pie está en movimiento.css */
 #pie h4 {
   color: #fff;
   font-size: 0.8rem;
@@ -730,6 +753,16 @@ select {
   .boton-menu { display: none; }
   nav { width: auto; order: 2; }
   .acciones-encabezado { order: 3; }
-  .menu { display: flex; flex-direction: row; gap: 2px; padding: 0; }
+  .menu {
+    flex-direction: row;
+    gap: 2px;
+    padding: 0;
+    position: static;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    visibility: visible;
+    opacity: 1;
+  }
   .menu a { padding: 8px 9px; font-size: 0.78rem; }
 }

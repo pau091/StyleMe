@@ -180,6 +180,9 @@ const ENLACES_MENU = [
   { href: "acerca.html", texto: "Acerca de" }
 ];
 
+// ✏️ Texto de la barra rosa de arriba
+const TEXTO_ANUNCIO = "Tiendas locales de moda y belleza · Contacto directo con cada tienda";
+
 const LOGO = `
   <span class="logo-nombre">Style<span>Me</span></span>
   <span class="logo-lema">Bucaramanga</span>`;
@@ -189,13 +192,20 @@ function pintarEncabezado() {
   if (!contenedor) return;
 
   const paginaActual = window.location.pathname.split("/").pop() || "index.html";
+  // --i es el orden de cada enlace: en celular entran uno tras otro al abrir el menú
   const enlaces = ENLACES_MENU.map(
-    (e) =>
-      `<li><a href="${e.href}" ${e.href === paginaActual ? 'aria-current="page"' : ""}>${e.texto}</a></li>`
+    (e, i) =>
+      `<li style="--i:${i}"><a href="${e.href}" ${e.href === paginaActual ? 'aria-current="page"' : ""}>${e.texto}</a></li>`
+  ).join("");
+
+  // Cinta del anuncio: el texto se repite para que corra sin cortes.
+  // Solo la primera copia la leen los lectores de pantalla (las demás llevan aria-hidden).
+  const copiasAnuncio = Array.from({ length: 12 }, (_, i) =>
+    `<span${i > 0 ? ' aria-hidden="true"' : ""}>${TEXTO_ANUNCIO}</span>`
   ).join("");
 
   contenedor.innerHTML = `
-    <div class="anuncio">Tiendas locales de moda y belleza · Contacto directo con cada tienda</div>
+    <div class="anuncio"><div class="anuncio-cinta">${copiasAnuncio}</div></div>
     <div class="contenedor barra">
       <a class="logo" href="index.html" aria-label="StyleMe, ir al inicio">${LOGO}</a>
       <div class="acciones-encabezado">
@@ -210,9 +220,27 @@ function pintarEncabezado() {
 
   const boton = contenedor.querySelector(".boton-menu");
   const menu = contenedor.querySelector(".menu");
+  function cerrarMenu() {
+    menu.classList.remove("abierto");
+    boton.setAttribute("aria-expanded", "false");
+  }
+
   boton.addEventListener("click", () => {
     const abierto = menu.classList.toggle("abierto");
     boton.setAttribute("aria-expanded", abierto);
+  });
+
+  // Escape cierra el menú y devuelve el foco al botón
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape" && menu.classList.contains("abierto")) {
+      cerrarMenu();
+      boton.focus();
+    }
+  });
+
+  // Tocar fuera del encabezado también cierra el menú
+  document.addEventListener("click", (evento) => {
+    if (menu.classList.contains("abierto") && !contenedor.contains(evento.target)) cerrarMenu();
   });
 }
 
@@ -221,7 +249,7 @@ function pintarPie() {
   if (!contenedor) return;
   contenedor.innerHTML = `
     <div class="contenedor">
-      <div class="pie-columnas">
+      <div class="pie-columnas" data-cascada>
         <div>
           <a class="logo" href="index.html">${LOGO}</a>
           <p>Las tiendas de moda y belleza de Bucaramanga en un solo lugar.</p>

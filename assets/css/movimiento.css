@@ -1,0 +1,431 @@
+/*
+ * MOVIMIENTO DE STYLEME
+ * ---------------------
+ * Todo lo que se anima vive aquí. Concepto "Vitrina de Bucaramanga":
+ *   seda (suave y continuo) · vitrina (las fotos se revelan) · cercanía (acompaña, no presume).
+ *
+ * Reglas para que todo vaya fluido a 120 / 144 fps:
+ *   - Solo se anima transform y opacity (clip-path solo en pocas fotos grandes).
+ *   - Las clases que esconden cosas solo funcionan si movimiento.js cargó
+ *     (pone la clase .con-movimiento en <html>). Si el JS falla, todo se ve.
+ *   - Quien activó "reducir movimiento" ve solo fundidos cortos (al final del archivo).
+ *
+ * Se carga en el <head> de las 9 páginas, justo después de estilos.css.
+ */
+
+/* ---------- 1. Tokens de movimiento ---------- */
+
+:root {
+  /* ✏️ Curvas: cómo acelera y frena cada movimiento */
+  --curva-seda: cubic-bezier(0.22, 1, 0.36, 1);       /* salida larga y suave: entradas, revelados */
+  --curva-vitrina: cubic-bezier(0.65, 0, 0.35, 1);    /* entra y sale suave: cortinas, cambios */
+  --curva-pulso: cubic-bezier(0.34, 1.56, 0.64, 1);   /* rebote mínimo: SOLO confirmaciones */
+
+  /* ✏️ Duraciones: si todo se siente lento o rápido, cambia estos números */
+  --duracion-micro: 160ms;   /* hover, foco, presionar */
+  --duracion-corta: 280ms;   /* menús, pestañas, filtros */
+  --duracion-media: 520ms;   /* tarjetas que entran */
+  --duracion-larga: 900ms;   /* portada, revelado de fotos */
+  --escalon: 70ms;           /* ✏️ espera entre una tarjeta y la siguiente (cascada) */
+  --distancia-entrada: 24px; /* ✏️ cuánto suben las cosas al aparecer (16–32 px) */
+  --duracion-cinta: 60s;     /* ✏️ cuánto tarda una vuelta del texto de la barra rosa (más = más lento) */
+}
+
+/* Desplazamiento suave al usar enlaces internos (#contacto), solo si no se pidió menos movimiento */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* ---------- 2. Revelado al entrar en pantalla ---------- */
+/* Uso en HTML: <section data-revelar> ... </section>
+   movimiento.js le pone la clase .visible cuando aparece en pantalla (una sola vez). */
+
+.con-movimiento [data-revelar] {
+  opacity: 0;
+  transform: translateY(var(--distancia-entrada));
+  /* "translate" (sin retraso) es el que usan las tarjetas al pasar el mouse:
+     así el hover responde al instante aunque la tarjeta haya entrado en cascada */
+  transition:
+    opacity var(--duracion-media) var(--curva-seda) calc(var(--orden, 0) * var(--escalon)),
+    transform var(--duracion-media) var(--curva-seda) calc(var(--orden, 0) * var(--escalon)),
+    translate var(--duracion-corta) var(--curva-seda);
+}
+.con-movimiento [data-revelar].visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Variante: solo fundido, sin subir (para bloques muy grandes como mapas) */
+.con-movimiento [data-revelar="fundido"] { transform: none; }
+
+/* ---------- 3. Telón: la foto se descubre de abajo hacia arriba ---------- */
+/* Uso: <div class="collage-foto" data-revelar="telon" style="--orden:1"><img ...></div>
+   Úsalo solo en pocas fotos grandes (clip-path es más pesado que transform). */
+
+.con-movimiento [data-revelar="telon"] {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(100% 0 0 0 round var(--radio));
+  transition: clip-path var(--duracion-larga) var(--curva-vitrina);
+  transition-delay: calc(var(--orden, 0) * 120ms);
+}
+.con-movimiento [data-revelar="telon"].visible {
+  clip-path: inset(0 0 0 0 round var(--radio));
+}
+/* La foto de adentro se "acomoda" mientras sube la persiana */
+.con-movimiento [data-revelar="telon"] img {
+  transform: scale(1.15);
+  transition: transform calc(var(--duracion-larga) * 1.4) var(--curva-seda);
+  transition-delay: inherit;
+}
+.con-movimiento [data-revelar="telon"].visible img { transform: scale(1); }
+
+/* ---------- 4. Título línea por línea ---------- */
+/* Uso: <h1 class="titulo-lineas">VAMOS DE<br>COMPRAS!</h1>
+   movimiento.js envuelve cada línea (separada por <br>) en .linea > span. */
+
+.titulo-lineas .linea {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em; /* para que no se corten las letras con "cola" (g, p) */
+}
+.con-movimiento .titulo-lineas .linea > span {
+  display: inline-block;
+  transform: translateY(110%);
+  transition: transform var(--duracion-larga) var(--curva-seda);
+  transition-delay: calc(var(--orden, 0) * 110ms);
+}
+.con-movimiento .titulo-lineas.visible .linea > span { transform: none; }
+
+/* ---------- 5. Animaciones de la casa (se reutilizan en todas las páginas) ---------- */
+
+/* Latido: confirmaciones pequeñas (números, corazones) */
+@keyframes latido {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Cinta: el texto del anuncio corre en bucle */
+@keyframes cinta {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Brillo: franja de luz que cruza (cargas y escaneo) */
+@keyframes brillo {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* Caer pin: marcadores del mapa que aparecen desde arriba */
+@keyframes caer-pin {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Aparecer: fundido y subida corta (para cosas que se pintan después) */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* =========================================================
+   MICROINTERACCIONES GLOBALES (todas las páginas)
+   Responden en ≤ 160–280 ms. Todo lo de "pasar el mouse" va dentro de
+   @media (hover: hover) para que en el celular no se quede "pegado".
+   ========================================================= */
+
+/* ---------- 6. Botones: relleno que sube desde abajo ---------- */
+
+.boton {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate; /* el relleno queda detrás del texto pero encima del fondo */
+  transition:
+    transform var(--duracion-micro) var(--curva-seda),
+    color var(--duracion-corta) var(--curva-seda),
+    border-color var(--duracion-corta) var(--curva-seda);
+}
+.boton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--relleno-boton);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--duracion-corta) var(--curva-seda);
+}
+/* ✏️ Color del relleno de cada tipo de botón */
+.boton                 { --relleno-boton: var(--color-marca-oscuro); }
+.boton-secundario      { --relleno-boton: var(--color-marca-suave); }
+.boton-claro           { --relleno-boton: var(--color-marca-suave); }
+.boton-whatsapp        { --relleno-boton: var(--color-exito-oscuro); }
+
+@media (hover: hover) {
+  .boton:not(:disabled):hover::before { transform: scaleY(1); }
+  .boton:not(:disabled):hover { border-color: var(--relleno-boton); }
+  .boton-secundario:not(:disabled):hover { border-color: var(--color-marca); }
+}
+/* Al presionar (mouse o dedo) el botón se "hunde" un poquito */
+.boton:not(:disabled):active { transform: scale(0.97); }
+
+.boton-menu {
+  transition:
+    transform var(--duracion-micro) var(--curva-seda),
+    border-color var(--duracion-corta) var(--curva-seda);
+}
+@media (hover: hover) {
+  .boton-menu:hover { border-color: var(--color-marca); }
+}
+.boton-menu:active { transform: scale(0.96); }
+
+/* ---------- 7. Tarjetas: "acercamiento de vitrina" ---------- */
+/* La tarjeta sube 4 px, aparece una sombra y la foto se acerca dentro de su marco.
+   La sombra se muestra cambiando su opacidad (barato), no animando box-shadow (caro). */
+
+.tarjeta {
+  transition: translate var(--duracion-corta) var(--curva-seda);
+}
+.tarjeta::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow: var(--sombra-elevada);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duracion-corta) var(--curva-seda);
+}
+.tarjeta-imagen img {
+  transition: transform 700ms var(--curva-seda);
+}
+
+@media (hover: hover) {
+  .tarjeta:hover { translate: 0 -4px; }
+  .tarjeta:hover::after { opacity: 1; }
+  .tarjeta:hover .tarjeta-imagen img { transform: scale(1.06); }
+  .tarjeta:hover .tarjeta-imagen img[src$=".png"] { transform: scale(1.03); } /* logos: menos zoom */
+}
+/* Con teclado se ve igual que con el mouse */
+.tarjeta:focus-visible { translate: 0 -4px; }
+.tarjeta:focus-visible::after { opacity: 1; }
+
+/* ---------- 8. Enlaces con subrayado que crece ---------- */
+/* "Ver todas" y los enlaces del pie de página */
+
+.ver-todo,
+#pie li a,
+#pie p a {
+  position: relative;
+  display: inline-block;
+}
+.ver-todo::after,
+#pie li a::after,
+#pie p a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--duracion-corta) var(--curva-seda);
+}
+@media (hover: hover) {
+  .ver-todo:hover::after,
+  #pie li a:hover::after,
+  #pie p a:hover::after { transform: scaleX(1); transform-origin: left; }
+}
+.ver-todo:focus-visible::after,
+#pie li a:focus-visible::after,
+#pie p a:focus-visible::after { transform: scaleX(1); }
+/* El enlace "escríbenos" del pie va subrayado siempre (está dentro de un texto) */
+#pie p a::after { transform: scaleX(1); }
+
+/* ---------- 9. Encabezado ---------- */
+
+/* Íconos de buscar y mapa: un círculo rosa crece detrás al pasar el mouse */
+.accion-icono {
+  position: relative;
+  isolation: isolate;
+  transition: color var(--duracion-micro) var(--curva-seda);
+}
+.accion-icono::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--color-marca-suave);
+  opacity: 0;
+  transform: scale(0.5);
+  transition:
+    opacity var(--duracion-corta) var(--curva-seda),
+    transform var(--duracion-corta) var(--curva-seda);
+}
+@media (hover: hover) {
+  .accion-icono:hover { color: var(--color-marca-oscuro); }
+  .accion-icono:hover::before { opacity: 1; transform: scale(1); }
+}
+.accion-icono:active::before { opacity: 1; transform: scale(0.9); }
+
+/* Línea bajo el enlace del menú: crece de izquierda a derecha */
+.menu a::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  bottom: 6px;
+  width: 24px;
+  height: 2px;
+  background: var(--color-marca);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duracion-corta) var(--curva-seda);
+}
+.menu a[aria-current="page"]::after { transform: scaleX(1); }
+@media (hover: hover) {
+  .menu a:hover::after { transform: scaleX(1); }
+}
+
+/* Menú del celular: baja con un fundido y los enlaces entran uno tras otro */
+@media (max-width: 1079px) {
+  .menu {
+    transform: translateY(-8px);
+    /* al cerrar: rápido. visibility espera a que termine el fundido */
+    transition:
+      opacity var(--duracion-micro) var(--curva-vitrina),
+      transform var(--duracion-micro) var(--curva-vitrina),
+      visibility 0s linear var(--duracion-micro);
+  }
+  .menu.abierto {
+    transform: none;
+    /* al abrir: con seda */
+    transition:
+      opacity var(--duracion-corta) var(--curva-seda),
+      transform var(--duracion-corta) var(--curva-seda),
+      visibility 0s;
+  }
+  .menu.abierto li {
+    animation: entrar-enlace var(--duracion-media) var(--curva-seda) both;
+    animation-delay: calc(var(--i, 0) * 35ms);
+  }
+}
+@keyframes entrar-enlace {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (min-width: 1080px) {
+  .menu a::after { left: 9px; right: 9px; width: auto; bottom: 2px; }
+}
+
+/* Al bajar por la página: aparece una sombra bajo el encabezado y el logo se achica un poco.
+   movimiento.js pone la clase .encabezado-compacto. */
+#encabezado::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1; /* detrás del menú del celular, para no oscurecerlo */
+  box-shadow: var(--sombra-elevada);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duracion-corta) var(--curva-seda);
+}
+#encabezado.encabezado-compacto::after { opacity: 1; }
+.barra .logo {
+  transform-origin: left center;
+  transition: transform var(--duracion-corta) var(--curva-seda);
+}
+#encabezado.encabezado-compacto .barra .logo { transform: scale(0.88); } /* ✏️ tamaño del logo al bajar */
+
+/* Logo: la palabra "Me" tiene un brillo suave al entrar al sitio (una vez por visita) */
+.con-movimiento:not(.brillo-visto) #encabezado .logo-nombre > span {
+  position: relative;
+  clip-path: inset(0); /* el brillo no se sale de la palabra (sin mover las letras) */
+}
+.con-movimiento:not(.brillo-visto) #encabezado .logo-nombre > span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 25%, rgba(255, 255, 255, 0.8) 50%, transparent 75%);
+  animation: brillo 1100ms var(--curva-vitrina) 500ms both;
+}
+
+/* ---------- 10. Cinta del anuncio (barra rosa de arriba) ---------- */
+/* El texto corre lento en bucle; se pausa al pasar el mouse.
+   Con "reducir movimiento" (o sin JS) queda quieto y centrado. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .con-movimiento .anuncio { justify-content: flex-start; padding: 0; }
+  .con-movimiento .anuncio-cinta {
+    display: flex;
+    width: max-content;
+    animation: cinta var(--duracion-cinta) linear infinite;
+    will-change: transform; /* una sola capa permanente: la cinta */
+  }
+  .con-movimiento .anuncio-cinta span { display: inline-block; }
+  .con-movimiento .anuncio-cinta span::after {
+    content: "·";          /* ✏️ separador entre una vuelta y la otra */
+    margin: 0 1.6em;
+  }
+  .anuncio:hover .anuncio-cinta { animation-play-state: paused; }
+}
+
+/* ---------- 11. Formularios ---------- */
+/* El borde de buscadores y listas pasa a rosa al enfocarlos */
+
+input[type="search"],
+input[type="text"],
+input[type="number"],
+select {
+  transition: border-color var(--duracion-micro) var(--curva-seda);
+}
+input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus { border-color: var(--color-marca); }
+@media (hover: hover) {
+  input[type="search"]:hover,
+  input[type="text"]:hover,
+  input[type="number"]:hover,
+  select:hover { border-color: var(--color-marca); }
+}
+
+/* ---------- 12. Accesibilidad: "reducir movimiento" ---------- */
+/* Sin desplazamientos, sin telones, sin líneas que suben, sin zoom: solo fundidos cortos. */
+
+@media (prefers-reduced-motion: reduce) {
+  .con-movimiento [data-revelar],
+  .con-movimiento [data-revelar="telon"],
+  .con-movimiento [data-revelar="telon"] img,
+  .con-movimiento .titulo-lineas .linea > span {
+    transform: none !important;
+    clip-path: none !important;
+    transition: opacity 150ms linear !important;
+    transition-delay: 0s !important;
+  }
+
+  /* Botones: el relleno aparece con un fundido en vez de subir */
+  .boton::before { transform: none; opacity: 0; transition: opacity 150ms linear; }
+  .boton:not(:disabled):hover::before { transform: none; opacity: 1; }
+  .boton:not(:disabled):active,
+  .boton-menu:active { transform: none; }
+
+  /* Tarjetas: sin subir ni acercar la foto; solo aparece la sombra */
+  .tarjeta:hover,
+  .tarjeta:focus-visible { translate: none !important; }
+  .tarjeta:hover .tarjeta-imagen img { transform: none !important; }
+
+  /* Menú: aparece con un fundido, sin desplazarse */
+  .menu,
+  .menu.abierto { transform: none; }
+  .menu.abierto li { animation: none; }
+
+  /* Logo y encabezado: sin brillo ni cambio de tamaño */
+  #encabezado .logo-nombre > span::after { display: none; }
+  #encabezado.encabezado-compacto .barra .logo { transform: none; }
+}
