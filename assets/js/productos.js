@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
   campoTexto.value = parametroURL("q") ?? "";
   campoCategoria.value = parametroURL("categoria") ?? "";
 
+  let cantidadAnterior = 0;
+
   function mostrar() {
     const texto = normalizar(campoTexto.value.trim());
     const categoria = campoCategoria.value;
@@ -41,13 +43,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return coincideTexto && coincideCategoria && coincidePrecio && coincideTienda;
     });
 
-    contador.textContent = `${resultado.length} producto${resultado.length === 1 ? "" : "s"}`;
+    // El número del contador cuenta desde el valor anterior hasta el nuevo
+    const cantidad = resultado.length;
+    contador.innerHTML = `<span class="contador-numero">${cantidad}</span> producto${cantidad === 1 ? "" : "s"}`;
+    window.StyleMeMovimiento?.animarNumero(contador.firstElementChild, cantidadAnterior, cantidad);
+    cantidadAnterior = cantidad;
     lista.innerHTML = resultado.length
       ? resultado.map(tarjetaProducto).join("")
       : '<p class="vacio">No encontramos productos con esos filtros. Prueba con otra palabra.</p>';
   }
 
-  [campoTexto, campoPrecio].forEach((c) => c.addEventListener("input", mostrar));
-  [campoCategoria, campoTienda].forEach((c) => c.addEventListener("change", mostrar));
-  mostrar();
+  // Al filtrar, las tarjetas se reacomodan con suavidad (pintarConTransicion está en comun.js)
+  const mostrarConTransicion = () => pintarConTransicion(lista, mostrar);
+  [campoTexto, campoPrecio].forEach((c) => c.addEventListener("input", mostrarConTransicion));
+  [campoCategoria, campoTienda].forEach((c) => c.addEventListener("change", mostrarConTransicion));
+  mostrar(); // la primera vez entran en cascada y el contador cuenta desde 0
 });

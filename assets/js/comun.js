@@ -101,20 +101,24 @@ function popupTienda(tienda) {
 
 /* ---------- Piezas visuales ---------- */
 
-// Muestra la foto, o un recuadro con el nombre de la categoría si todavía no hay foto
-function imagenOMarcador(src, alt, categoria) {
+// Muestra la foto, o un recuadro con el nombre de la categoría si todavía no hay foto.
+// "prioridad" = true para la foto principal de una página (se pide primero, sin esperar).
+function imagenOMarcador(src, alt, categoria, prioridad = false) {
   if (src) {
-    return `<img src="${escaparHTML(src)}" alt="${escaparHTML(alt)}" loading="lazy">`;
+    const carga = prioridad ? 'fetchpriority="high"' : 'loading="lazy"';
+    return `<img src="${escaparHTML(src)}" alt="${escaparHTML(alt)}" ${carga} decoding="async">`;
   }
   const texto = CATEGORIAS[categoria]?.nombre ?? TIPOS_TIENDA[categoria] ?? "Sin foto";
   return `<div class="marcador-imagen" aria-hidden="true">${escaparHTML(texto)}</div>`;
 }
 
+// data-vt = nombre para que la tarjeta se deslice al filtrar (pintarConTransicion)
+// data-tienda = para que la foto "viaje" al perfil (movimiento.js)
 function tarjetaTienda(tienda) {
   const cantidad = productosDeTienda(tienda.id).length;
   return `
-    <a class="tarjeta" href="tienda.html?id=${encodeURIComponent(tienda.id)}">
-      <div class="tarjeta-imagen">${imagenOMarcador(tienda.foto, tienda.nombre, tienda.tipo)}</div>
+    <a class="tarjeta" href="tienda.html?id=${encodeURIComponent(tienda.id)}" data-vt="tarjeta-${escaparHTML(tienda.id)}">
+      <div class="tarjeta-imagen" data-tienda="${escaparHTML(tienda.id)}">${imagenOMarcador(tienda.foto, tienda.nombre, tienda.tipo)}</div>
       <div class="tarjeta-cuerpo">
         <span class="etiqueta">${escaparHTML(TIPOS_TIENDA[tienda.tipo])}</span>
         <h3>${escaparHTML(tienda.nombre)}</h3>
@@ -131,7 +135,7 @@ function tarjetaProducto(producto) {
       ? `<a class="boton boton-secundario boton-pequeno" href="probador.html?producto=${encodeURIComponent(producto.id)}">Probar virtualmente</a>`
       : "";
   return `
-    <article class="tarjeta">
+    <article class="tarjeta" data-vt="producto-${escaparHTML(producto.id)}">
       <div class="tarjeta-imagen">
         ${imagenOMarcador(producto.foto, producto.nombre, producto.categoria)}
         ${producto.pendiente ? '<span class="sello">Ejemplo</span>' : ""}
@@ -144,6 +148,42 @@ function tarjetaProducto(producto) {
         ${botonProbador}
       </div>
     </article>`;
+}
+
+/* ---------- Pintar resultados con una transición suave ---------- */
+
+// Al filtrar tiendas o productos, las tarjetas que se quedan se deslizan a su nuevo lugar
+// y las nuevas aparecen con un fundido (View Transition). Si el navegador no lo soporta,
+// o la persona pidió "reducir movimiento", simplemente se pinta como siempre.
+//   contenedor → la cuadrícula que cambia (ej.: #lista-tiendas)
+//   pintar     → la función que cambia su contenido
+let transicionActual = 0;
+function pintarConTransicion(contenedor, pintar) {
+  // Después del primer pintado ya no hay cascada: el filtro debe sentirse inmediato
+  contenedor.removeAttribute("data-cascada");
+
+  const menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!document.startViewTransition || menosMovimiento) {
+    pintar();
+    return;
+  }
+
+  // Cada tarjeta recibe su nombre (data-vt) solo durante la transición
+  const nombrar = (activo) =>
+    contenedor.querySelectorAll("[data-vt]").forEach((el) => {
+      el.style.viewTransitionName = activo ? el.dataset.vt : "";
+    });
+
+  const numero = ++transicionActual;
+  nombrar(true);
+  const transicion = document.startViewTransition(() => {
+    pintar();
+    nombrar(true);
+  });
+  // Si se escribe rápido, solo la última transición limpia los nombres
+  transicion.finished.finally(() => {
+    if (numero === transicionActual) nombrar(false);
+  });
 }
 
 /* ---------- Íconos de línea (SVG) ---------- */

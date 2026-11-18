@@ -15,10 +15,10 @@
   <header id="encabezado"></header>
 
   <main class="contenedor">
-    <h1>Tiendas</h1>
-    <p class="texto-suave">Tiendas locales de Bucaramanga.</p>
+    <h1 class="titulo-lineas">Tiendas</h1>
+    <p class="texto-suave" data-revelar style="--orden:2">Tiendas locales de Bucaramanga.</p>
 
-    <div class="filtros">
+    <div class="filtros" data-revelar style="--orden:3">
       <div>
         <label for="filtro-texto">Buscar tienda</label>
         <input type="search" id="filtro-texto" placeholder="Nombre o barrio">
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <div class="cuadricula" id="lista-tiendas"></div>
+    <div class="cuadricula" id="lista-tiendas" data-cascada></div>
   </main>
 
   <footer id="pie"></footer>

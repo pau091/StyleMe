@@ -1,6 +1,9 @@
 /* PERFIL DE TIENDA: datos, botones de contacto, mini mapa y productos */
 
-document.addEventListener("DOMContentLoaded", () => {
+// Se pinta apenas carga este archivo (no espera a DOMContentLoaded): así la foto ya existe
+// cuando el navegador hace la transición desde la tarjeta ("foto que viaja").
+// Este script está al final del <body>, por eso #perfil ya existe.
+(function pintarPerfil() {
   const contenedor = document.getElementById("perfil");
   const tienda = buscarTienda(parametroURL("id"));
 
@@ -20,9 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const productos = productosDeTienda(tienda.id);
 
   contenedor.innerHTML = `
-    <div class="perfil-cabecera">
-      <div class="perfil-foto">${imagenOMarcador(tienda.foto, tienda.nombre, tienda.tipo)}</div>
-      <div>
+    <div class="perfil-cabecera" id="perfil-listo">
+      <div class="perfil-foto" data-tienda="${escaparHTML(tienda.id)}" style="view-transition-name: foto-viajera">${imagenOMarcador(tienda.foto, tienda.nombre, tienda.tipo, true)}</div>
+      <div data-cascada>
         <span class="etiqueta">${escaparHTML(TIPOS_TIENDA[tienda.tipo])}</span>
         <h1>${escaparHTML(tienda.nombre)}</h1>
         <p>${escaparHTML(tienda.descripcion)}</p>
@@ -41,19 +44,21 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     </div>
 
-    ${tieneUbicacion(tienda) ? '<section><h2>Ubicación</h2><div id="mini-mapa" class="mapa mapa-pequeno"></div></section>' : ""}
+    ${tieneUbicacion(tienda) ? '<section data-revelar="fundido"><h2>Ubicación</h2><div id="mini-mapa" class="mapa mapa-pequeno"></div></section>' : ""}
 
     <section>
-      <h2>Productos</h2>
+      <h2 data-revelar>Productos</h2>
       ${
         productos.length
-          ? `<div class="cuadricula">${productos.map(tarjetaProducto).join("")}</div>`
+          ? `<div class="cuadricula" data-cascada>${productos.map(tarjetaProducto).join("")}</div>`
           : '<p class="vacio">Esta tienda aún no tiene productos publicados.</p>'
       }
     </section>`;
 
   if (tieneUbicacion(tienda)) {
     const mapa = crearMapa("mini-mapa", [tienda.lat, tienda.lng], 16);
-    L.marker([tienda.lat, tienda.lng]).addTo(mapa).bindPopup(escaparHTML(tienda.nombre));
+    const marcador = L.marker([tienda.lat, tienda.lng]).addTo(mapa).bindPopup(escaparHTML(tienda.nombre));
+    // El pin "cae" cuando el mapa aparece en pantalla (animación en movimiento.css)
+    marcador.getElement()?.classList.add("pin-cae");
   }
-});
+})();

@@ -62,15 +62,17 @@
 /* Uso: <div class="collage-foto" data-revelar="telon" style="--orden:1"><img ...></div>
    Úsalo solo en pocas fotos grandes (clip-path es más pesado que transform). */
 
+/* El recorte es un poco más grande que la foto (-40px) para no cortar su sombra;
+   las esquinas redondas ya las pone la propia foto (border-radius + overflow: hidden). */
 .con-movimiento [data-revelar="telon"] {
   opacity: 1;
   transform: none;
-  clip-path: inset(100% 0 0 0 round var(--radio));
+  clip-path: inset(100% -40px -40px -40px);
   transition: clip-path var(--duracion-larga) var(--curva-vitrina);
   transition-delay: calc(var(--orden, 0) * 120ms);
 }
 .con-movimiento [data-revelar="telon"].visible {
-  clip-path: inset(0 0 0 0 round var(--radio));
+  clip-path: inset(-40px);
 }
 /* La foto de adentro se "acomoda" mientras sube la persiana */
 .con-movimiento [data-revelar="telon"] img {
@@ -87,7 +89,7 @@
 .titulo-lineas .linea {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.08em; /* para que no se corten las letras con "cola" (g, p) */
+  padding-bottom: 0.12em; /* para que no se corten las letras con "cola" (g, p) */
 }
 .con-movimiento .titulo-lineas .linea > span {
   display: inline-block;
@@ -119,10 +121,12 @@
   to   { transform: translateX(100%); }
 }
 
-/* Caer pin: marcadores del mapa que aparecen desde arriba */
+/* Caer pin: marcadores del mapa que aparecen desde arriba.
+   Usa "translate" y no "transform" porque Leaflet ya usa transform para ubicar
+   cada marcador en el mapa; translate se suma sin borrar esa posición. */
 @keyframes caer-pin {
-  from { opacity: 0; transform: translateY(-20px); }
-  to   { opacity: 1; transform: none; }
+  from { opacity: 0; translate: 0 -20px; }
+  to   { opacity: 1; translate: 0 0; }
 }
 
 /* Aparecer: fundido y subida corta (para cosas que se pintan después) */
@@ -395,6 +399,206 @@ select:focus { border-color: var(--color-marca); }
   select:hover { border-color: var(--color-marca); }
 }
 
+/* ---------- Piezas que se usan en varias páginas ---------- */
+
+/* La rayita rosa bajo los títulos de sección se dibuja de izquierda a derecha al aparecer */
+.con-movimiento .titulo-seccion[data-revelar]::after {
+  transform: scaleX(0);
+  transition: transform 700ms var(--curva-seda) 250ms;
+}
+.con-movimiento .titulo-seccion[data-revelar].visible::after { transform: none; }
+
+/* Mensajes de "no encontramos..." aparecen con un fundido */
+.con-movimiento .vacio { animation: aparecer var(--duracion-media) var(--curva-seda) both; }
+
+/* Botón magnético (solo con mouse): se inclina unos px hacia el cursor.
+   movimiento.js mueve la propiedad "translate"; el clic sigue usando "transform". */
+.boton[data-magnetico] {
+  transition:
+    transform var(--duracion-micro) var(--curva-seda),
+    color var(--duracion-corta) var(--curva-seda),
+    border-color var(--duracion-corta) var(--curva-seda),
+    translate 400ms var(--curva-seda);
+}
+
+/* Sello "Ejemplo" de los productos: aparece un poco después de su tarjeta */
+.con-movimiento [data-revelar] .sello {
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity var(--duracion-corta) var(--curva-seda),
+    transform var(--duracion-corta) var(--curva-seda);
+  transition-delay: calc(var(--orden, 0) * var(--escalon) + 300ms);
+}
+.con-movimiento [data-revelar].visible .sello { opacity: 1; transform: none; }
+
+/* =========================================================
+   INICIO (index.html) — momento estrella: "se abre la vitrina"
+   El título sube línea por línea y las fotos del collage se descubren como persianas.
+   ========================================================= */
+
+/* Palabra en itálica del título ("compras!") */
+.portada h1 em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--color-marca-oscuro);
+}
+
+/* Fondo de la portada: dos luces suaves que se mueven muy despacio */
+.portada { position: relative; isolation: isolate; }
+.portada::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 45% at 25% 35%, var(--color-superficie), transparent),
+    radial-gradient(35% 40% at 75% 70%, var(--color-marca-suave), transparent);
+  opacity: 0.55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .con-movimiento .portada::before {
+    animation: deriva-portada 30s ease-in-out infinite alternate; /* ✏️ 30s = muy lento */
+  }
+}
+@keyframes deriva-portada {
+  from { transform: translate(-4%, -3%) rotate(0deg); }
+  to   { transform: translate(4%, 3%) rotate(8deg); }
+}
+
+/* Categorías en círculo: sube, el ícono gira un poquito y aparece un anillo rosa */
+.categoria-circulo {
+  position: relative;
+  transition: translate var(--duracion-corta) var(--curva-seda);
+}
+.categoria-circulo .icono {
+  transition: transform var(--duracion-corta) var(--curva-seda);
+}
+.categoria-circulo::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-marca);
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity var(--duracion-corta) var(--curva-seda),
+    transform var(--duracion-corta) var(--curva-seda);
+}
+@media (hover: hover) {
+  .categoria:hover .categoria-circulo { translate: 0 -4px; }
+  .categoria:hover .categoria-circulo .icono { transform: rotate(-8deg) scale(1.08); }
+  .categoria:hover .categoria-circulo::after { opacity: 1; transform: none; }
+}
+.categoria:focus-visible .categoria-circulo::after { opacity: 1; transform: none; }
+
+/* Tarjetas de herramientas (probador y recomendador): suben como las tarjetas */
+.herramienta {
+  position: relative;
+  transition:
+    translate var(--duracion-corta) var(--curva-seda),
+    border-color var(--duracion-corta) var(--curva-seda);
+}
+.herramienta::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow: var(--sombra-elevada);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duracion-corta) var(--curva-seda);
+}
+.herramienta .icono-grande { transition: transform var(--duracion-corta) var(--curva-seda); }
+@media (hover: hover) {
+  .herramienta:hover { translate: 0 -4px; }
+  .herramienta:hover::after { opacity: 1; }
+  .herramienta:hover .icono-grande { transform: scale(1.08); }
+}
+
+/* Banner "Arma tu salida de compras": la foto se desplaza un poquito con el scroll.
+   Lo hace el navegador solo (scroll-driven animation), sin JavaScript.
+   En navegadores que no lo soportan, la foto simplemente se queda quieta. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .promo-imagenes img {
+      animation: deriva-banner linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@keyframes deriva-banner {
+  from { transform: scale(1.12) translateY(-4%); }
+  to   { transform: scale(1.12) translateY(4%); }
+}
+
+/* =========================================================
+   TIENDAS y PRODUCTOS — "vitrinas en fila" y "catálogo vivo"
+   Las tarjetas entran en cascada; al filtrar, las que quedan se deslizan
+   a su nuevo lugar (View Transition, ver pintarConTransicion en comun.js).
+   ========================================================= */
+
+.tarjeta { view-transition-class: tarjeta; }
+::view-transition-group(*.tarjeta) {
+  animation-duration: 420ms; /* ✏️ qué tan rápido se reacomodan al filtrar */
+  animation-timing-function: var(--curva-seda);
+}
+
+/* El número del contador ("12 productos") no "baila" mientras cuenta */
+.contador-numero { font-variant-numeric: tabular-nums; }
+
+/* =========================================================
+   PERFIL DE TIENDA — momento estrella: "la foto que viaja"
+   La foto de la tarjeta crece hasta su lugar en el perfil (y vuelve al regresar).
+   movimiento.js le pone el nombre "foto-viajera" solo a la tarjeta que se tocó.
+   ========================================================= */
+
+/* Cambio de página suave entre todas las páginas (Chrome/Edge 126+, Safari 18.2+).
+   En otros navegadores la página cambia normal. */
+@view-transition { navigation: auto; }
+
+.tarjeta-imagen,
+.perfil-foto { view-transition-class: foto-tienda; }
+
+::view-transition-group(*.foto-tienda) {
+  animation-duration: 560ms; /* ✏️ duración del viaje de la foto */
+  animation-timing-function: var(--curva-seda);
+  border-radius: var(--radio-grande);
+  overflow: clip;
+}
+/* La foto es cuadrada en la tarjeta y 4:3 en el perfil: así no se estira */
+::view-transition-old(*.foto-tienda),
+::view-transition-new(*.foto-tienda) {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* La etiqueta de tipo de tienda necesita ser "bloque" para poder subir */
+.perfil-cabecera .etiqueta { display: inline-block; }
+
+/* Botón de WhatsApp: un brillo lo cruza una sola vez, cuando ya llegó la foto */
+@media (prefers-reduced-motion: no-preference) {
+  .con-movimiento .perfil-cabecera .boton-whatsapp::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+    animation: brillo 900ms var(--curva-vitrina) 1000ms both;
+  }
+}
+
+/* Mini mapa: el pin cae cuando la sección aparece en pantalla */
+.con-movimiento [data-revelar].visible .pin-cae {
+  animation: caer-pin 500ms var(--curva-seda) 250ms both;
+}
+
+/* Quita la transición por un momento (la usa movimiento.js al volver de un perfil) */
+.sin-transicion { transition: none !important; }
+
 /* ---------- 12. Accesibilidad: "reducir movimiento" ---------- */
 /* Sin desplazamientos, sin telones, sin líneas que suben, sin zoom: solo fundidos cortos. */
 
@@ -428,4 +632,22 @@ select:focus { border-color: var(--color-marca); }
   /* Logo y encabezado: sin brillo ni cambio de tamaño */
   #encabezado .logo-nombre > span::after { display: none; }
   #encabezado.encabezado-compacto .barra .logo { transform: none; }
+
+  /* Inicio y tiendas: sin movimientos de hover ni entradas animadas */
+  .categoria:hover .categoria-circulo,
+  .herramienta:hover { translate: none; }
+  .categoria:hover .categoria-circulo .icono,
+  .herramienta:hover .icono-grande,
+  .con-movimiento .titulo-seccion[data-revelar]::after,
+  .con-movimiento [data-revelar] .sello { transform: none; }
+  .con-movimiento .vacio,
+  .con-movimiento [data-revelar].visible .pin-cae { animation: none; }
+  .boton[data-magnetico] { translate: none !important; }
+
+  /* Cambios de página y foto viajera: instantáneos */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+  }
 }

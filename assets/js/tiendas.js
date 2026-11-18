@@ -27,7 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
       : '<p class="vacio">No encontramos tiendas con esos filtros.</p>';
   }
 
-  campoTexto.addEventListener("input", mostrar);
-  campoTipo.addEventListener("change", mostrar);
-  mostrar();
+  // Al filtrar, las tarjetas se reacomodan con suavidad (pintarConTransicion está en comun.js)
+  const mostrarConTransicion = () => pintarConTransicion(lista, mostrar);
+  campoTexto.addEventListener("input", mostrarConTransicion);
+  campoTipo.addEventListener("change", mostrarConTransicion);
+  mostrar(); // la primera vez entran en cascada
 });

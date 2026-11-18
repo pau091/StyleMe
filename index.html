@@ -7,7 +7,7 @@
   <meta name="description" content="Encuentra tiendas locales de ropa y maquillaje en Bucaramanga, planea tu salida de compras y pruébate la ropa virtualmente.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Jost:wght@400;500;600&display=swap">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/css/estilos.css">
   <link rel="stylesheet" href="assets/css/movimiento.css">
@@ -19,17 +19,18 @@
     <!-- Portada -->
     <section class="portada">
       <div>
-        <p class="portada-etiqueta">Moda y belleza local</p>
-        <h1>VAMOS DE COMPRAS!</h1>
-        <p>Descubre tiendas de Bucaramanga, mira dónde quedan y escríbeles directamente.</p>
+        <p class="portada-etiqueta" data-revelar>Moda y belleza local</p>
+        <!-- ✏️ El <br> parte el título en dos líneas; <em> pone "compras!" en itálica -->
+        <h1 class="titulo-lineas">VAMOS DE<br><em>compras!</em></h1>
+        <p data-revelar style="--orden:3">Descubre tiendas de Bucaramanga, mira dónde quedan y escríbeles directamente.</p>
 
-        <form class="buscador" action="productos.html" method="get" role="search">
+        <form class="buscador" data-revelar style="--orden:4" action="productos.html" method="get" role="search">
           <input type="search" id="busqueda" name="q" aria-label="Buscar productos o tiendas" placeholder="Busca blusas, labiales, tiendas...">
           <button class="boton" type="submit">Buscar</button>
         </form>
 
-        <div class="grupo-botones">
-          <a class="boton" href="salida.html">Planear salida de compras</a>
+        <div class="grupo-botones" data-revelar style="--orden:5">
+          <a class="boton" href="salida.html" data-magnetico>Planear salida de compras</a>
           <a class="boton boton-secundario" href="tiendas.html">Ver tiendas</a>
         </div>
       </div>
@@ -39,25 +40,25 @@
 
     <!-- Ventajas -->
     <section>
-      <div class="ventajas" id="ventajas"></div>
+      <div class="ventajas" id="ventajas" data-cascada></div>
     </section>
 
     <!-- Categorías -->
     <section>
-      <div class="titulo-seccion">
+      <div class="titulo-seccion" data-revelar>
         <h2>Explora por categoría</h2>
       </div>
-      <div class="categorias" id="lista-categorias"></div>
+      <div class="categorias" id="lista-categorias" data-cascada></div>
     </section>
 
     <!-- Banner de salida de compras -->
-    <section class="promo">
+    <section class="promo" data-revelar>
       <div class="promo-texto">
         <p class="promo-etiqueta">¿No sabes qué hacer hoy?</p>
         <h2>Arma tu salida de compras</h2>
         <p>Elige qué quieres ver y te sugerimos un recorrido por tiendas cercanas entre sí.</p>
         <div class="grupo-botones">
-          <a class="boton boton-claro" href="salida.html">Empezar</a>
+          <a class="boton boton-claro" href="salida.html" data-magnetico>Empezar</a>
         </div>
       </div>
       <div class="promo-imagenes" id="promo-imagenes" aria-hidden="true"></div>
@@ -65,28 +66,28 @@
 
     <!-- Tiendas de ropa -->
     <section>
-      <div class="cabecera-seccion">
+      <div class="cabecera-seccion" data-revelar>
         <h2>Tiendas de ropa</h2>
         <a class="ver-todo" href="tiendas.html?tipo=ropa">Ver todas</a>
       </div>
-      <div class="cuadricula" id="tiendas-ropa"></div>
+      <div class="cuadricula" id="tiendas-ropa" data-cascada></div>
     </section>
 
     <!-- Tiendas de maquillaje -->
     <section>
-      <div class="cabecera-seccion">
+      <div class="cabecera-seccion" data-revelar>
         <h2>Maquillaje y belleza</h2>
         <a class="ver-todo" href="tiendas.html?tipo=maquillaje">Ver todas</a>
       </div>
-      <div class="cuadricula" id="tiendas-maquillaje"></div>
+      <div class="cuadricula" id="tiendas-maquillaje" data-cascada></div>
     </section>
 
     <!-- Herramientas -->
     <section>
-      <div class="titulo-seccion">
+      <div class="titulo-seccion" data-revelar>
         <h2>Herramientas para ti</h2>
       </div>
-      <div class="herramientas" id="herramientas"></div>
+      <div class="herramientas" id="herramientas" data-cascada></div>
     </section>
   </main>
 

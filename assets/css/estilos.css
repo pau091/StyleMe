@@ -403,10 +403,9 @@ select {
   justify-content: center;
   background: linear-gradient(160deg, var(--color-marca-suave), var(--color-beige));
   color: var(--color-marca-oscuro);
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 .categoria-circulo .icono { width: 48px; height: 48px; stroke-width: 1.2; }
-.categoria:hover .categoria-circulo { transform: translateY(-3px); box-shadow: var(--sombra); }
+/* El hover de las categorías (sube, gira el ícono y aparece un anillo) está en movimiento.css */
 
 /* ---------- Banner promocional ---------- */
 

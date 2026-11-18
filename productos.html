@@ -15,10 +15,10 @@
   <header id="encabezado"></header>
 
   <main class="contenedor">
-    <h1>Productos</h1>
-    <p class="aviso">Los precios y la disponibilidad pueden cambiar. Confírmalos con la tienda por WhatsApp.</p>
+    <h1 class="titulo-lineas">Productos</h1>
+    <p class="aviso" data-revelar style="--orden:2">Los precios y la disponibilidad pueden cambiar. Confírmalos con la tienda por WhatsApp.</p>
 
-    <div class="filtros">
+    <div class="filtros" data-revelar style="--orden:3">
       <div>
         <label for="filtro-texto">Buscar</label>
         <input type="search" id="filtro-texto" placeholder="Producto o tienda">
@@ -45,8 +45,8 @@
       </div>
     </div>
 
-    <p class="texto-suave" id="contador"></p>
-    <div class="cuadricula" id="lista-productos"></div>
+    <p class="texto-suave" id="contador" data-revelar style="--orden:4"></p>
+    <div class="cuadricula" id="lista-productos" data-cascada></div>
   </main>
 
   <footer id="pie"></footer>

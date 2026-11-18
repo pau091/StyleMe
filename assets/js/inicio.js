@@ -42,14 +42,18 @@ const FOTOS_PORTADA = [
 const FOTO_BANNER = "assets/img/decoracion/bolsas-de-compras.jpg";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Collage de la portada
+  // Collage de la portada. Cada foto se descubre como una persiana (data-revelar="telon"),
+  // una después de la otra (--orden). La primera es la más importante: se pide primero.
   document.getElementById("collage").innerHTML = FOTOS_PORTADA.map(
-    (ruta) => `<div class="collage-foto"><img src="${escaparHTML(ruta)}" alt=""></div>`
+    (ruta, i) => `
+      <div class="collage-foto" data-revelar="telon" style="--orden:${i + 1}">
+        <img src="${escaparHTML(ruta)}" alt="" decoding="async" ${i === 0 ? 'fetchpriority="high"' : ""}>
+      </div>`
   ).join("");
 
-  // Banner de salida de compras
+  // Banner de salida de compras (está más abajo: se carga cuando la persona se acerca)
   document.getElementById("promo-imagenes").innerHTML =
-    `<img src="${escaparHTML(FOTO_BANNER)}" alt="">`;
+    `<img src="${escaparHTML(FOTO_BANNER)}" alt="" loading="lazy" decoding="async">`;
 
   // Ventajas
   document.getElementById("ventajas").innerHTML = VENTAJAS.map(

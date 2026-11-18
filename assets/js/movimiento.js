@@ -36,6 +36,13 @@
         entradas.forEach((entrada) => {
           if (!entrada.isIntersecting) return;
           const el = entrada.target;
+          // Si es el contenedor de unas fotos con telón, se descubren ellas
+          if (telonesPorContenedor.has(el)) {
+            telonesPorContenedor.get(el).forEach((foto) => foto.classList.add("visible"));
+            telonesPorContenedor.delete(el);
+            observador.unobserve(el);
+            return;
+          }
           if (el.hasAttribute("data-en-cascada")) {
             el.style.setProperty("--orden", Math.min(enEstaTanda, MAX_ESCALONES));
             enEstaTanda++;
@@ -46,6 +53,20 @@
       },
       { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
     );
+
+    // Las fotos con telón empiezan 100 % recortadas y el navegador las considera
+    // "invisibles"; por eso se vigila a su contenedor, que sí tiene tamaño.
+    const telonesPorContenedor = new Map();
+    function prepararTelon(foto) {
+      if (foto.dataset.telonListo) return;
+      foto.dataset.telonListo = "1";
+      const contenedor = foto.parentElement;
+      if (!telonesPorContenedor.has(contenedor)) {
+        telonesPorContenedor.set(contenedor, []);
+        observador.observe(contenedor);
+      }
+      telonesPorContenedor.get(contenedor).push(foto);
+    }
 
     // Los hijos de una cuadrícula con data-cascada se revelan en orden
     function prepararCascada(contenedor) {
@@ -66,14 +87,53 @@
       observador.observe(titulo);
     }
 
+    /* ---------- Botón magnético (solo con mouse) ---------- */
+    // El botón se inclina unos px hacia el cursor. Se usa en 1–2 botones por página.
+    const MAX_IMAN = 8; // ✏️ cuántos px se puede mover como máximo
+
+    function prepararMagnetico(boton) {
+      if (boton.dataset.magneticoListo) return;
+      boton.dataset.magneticoListo = "1";
+      let caja = null;
+      let pendiente = false;
+      let x = 0;
+      let y = 0;
+      const limitar = (n) => Math.max(-MAX_IMAN, Math.min(MAX_IMAN, n));
+
+      boton.addEventListener("pointerenter", () => {
+        caja = boton.getBoundingClientRect(); // se mide una sola vez al entrar
+      });
+      boton.addEventListener(
+        "pointermove",
+        (evento) => {
+          if (!caja || !punteroFino.matches || menosMovimiento.matches) return;
+          x = limitar((evento.clientX - caja.left - caja.width / 2) * 0.25);
+          y = limitar((evento.clientY - caja.top - caja.height / 2) * 0.35);
+          if (pendiente) return; // como máximo un cambio por cuadro
+          pendiente = true;
+          requestAnimationFrame(() => {
+            boton.style.translate = `${x}px ${y}px`;
+            pendiente = false;
+          });
+        },
+        { passive: true }
+      );
+      boton.addEventListener("pointerleave", () => {
+        caja = null;
+        boton.style.translate = "";
+      });
+    }
+
     // Busca dentro de "raiz" todo lo que hay que animar y lo prepara
     function activar(raiz = document) {
       if (raiz.nodeType !== 1 && raiz !== document) return;
       raiz.querySelectorAll("[data-cascada]").forEach(prepararCascada);
       raiz.querySelectorAll(".titulo-lineas").forEach(prepararTitulo);
-      raiz.querySelectorAll("[data-revelar]:not(.visible)").forEach((el) => observador.observe(el));
+      raiz.querySelectorAll("[data-magnetico]").forEach(prepararMagnetico);
+      raiz.querySelectorAll('[data-revelar="telon"]:not(.visible)').forEach(prepararTelon);
+      raiz.querySelectorAll('[data-revelar]:not(.visible):not([data-revelar="telon"])').forEach((el) => observador.observe(el));
       // El propio elemento también puede tener data-revelar
-      if (raiz !== document && raiz.matches("[data-revelar]:not(.visible)")) observador.observe(raiz);
+      if (raiz !== document && raiz.matches('[data-revelar]:not(.visible):not([data-revelar="telon"])')) observador.observe(raiz);
     }
 
     /* ---------- Lo que se pinta después (innerHTML de cada página) ---------- */
@@ -116,6 +176,74 @@
     } catch (e) {
       // Navegación privada sin almacenamiento: el brillo simplemente sale siempre
     }
+
+    /* ---------- La foto que viaja: tarjeta de tienda ⇄ perfil ---------- */
+    // El perfil (tienda.html) siempre tiene una foto llamada "foto-viajera".
+    // En las listas, solo la tarjeta que se tocó recibe ese nombre justo antes de
+    // cambiar de página; así el navegador sabe qué foto tiene que hacer crecer.
+    const CLAVE_VUELTA = "styleme-foto-viajera";
+    let fotoTocada = null;
+
+    // Recuerda qué tarjeta de tienda se tocó
+    document.addEventListener(
+      "click",
+      (evento) => {
+        const tarjeta = evento.target.closest?.("a.tarjeta");
+        // Ctrl/Cmd/Shift + clic abre otra pestaña: aquí no hay viaje
+        const otraPestana = evento.ctrlKey || evento.metaKey || evento.shiftKey || evento.button !== 0;
+        fotoTocada = tarjeta && !otraPestana ? tarjeta.querySelector(".tarjeta-imagen[data-tienda]") : null;
+      },
+      true
+    );
+
+    function quitarNombresDeFotos() {
+      document.querySelectorAll(".tarjeta-imagen[data-tienda]").forEach((foto) => {
+        foto.style.viewTransitionName = "";
+      });
+    }
+
+    // Al SALIR de una página
+    window.addEventListener("pageswap", (evento) => {
+      if (!evento.viewTransition) return;
+      // Ida (lista → perfil): nombramos la foto de la tarjeta tocada
+      if (fotoTocada) {
+        quitarNombresDeFotos();
+        fotoTocada.style.viewTransitionName = "foto-viajera";
+      }
+      // Vuelta (perfil → lista): recordamos de qué tienda veníamos
+      const fotoPerfil = document.querySelector(".perfil-foto[data-tienda]");
+      try {
+        if (fotoPerfil) sessionStorage.setItem(CLAVE_VUELTA, fotoPerfil.dataset.tienda);
+      } catch (e) { /* sin almacenamiento: solo no habrá viaje de vuelta */ }
+    });
+
+    // Al LLEGAR a una página
+    window.addEventListener("pageshow", () => { fotoTocada = null; });
+    window.addEventListener("pagereveal", (evento) => {
+      let idTienda = null;
+      try {
+        idTienda = sessionStorage.getItem(CLAVE_VUELTA);
+        sessionStorage.removeItem(CLAVE_VUELTA);
+      } catch (e) { /* nada */ }
+
+      quitarNombresDeFotos();
+      if (!evento.viewTransition || !idTienda) return;
+
+      const foto = document.querySelector(`.tarjeta-imagen[data-tienda="${CSS.escape(idTienda)}"]`);
+      if (!foto) return;
+      foto.style.viewTransitionName = "foto-viajera";
+
+      // Su tarjeta se muestra ya (sin cascada) para que la foto tenga dónde aterrizar
+      const tarjeta = foto.closest("[data-revelar]");
+      if (tarjeta) {
+        tarjeta.classList.add("visible", "sin-transicion");
+        observador.unobserve(tarjeta);
+      }
+      evento.viewTransition.finished.finally(() => {
+        foto.style.viewTransitionName = "";
+        tarjeta?.classList.remove("sin-transicion");
+      });
+    });
 
     // En iPhone, :active (botón que se hunde) solo funciona si hay una escucha de toque
     document.addEventListener("touchstart", () => {}, { passive: true });
