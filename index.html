@@ -11,13 +11,17 @@
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/css/estilos.css">
   <link rel="stylesheet" href="assets/css/movimiento.css">
+  <link rel="stylesheet" href="assets/css/intro.css">
+  <!-- Deben ir aquí, en el head: preparan la intro 3D, las puertas entre páginas y las animaciones antes de que se vea la página -->
+  <script src="assets/js/arranque.js"></script>
+  <script src="assets/js/intro.js"></script>
 </head>
 <body>
   <header id="encabezado"></header>
 
   <main class="contenedor">
     <!-- Portada -->
-    <section class="portada">
+    <section class="portada" data-pausar-fuera>
       <div>
         <p class="portada-etiqueta" data-revelar>Moda y belleza local</p>
         <!-- ✏️ El <br> parte el título en dos líneas; <em> pone "compras!" en itálica -->
@@ -45,6 +49,9 @@
       </div>
       <div class="categorias" id="lista-categorias" data-cascada></div>
     </section>
+
+    <!-- Cintas cruzadas que corren (las palabras se cambian en assets/js/inicio.js) -->
+    <div class="cintas" id="cintas" aria-hidden="true" data-pausar-fuera></div>
 
     <!-- Banner de salida de compras -->
     <section class="promo" data-revelar>

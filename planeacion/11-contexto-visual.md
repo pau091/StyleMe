@@ -156,7 +156,11 @@ assets/
     └── movimiento.js     (NUEVO: observador de revelado, cascada, magnético, utilidades)
 ```
 
-Orden de carga en cada página: `estilos.css` → `movimiento.css` en el `<head>`; `comun.js` → script de la página → `movimiento.js` al final.
+Orden de carga en cada página: `estilos.css` → `movimiento.css` → `intro.css` → `arranque.js` → `intro.js` en el `<head>`; `comun.js` → script de la página → `movimiento.js` al final.
+
+`arranque.js` (✅ agregado el 2026-11-20) maneja la **intro 3D "Entrar a la tienda"** (`intro.js` + `intro.css`: calle, tienda, "Toca la puerta para entrar", cámara que entra; cielo de día, atardecer o noche según la hora de Bucaramanga; sonido opcional; una vez por visita o con `?intro`, `?intro=noche`), las **puertas de vidrio entre páginas**, el **título de la pestaña** cuando la persona se va, y pone `.con-movimiento` desde el principio. Mientras la intro o las puertas tapan la página, las entradas esperan (`.esperando-telon`).
+
+Imágenes: las fotos de categorías se usan desde `assets/img/categorias/` (480 px, ~40 KB). Las fotos de productos enlazadas usan la versión pequeña de cada tienda (ver comentario en `data/productos.js`).
 
 ---
 

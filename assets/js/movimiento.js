@@ -28,31 +28,48 @@
 
     /* ---------- Revelado al entrar en pantalla ---------- */
 
+    // Mientras la intro o las puertas tapan la página (clase .esperando-telon,
+    // la pone arranque.js), lo que aparece se guarda aquí y se revela al abrirse el telón.
+    const enEspera = new Set();
+    document.addEventListener("styleme:telon-abierto", () => {
+      const pendientes = [...enEspera];
+      enEspera.clear();
+      revelarTanda(pendientes);
+    });
+
     const observador = new IntersectionObserver(
       (entradas) => {
-        // Las tarjetas de una cascada que aparecen juntas se ordenan entre ellas:
-        // así la primera visible no espera a las que están más arriba (ya vistas).
-        let enEstaTanda = 0;
-        entradas.forEach((entrada) => {
-          if (!entrada.isIntersecting) return;
-          const el = entrada.target;
-          // Si es el contenedor de unas fotos con telón, se descubren ellas
-          if (telonesPorContenedor.has(el)) {
-            telonesPorContenedor.get(el).forEach((foto) => foto.classList.add("visible"));
-            telonesPorContenedor.delete(el);
-            observador.unobserve(el);
-            return;
-          }
-          if (el.hasAttribute("data-en-cascada")) {
-            el.style.setProperty("--orden", Math.min(enEstaTanda, MAX_ESCALONES));
-            enEstaTanda++;
-          }
-          el.classList.add("visible");
-          observador.unobserve(el); // cada cosa se anima una sola vez
-        });
+        const visibles = entradas.filter((e) => e.isIntersecting).map((e) => e.target);
+        if (raizHTML.classList.contains("esperando-telon")) {
+          visibles.forEach((el) => enEspera.add(el));
+          return;
+        }
+        revelarTanda(visibles);
       },
       { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
     );
+
+    // Revela un grupo de elementos que aparecieron al mismo tiempo
+    function revelarTanda(elementos) {
+      // Las tarjetas de una cascada que aparecen juntas se ordenan entre ellas:
+      // así la primera visible no espera a las que están más arriba (ya vistas).
+      let enEstaTanda = 0;
+      elementos.forEach((el) => {
+        // Si es el contenedor de unas fotos con telón, se descubren ellas
+        if (telonesPorContenedor.has(el)) {
+          telonesPorContenedor.get(el).forEach((foto) => foto.classList.add("visible"));
+          telonesPorContenedor.delete(el);
+          observador.unobserve(el);
+          return;
+        }
+        if (el.hasAttribute("data-en-cascada")) {
+          el.style.setProperty("--orden", Math.min(enEstaTanda, MAX_ESCALONES));
+          enEstaTanda++;
+        }
+        el.classList.add("visible");
+        observador.unobserve(el); // cada cosa se anima una sola vez
+      });
+    }
 
     // Las fotos con telón empiezan 100 % recortadas y el navegador las considera
     // "invisibles"; por eso se vigila a su contenedor, que sí tiene tamaño.
@@ -126,9 +143,36 @@
       });
     }
 
+    /* ---------- Brillo de carga en las fotos (P6) ---------- */
+    // Mientras una foto descarga, su marco muestra un brillo suave que lo cruza.
+    // Cuando la foto llega (o falla), el brillo se quita.
+    const MARCOS_FOTO =
+      ".tarjeta-imagen, .categoria-recorte, .collage-foto, .perfil-foto, .recomendacion-imagen, .promo-imagenes";
+
+    function prepararCarga(marco) {
+      const foto = marco.querySelector("img");
+      if (!foto || foto.dataset.cargaLista) return;
+      foto.dataset.cargaLista = "1";
+      if (foto.complete) return; // ya estaba descargada (por ejemplo, en caché)
+      marco.classList.add("cargando");
+      const listo = () => marco.classList.remove("cargando");
+      foto.addEventListener("load", listo, { once: true });
+      foto.addEventListener("error", listo, { once: true });
+    }
+
+    /* ---------- Pausar lo que corre sin parar cuando no se ve ---------- */
+    // Las cintas y la luz de la portada se detienen fuera de pantalla: así el
+    // navegador no gasta trabajo en algo que nadie está mirando.
+    const observadorPausa = new IntersectionObserver((entradas) => {
+      entradas.forEach((e) => e.target.classList.toggle("en-pausa", !e.isIntersecting));
+    });
+
     // Busca dentro de "raiz" todo lo que hay que animar y lo prepara
     function activar(raiz = document) {
       if (raiz.nodeType !== 1 && raiz !== document) return;
+      raiz.querySelectorAll(MARCOS_FOTO).forEach(prepararCarga);
+      if (raiz !== document && raiz.matches(MARCOS_FOTO)) prepararCarga(raiz);
+      raiz.querySelectorAll("[data-pausar-fuera]").forEach((el) => observadorPausa.observe(el));
       raiz.querySelectorAll("[data-cascada]").forEach(prepararCascada);
       raiz.querySelectorAll(".titulo-lineas").forEach(prepararTitulo);
       raiz.querySelectorAll("[data-magnetico]").forEach(prepararMagnetico);
@@ -146,6 +190,9 @@
       cambios.forEach((cambio) => {
         if (cambio.addedNodes.length === 0) return;
         const padre = cambio.target;
+        // ⚡ El mapa (Leaflet) agrega cuadritos todo el tiempo al moverlo: ahí no hay
+        // nada que animar, así que se ignora (antes esto hacía lento el mapa).
+        if (padre.closest?.(".leaflet-container, .puerta-pagina, .intro")) return;
         const cascada = padre.closest?.("[data-cascada]");
         if (cascada) prepararCascada(cascada);
         porRevisar.add(padre);
@@ -207,15 +254,24 @@
     // Al SALIR de una página
     window.addEventListener("pageswap", (evento) => {
       if (!evento.viewTransition) return;
+      // Vuelta (perfil → lista con el botón Atrás): la foto regresa a su tarjeta
+      const fotoPerfil = document.querySelector(".perfil-foto[data-tienda]");
+      const esAtras = evento.activation?.navigationType === "traverse";
+      const vueltaConFoto = fotoPerfil && esAtras;
+
+      // Le dice a la página nueva qué cambio hacer (lo lee arranque.js):
+      // "foto" = la foto viaja · "cortina" = puertas de vidrio entre páginas
+      try {
+        sessionStorage.setItem("styleme-paso", fotoTocada || vueltaConFoto ? "foto" : "cortina");
+      } catch (e) { /* sin almacenamiento: cambio normal */ }
+
       // Ida (lista → perfil): nombramos la foto de la tarjeta tocada
       if (fotoTocada) {
         quitarNombresDeFotos();
         fotoTocada.style.viewTransitionName = "foto-viajera";
       }
-      // Vuelta (perfil → lista): recordamos de qué tienda veníamos
-      const fotoPerfil = document.querySelector(".perfil-foto[data-tienda]");
       try {
-        if (fotoPerfil) sessionStorage.setItem(CLAVE_VUELTA, fotoPerfil.dataset.tienda);
+        if (vueltaConFoto) sessionStorage.setItem(CLAVE_VUELTA, fotoPerfil.dataset.tienda);
       } catch (e) { /* sin almacenamiento: solo no habrá viaje de vuelta */ }
     });
 

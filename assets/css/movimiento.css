@@ -22,11 +22,12 @@
   --curva-pulso: cubic-bezier(0.34, 1.56, 0.64, 1);   /* rebote mínimo: SOLO confirmaciones */
 
   /* ✏️ Duraciones: si todo se siente lento o rápido, cambia estos números */
-  --duracion-micro: 160ms;   /* hover, foco, presionar */
-  --duracion-corta: 280ms;   /* menús, pestañas, filtros */
-  --duracion-media: 520ms;   /* tarjetas que entran */
-  --duracion-larga: 900ms;   /* portada, revelado de fotos */
-  --escalon: 70ms;           /* ✏️ espera entre una tarjeta y la siguiente (cascada) */
+  /* ⚡ Más cortas que antes: la página se siente más ágil */
+  --duracion-micro: 140ms;   /* hover, foco, presionar */
+  --duracion-corta: 240ms;   /* menús, pestañas, filtros */
+  --duracion-media: 420ms;   /* tarjetas que entran */
+  --duracion-larga: 700ms;   /* portada, revelado de fotos */
+  --escalon: 50ms;           /* ✏️ espera entre una tarjeta y la siguiente (cascada) */
   --distancia-entrada: 24px; /* ✏️ cuánto suben las cosas al aparecer (16–32 px) */
   --duracion-cinta: 60s;     /* ✏️ cuánto tarda una vuelta del texto de la barra rosa (más = más lento) */
 }
@@ -77,7 +78,7 @@
 /* La foto de adentro se "acomoda" mientras sube la persiana */
 .con-movimiento [data-revelar="telon"] img {
   transform: scale(1.15);
-  transition: transform calc(var(--duracion-larga) * 1.4) var(--curva-seda);
+  transition: transform calc(var(--duracion-larga) * 1.15) var(--curva-seda);
   transition-delay: inherit;
 }
 .con-movimiento [data-revelar="telon"].visible img { transform: scale(1); }
@@ -449,7 +450,7 @@ select:focus { border-color: var(--color-marca); }
 .portada::before {
   content: "";
   position: absolute;
-  inset: -25%;
+  inset: -8%; /* ⚡ antes era -25% (una capa enorme): ahora es más liviana */
   z-index: -1;
   pointer-events: none;
   background:
@@ -462,9 +463,11 @@ select:focus { border-color: var(--color-marca); }
     animation: deriva-portada 30s ease-in-out infinite alternate; /* ✏️ 30s = muy lento */
   }
 }
+/* Fuera de pantalla se detiene (movimiento.js pone .en-pausa) */
+.portada.en-pausa::before { animation-play-state: paused; }
 @keyframes deriva-portada {
-  from { transform: translate(-4%, -3%) rotate(0deg); }
-  to   { transform: translate(4%, 3%) rotate(8deg); }
+  from { transform: translate(-4%, -3%); }
+  to   { transform: translate(4%, 3%); }
 }
 
 /* Categorías en círculo: sube, la foto se acerca por dentro y aparece un anillo rosa */
@@ -774,6 +777,166 @@ html:active-view-transition-type(cambio-pagina)::view-transition-new(root) {
   from { opacity: 0; transform: translateY(14px); }
 }
 
+/* =========================================================
+   PUERTAS ENTRE PÁGINAS — arranque.js las pone en la página que llega
+   Las mismas puertas de vidrio de la intro, pero corredizas (como las de un centro comercial):
+   1. Se cierran desde los lados y tapan la página vieja (View Transition).
+   2. Se quedan un instante cerradas mostrando "StyleMe" grabado en el vidrio.
+   3. Se abren y dejan ver la página nueva.
+   ========================================================= */
+
+.puerta-pagina {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 50.5%; /* un poquito más de la mitad para que no quede una rayita en el centro */
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  background:
+    /* reflejo del vidrio */
+    linear-gradient(112deg, transparent 28%, rgba(255, 255, 255, 0.5) 40%, transparent 52%),
+    /* vidrio esmerilado cálido */
+    linear-gradient(to bottom, #f6eee8, #e9dad0);
+  box-shadow: inset 0 0 0 10px var(--color-ciruela); /* marco */
+}
+.puerta-pagina.izquierda {
+  left: 0;
+  justify-content: flex-end;
+  view-transition-name: puerta-izquierda;
+  /* ✏️ 540ms = lo que tardan en cerrarse (420ms) + el instante cerradas (120ms) */
+  animation: puerta-pagina-abre-izq 620ms var(--curva-vitrina) 540ms forwards;
+}
+.puerta-pagina.derecha {
+  right: 0;
+  justify-content: flex-start;
+  view-transition-name: puerta-derecha;
+  animation: puerta-pagina-abre-der 620ms var(--curva-vitrina) 540ms forwards;
+}
+/* Manijas, junto a la unión de las dos hojas */
+.puerta-pagina::after {
+  content: "";
+  position: absolute;
+  top: 40%;
+  width: 7px;
+  height: 20%;
+  border-radius: 99px;
+  background: var(--color-ciruela);
+}
+.puerta-pagina.izquierda::after { right: 22px; }
+.puerta-pagina.derecha::after { left: 22px; }
+
+/* "StyleMe" grabado en el vidrio, partido entre las dos hojas */
+.puerta-marca {
+  font-family: var(--fuente-titulos);
+  font-size: clamp(2.4rem, 8vw, 5.4rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-ciruela);
+  opacity: 0.85;
+}
+.izquierda .puerta-marca { padding-right: 0.06em; }
+.derecha .puerta-marca { padding-left: 0.02em; color: var(--color-marca); }
+
+@keyframes puerta-pagina-abre-izq { to { transform: translateX(-100%); } }
+@keyframes puerta-pagina-abre-der { to { transform: translateX(100%); } }
+
+/* Mientras se cierran, la página vieja se queda quieta debajo
+   y la nueva espera escondida (las puertas la tapan) */
+html.con-puertas::view-transition-old(root) { animation: none; }
+html.con-puertas::view-transition-new(root) { animation: none; opacity: 0; }
+::view-transition-group(puerta-izquierda),
+::view-transition-group(puerta-derecha) { animation: none; }
+::view-transition-new(puerta-izquierda) { animation: puerta-cierra-izq 420ms var(--curva-vitrina) both; }
+::view-transition-new(puerta-derecha) { animation: puerta-cierra-der 420ms var(--curva-vitrina) both; }
+@keyframes puerta-cierra-izq { from { transform: translateX(-100%); } }
+@keyframes puerta-cierra-der { from { transform: translateX(100%); } }
+
+/* =========================================================
+   CINTAS CRUZADAS (M3) — inicio, entre las categorías y el banner
+   Dos franjas inclinadas que corren en sentidos contrarios.
+   ========================================================= */
+
+.cintas {
+  position: relative;
+  height: 150px;
+  margin: -12px calc(50% - 50vw) 40px; /* ocupan todo el ancho de la pantalla */
+  overflow: clip;
+}
+.cinta-cruzada {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  top: 50%;
+  padding: 11px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.cinta-rosa {
+  background: var(--color-marca);
+  color: #fff;
+  transform: translateY(-50%) rotate(-3deg);   /* ✏️ inclinación */
+}
+.cinta-ciruela {
+  background: var(--color-ciruela);
+  color: #f3e3e7;
+  transform: translateY(-50%) rotate(2.5deg);
+}
+.cinta-pista { display: flex; width: max-content; }
+.cinta-pista span {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.cinta-pista span::after {
+  content: "✦";              /* ✏️ separador entre palabras */
+  font-style: normal;
+  font-size: 0.6em;
+  margin: 0 1.4em;
+  opacity: 0.8;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .con-movimiento .cinta-pista {
+    animation: cinta 38s linear infinite;      /* ✏️ más segundos = más lenta */
+    will-change: transform;
+  }
+  .con-movimiento .cinta-ciruela .cinta-pista {
+    animation-duration: 46s;
+    animation-direction: reverse;               /* corre al lado contrario */
+  }
+  .cintas.en-pausa .cinta-pista { animation-play-state: paused; }
+}
+@media (min-width: 720px) {
+  .cintas { height: 180px; }
+  .cinta-pista span { font-size: 1.6rem; }
+}
+
+/* =========================================================
+   BRILLO DE CARGA (P6) — mientras una foto descarga
+   movimiento.js pone .cargando en el marco y la quita cuando la foto llega.
+   ========================================================= */
+
+.cargando { position: relative; overflow: hidden; }
+.cargando::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in srgb, var(--color-superficie) 60%, transparent) 50%,
+    transparent 80%
+  );
+  animation: brillo 1.3s ease-in-out infinite;
+}
+
 /* ---------- 12. Accesibilidad: "reducir movimiento" ---------- */
 /* Sin desplazamientos, sin telones, sin líneas que suben, sin zoom: solo fundidos cortos. */
 
@@ -832,6 +995,10 @@ html:active-view-transition-type(cambio-pagina)::view-transition-new(root) {
   .punto-ia { display: none; }
   /* El escaneo se queda como una franja quieta y suave arriba del recuadro */
   .lienzo-contenedor.escaneando::after { transform: none; opacity: 0.6; }
+
+  /* Cintas quietas y brillo de carga sin moverse */
+  .cinta-pista { animation: none !important; }
+  .cargando::before { animation: none; }
 
   /* Cambios de página y foto viajera: instantáneos */
   ::view-transition-group(*),

@@ -50,6 +50,7 @@ body {
   color: var(--color-texto);
   background: var(--color-fondo);
   line-height: 1.6;
+  overflow-x: clip; /* las cintas de ancho completo no crean scroll de lado */
 }
 
 img { max-width: 100%; display: block; }
@@ -580,11 +581,31 @@ select {
 /* ---------- Perfil de tienda ---------- */
 
 .perfil-cabecera { display: grid; gap: 24px; margin-bottom: 36px; }
+/* Foto del perfil como VITRINA en arco (igual a la tienda de la intro):
+   vidrio en arco con marco oscuro, borde de "piedra" alrededor y un reflejo. */
 .perfil-foto {
-  border-radius: var(--radio-grande);
+  position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 3;
   background: var(--color-beige);
+  /* ✏️ Forma del arco: el primer par de % es lo redondo arriba */
+  border-radius: 48% 48% var(--radio) var(--radio) / 36% 36% var(--radio) var(--radio);
+  border: 3px solid var(--color-ciruela);
+  box-shadow:
+    0 0 0 10px #efe6dc,                 /* marco de piedra */
+    0 0 0 11px var(--color-borde),
+    0 18px 40px rgba(79, 44, 58, 0.16);
+  margin: 11px;                         /* espacio para el marco de piedra */
+}
+/* Reflejo del vidrio y una línea de marco horizontal, como en una vitrina */
+.perfil-foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 22%, rgba(255, 255, 255, 0.22) 34%, transparent 46%),
+    linear-gradient(to bottom, transparent 0 calc(30% - 1px), rgba(47, 36, 39, 0.55) calc(30% - 1px) calc(30% + 1px), transparent calc(30% + 1px));
 }
 .perfil-foto img { width: 100%; height: 100%; object-fit: cover; }
 .datos { list-style: none; padding: 0; margin: 12px 0; }

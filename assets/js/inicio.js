@@ -2,18 +2,27 @@
 
 /*
  * ✏️ FOTOS DE LAS CATEGORÍAS (círculos de "Explora por categoría")
- * Las fotos están en assets/img/logos/. Al hacer clic en un círculo,
- * la persona va al catálogo con esa categoría ya filtrada.
+ * Al hacer clic en un círculo, la persona va al catálogo con esa categoría ya filtrada.
+ * ⚡ Se usan las versiones LIVIANAS de assets/img/categorias/ (480 px, ~40 KB cada una).
+ *    Las originales siguen en assets/img/logos/ (la de maquillaje pesaba 2,3 MB).
+ *    Si cambias una foto, guárdala pequeña: unos 480 px de ancho y menos de 100 KB.
  *   foto   → ruta de la imagen
  *   centro → qué parte de la foto se ve dentro del círculo
  *            ("50% 50%" = el centro; "20% 30%" = más a la izquierda y arriba)
  */
 const FOTOS_CATEGORIA = {
-  ropa: { foto: "assets/img/logos/ropa y moda.jpg", centro: "24% 40%" },
-  maquillaje: { foto: "assets/img/logos/logo maquillaje.png", centro: "50% 50%" },
-  skincare: { foto: "assets/img/logos/skincare.jpg", centro: "55% 35%" },
-  capilar: { foto: "assets/img/logos/cuidado capilar.jpg", centro: "50% 40%" }
+  ropa: { foto: "assets/img/categorias/ropa.jpg", centro: "24% 40%" },
+  maquillaje: { foto: "assets/img/categorias/maquillaje.jpg", centro: "50% 50%" },
+  skincare: { foto: "assets/img/categorias/skincare.jpg", centro: "55% 35%" },
+  capilar: { foto: "assets/img/categorias/capilar.jpg", centro: "50% 40%" }
 };
+
+/*
+ * ✏️ CINTAS CRUZADAS (las dos franjas inclinadas que corren entre secciones)
+ * Cambia o agrega palabras aquí. Se repiten solas para llenar toda la franja.
+ */
+const PALABRAS_CINTA_ROSA = ["Ropa y moda", "Maquillaje", "Skincare", "Cuidado capilar"];
+const PALABRAS_CINTA_CIRUELA = ["Hecho en Bucaramanga", "Tiendas locales", "Vamos de compras"];
 
 const HERRAMIENTAS = [
   {
@@ -77,6 +86,18 @@ document.addEventListener("DOMContentLoaded", () => {
         </a>`;
     })
     .join("");
+
+  // Cintas cruzadas: cada franja lleva su texto repetido dos veces (una mitad
+  // es copia de la otra), así al correr hasta la mitad vuelve a empezar sin corte.
+  const textoCinta = (palabras) => {
+    const mitad = Array(3).fill(palabras).flat()
+      .map((p) => `<span>${escaparHTML(p)}</span>`)
+      .join("");
+    return `<div class="cinta-pista">${mitad}${mitad}</div>`;
+  };
+  document.getElementById("cintas").innerHTML = `
+    <div class="cinta-cruzada cinta-ciruela">${textoCinta(PALABRAS_CINTA_CIRUELA)}</div>
+    <div class="cinta-cruzada cinta-rosa">${textoCinta(PALABRAS_CINTA_ROSA)}</div>`;
 
   // Tiendas separadas por tipo
   document.getElementById("tiendas-ropa").innerHTML = TIENDAS.filter((t) => t.tipo === "ropa")
