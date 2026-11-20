@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const coincideTexto =
         !texto ||
         normalizar(p.nombre).includes(texto) ||
+        normalizar(p.marca).includes(texto) ||
         normalizar(tienda?.nombre).includes(texto);
       const coincideCategoria = !categoria || p.categoria === categoria;
       // Si hay precio máximo, se ocultan los productos sin precio

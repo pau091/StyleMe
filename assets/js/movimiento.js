@@ -69,9 +69,11 @@
     }
 
     // Los hijos de una cuadrícula con data-cascada se revelan en orden
+    // data-cascada="rapido" hace que los hijos entren con la versión rápida (herramientas)
     function prepararCascada(contenedor) {
+      const tipo = contenedor.dataset.cascada || "";
       for (const hijo of contenedor.children) {
-        if (!hijo.hasAttribute("data-revelar")) hijo.setAttribute("data-revelar", "");
+        if (!hijo.hasAttribute("data-revelar")) hijo.setAttribute("data-revelar", tipo);
         hijo.setAttribute("data-en-cascada", "");
       }
     }

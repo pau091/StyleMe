@@ -68,6 +68,22 @@ function enlaceRutaGoogleMaps(ruta, ubicacionPersona) {
   return `https://www.google.com/maps/dir/?${parametros.toString()}`;
 }
 
+// Espera a que un elemento se vea en pantalla (al menos un 40 %)
+function cuandoSeVea(elemento) {
+  return new Promise((resolver) => {
+    if (!("IntersectionObserver" in window)) return resolver();
+    const observador = new IntersectionObserver(
+      ([entrada]) => {
+        if (!entrada.isIntersecting) return;
+        observador.disconnect();
+        resolver();
+      },
+      { threshold: 0.4 }
+    );
+    observador.observe(elemento);
+  });
+}
+
 function obtenerUbicacion() {
   return new Promise((resolver, rechazar) => {
     if (!navigator.geolocation) return rechazar(new Error("sin soporte"));
@@ -86,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedorMapa = document.getElementById("mapa");
   let mapa = null;
   let capa = null;
+  let salidaActual = 0; // si se arma otra salida, la animación anterior se cancela
 
   const tiendasUbicadas = TIENDAS.filter(tieneUbicacion);
 
@@ -132,10 +149,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     resultado.innerHTML = `
       ${notaUbicacion}
-      <h2>Tu salida de compras</h2>
-      <p>${ruta.length} tiendas · aprox. <strong>${kmReales.toFixed(1)} km</strong> y
+      <h2 data-revelar>Tu salida de compras</h2>
+      <p data-revelar style="--orden:1">${ruta.length} tiendas · aprox. <strong>${kmReales.toFixed(1)} km</strong> y
          <strong>${minutos} min</strong> caminando (sin contar el tiempo dentro de cada tienda).</p>
-      <ol class="ruta">
+      <ol class="ruta" data-cascada>
         ${ruta
           .map(
             (t, i) => `
@@ -164,16 +181,60 @@ document.addEventListener("DOMContentLoaded", () => {
     capa.clearLayers();
 
     const puntos = ruta.map((t) => [t.lat, t.lng]);
-    if (ubicacionPersona) {
-      L.circleMarker([ubicacionPersona.lat, ubicacionPersona.lng], { radius: 8 }).addTo(capa).bindPopup("Tú");
-      puntos.unshift([ubicacionPersona.lat, ubicacionPersona.lng]);
+    if (ubicacionPersona) puntos.unshift([ubicacionPersona.lat, ubicacionPersona.lng]);
+    const desfase = ubicacionPersona ? 1 : 0; // si sales desde tu ubicación, ese es el punto 0
+
+    // Dibuja el recorrido. --i es el orden de aparición de cada parada y cada tramo
+    // (el ritmo se cambia con --paso-ruta en movimiento.css)
+    function dibujarRuta() {
+      if (ubicacionPersona) {
+        L.circleMarker([ubicacionPersona.lat, ubicacionPersona.lng], { radius: 8 }).addTo(capa).bindPopup("Tú");
+      }
+      ruta.forEach((t, i) => {
+        const icono = L.divIcon({
+          className: "",
+          html: `<div class="marcador-numero" style="--i:${i + desfase}">${i + 1}</div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        });
+        L.marker([t.lat, t.lng], { icon: icono }).addTo(capa).bindPopup(popupTienda(t));
+      });
+      // La línea va por tramos: cada tramo aparece justo antes de la parada a la que llega
+      for (let k = 1; k < puntos.length; k++) {
+        const tramo = L.polyline([puntos[k - 1], puntos[k]], {
+          color: "#a35d6d",
+          weight: 4,
+          dashArray: "6 8",
+          className: "ruta-tramo"
+        }).addTo(capa);
+        tramo.getElement()?.style.setProperty("--i", k - 1);
+      }
     }
-    ruta.forEach((t, i) => {
-      const icono = L.divIcon({ className: "", html: `<div class="marcador-numero">${i + 1}</div>`, iconSize: [32, 32], iconAnchor: [16, 16] });
-      L.marker([t.lat, t.lng], { icon: icono }).addTo(capa).bindPopup(popupTienda(t));
-    });
-    L.polyline(puntos, { color: "#a35d6d", weight: 4, dashArray: "6 8" }).addTo(capa);
+
     mapa.invalidateSize();
-    mapa.fitBounds(puntos, { padding: [40, 40], maxZoom: 17 });
+    const vista = { padding: [40, 40], maxZoom: 17 };
+    const menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (menosMovimiento) {
+      mapa.fitBounds(puntos, vista);
+      dibujarRuta();
+      return;
+    }
+
+    // Con movimiento: cuando el mapa se ve en pantalla, vuela hasta el recorrido
+    // y al llegar empieza a dibujar las paradas
+    const numero = ++salidaActual;
+    await cuandoSeVea(contenedorMapa);
+    if (numero !== salidaActual) return; // ya se pidió otra salida
+
+    let empezo = false;
+    const empezar = () => {
+      if (empezo || numero !== salidaActual) return;
+      empezo = true;
+      dibujarRuta();
+    };
+    mapa.once("moveend", empezar);
+    setTimeout(empezar, 1300); // por si el mapa ya estaba en ese lugar y no se mueve
+    mapa.flyToBounds(puntos, { ...vista, duration: 1 });
   });
 });

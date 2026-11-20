@@ -12,8 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const tiendas = TIENDAS.filter((t) => !tipo || t.tipo === tipo);
     const conUbicacion = tiendas.filter(tieneUbicacion);
 
-    conUbicacion.forEach((t) => {
-      L.marker([t.lat, t.lng]).addTo(capaMarcadores).bindPopup(popupTienda(t));
+    conUbicacion.forEach((t, i) => {
+      const marcador = L.marker([t.lat, t.lng]).addTo(capaMarcadores).bindPopup(popupTienda(t));
+      // El pin "cae" con un pequeño retraso según su orden (animación en movimiento.css)
+      const pin = marcador.getElement();
+      if (pin) {
+        pin.classList.add("pin-entra");
+        pin.style.setProperty("--i", i);
+      }
     });
 
     // Ajusta el zoom para que se vean todas las tiendas
@@ -27,6 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
       : "";
   }
 
-  campoTipo.addEventListener("change", mostrar);
+  // Al filtrar: los pines actuales se desvanecen y luego caen los nuevos
+  function cambiarTipo() {
+    const pinesActuales = document.querySelectorAll("#mapa .pin-entra");
+    const menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (menosMovimiento || !pinesActuales.length) return mostrar();
+    pinesActuales.forEach((pin) => pin.classList.add("pin-sale"));
+    setTimeout(mostrar, 200); // ✏️ lo que tardan en desvanecerse
+  }
+
+  campoTipo.addEventListener("change", cambiarTipo);
   mostrar();
 });

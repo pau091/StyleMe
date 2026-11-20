@@ -145,7 +145,7 @@ const TIENDAS = [
     horario: "Lun–Sáb 9:00–20:00 · Dom 10:00–18:00",
     whatsapp: "",
     instagram: "",
-    web: "gogomakeup.com.co",
+    web: "", // ⚠️ gogomakeup.com.co hoy muestra una página de casino (hackeada o vencida): NO enlazar
     foto: "assets/img/tiendas/gogo-makeup.jpg",
     verificado: false
   },

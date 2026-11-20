@@ -1,13 +1,19 @@
-/* PÁGINA DE INICIO: collage, ventajas, categorías, banner, tiendas y herramientas */
+/* PÁGINA DE INICIO: collage, categorías, banner, tiendas y herramientas */
 
-const ICONO_CATEGORIA = { ropa: "gancho", maquillaje: "labial", skincare: "frasco", capilar: "peine" };
-
-const VENTAJAS = [
-  { icono: "tienda", titulo: "Tiendas locales", texto: "Marcas y emprendimientos de la ciudad" },
-  { icono: "chat", titulo: "Contacto directo", texto: "Escríbeles por WhatsApp o llámalos" },
-  { icono: "ubicacion", titulo: "Cómo llegar", texto: "Mapa y rutas a cada tienda" },
-  { icono: "candado", titulo: "Tu privacidad", texto: "Tu foto no sale de tu celular" }
-];
+/*
+ * ✏️ FOTOS DE LAS CATEGORÍAS (círculos de "Explora por categoría")
+ * Las fotos están en assets/img/logos/. Al hacer clic en un círculo,
+ * la persona va al catálogo con esa categoría ya filtrada.
+ *   foto   → ruta de la imagen
+ *   centro → qué parte de la foto se ve dentro del círculo
+ *            ("50% 50%" = el centro; "20% 30%" = más a la izquierda y arriba)
+ */
+const FOTOS_CATEGORIA = {
+  ropa: { foto: "assets/img/logos/ropa y moda.jpg", centro: "24% 40%" },
+  maquillaje: { foto: "assets/img/logos/logo maquillaje.png", centro: "50% 50%" },
+  skincare: { foto: "assets/img/logos/skincare.jpg", centro: "55% 35%" },
+  capilar: { foto: "assets/img/logos/cuidado capilar.jpg", centro: "50% 40%" }
+};
 
 const HERRAMIENTAS = [
   {
@@ -55,24 +61,21 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("promo-imagenes").innerHTML =
     `<img src="${escaparHTML(FOTO_BANNER)}" alt="" loading="lazy" decoding="async">`;
 
-  // Ventajas
-  document.getElementById("ventajas").innerHTML = VENTAJAS.map(
-    (v) => `
-      <div class="ventaja">
-        ${icono(v.icono)}
-        <div><strong>${v.titulo}</strong><span>${v.texto}</span></div>
-      </div>`
-  ).join("");
-
-  // Categorías en círculos: cada una lleva al catálogo ya filtrado
+  // Categorías en círculos con foto: cada una lleva al catálogo ya filtrado
   document.getElementById("lista-categorias").innerHTML = Object.entries(CATEGORIAS)
-    .map(
-      ([clave, cat]) => `
-        <a class="categoria" href="productos.html?categoria=${clave}">
-          <span class="categoria-circulo">${icono(ICONO_CATEGORIA[clave])}</span>
+    .map(([clave, cat]) => {
+      const foto = FOTOS_CATEGORIA[clave];
+      return `
+        <a class="categoria" href="productos.html?categoria=${clave}" aria-label="Ver productos de ${escaparHTML(cat.nombre)}">
+          <span class="categoria-circulo">
+            <span class="categoria-recorte">
+              <img src="${encodeURI(foto.foto)}" alt="" loading="lazy" decoding="async"
+                   style="object-position: ${foto.centro}">
+            </span>
+          </span>
           ${cat.nombre}
-        </a>`
-    )
+        </a>`;
+    })
     .join("");
 
   // Tiendas separadas por tipo

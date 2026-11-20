@@ -37,6 +37,8 @@ const moverY = document.getElementById("mover-y");
 const quitarBlanco = document.getElementById("quitar-blanco");
 const estado = document.getElementById("estado");
 const infoPrenda = document.getElementById("info-prenda");
+const contenedorLienzo = lienzo.parentElement; // .lienzo-contenedor (ahí va la franja de escaneo)
+const menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 /* ---------- Estado ---------- */
 let detector = null;        // modelo de IA (se carga la primera vez que se usa)
@@ -47,7 +49,9 @@ let imagenPrenda = null;
 let posicionBase = null;    // { centroX, arriba, ancho } calculado por la IA
 
 /* ---------- Prendas disponibles ---------- */
-const prendas = PRODUCTOS.filter((p) => p.categoria === "ropa" && p.foto);
+// Solo prendas con fotoProbador (PNG sin fondo). Las fotos de las tiendas tienen fondo
+// y modelo, así que no sirven para ponerlas encima de otra persona.
+const prendas = PRODUCTOS.filter((p) => p.categoria === "ropa" && p.fotoProbador);
 
 if (!prendas.length) {
   selectorPrenda.innerHTML = '<option value="">Aún no hay prendas con foto</option>';
@@ -95,7 +99,7 @@ function cargarPrenda() {
   imagenPrenda.onerror = () => {
     estado.textContent = "No se pudo cargar la foto de la prenda. Revisa la ruta en data/productos.js.";
   };
-  imagenPrenda.src = producto.foto;
+  imagenPrenda.src = producto.fotoProbador;
 }
 
 function mostrarInfoPrenda(producto) {
@@ -140,9 +144,14 @@ async function ubicarAutomaticamente() {
   // Posición de respaldo por si la IA no encuentra a la persona
   posicionBase = { centroX: W / 2, arriba: H * 0.2, ancho: W * 0.5 };
 
+  // Franja de luz rosa que recorre la foto mientras la IA trabaja (movimiento.css)
+  contenedorLienzo.classList.add("escaneando");
+  let seEncontro = false;
+
   try {
     const modelo = await obtenerDetector();
     estado.textContent = "Buscando tu silueta…";
+    await esperarDosCuadros(); // deja que la franja se vea antes de que la IA ocupe el navegador
     const resultado = modelo.detect(fotoEscalada);
     const puntos = resultado.landmarks?.[0];
 
@@ -172,19 +181,77 @@ async function ubicarAutomaticamente() {
         };
       }
       estado.textContent = "¡Listo! Si hace falta, ajusta el tamaño y la posición.";
+      seEncontro = true;
+      mostrarPuntosIA([puntos[HOMBRO_IZQ], puntos[HOMBRO_DER], puntos[CADERA_IZQ], puntos[CADERA_DER]]);
     }
   } catch (error) {
     console.error(error);
     estado.textContent = "No se pudo cargar la IA (¿sin internet?). Puedes ajustar la prenda a mano.";
+  } finally {
+    contenedorLienzo.classList.remove("escaneando");
   }
 
   escala.value = 100;
   moverX.value = 0;
   moverY.value = 0;
-  dibujar();
+  if (seEncontro) aparecerPrenda();
+  else dibujar();
 }
 
-function dibujar() {
+/* ---------- Detalles de movimiento ---------- */
+
+function esperarDosCuadros() {
+  return new Promise((resolver) => requestAnimationFrame(() => requestAnimationFrame(resolver)));
+}
+
+// Muestra por un momento los puntos que encontró la IA (hombros y caderas).
+// Son solo un efecto visual: aparecen sobre la foto y se borran solos.
+function mostrarPuntosIA(puntosNormalizados) {
+  if (menosMovimiento.matches) return;
+  contenedorLienzo.querySelectorAll(".punto-ia").forEach((p) => p.remove());
+  // Se mide una sola vez dónde está el lienzo dentro de su recuadro
+  const izquierda = lienzo.offsetLeft;
+  const arriba = lienzo.offsetTop;
+  const ancho = lienzo.clientWidth;
+  const alto = lienzo.clientHeight;
+  puntosNormalizados.forEach((punto, i) => {
+    const marca = document.createElement("span");
+    marca.className = "punto-ia";
+    marca.setAttribute("aria-hidden", "true");
+    marca.style.left = `${izquierda + punto.x * ancho}px`;
+    marca.style.top = `${arriba + punto.y * alto}px`;
+    marca.style.setProperty("--i", i);
+    marca.addEventListener("animationend", () => marca.remove());
+    contenedorLienzo.appendChild(marca);
+  });
+}
+
+// La prenda aparece con un fundido de 400 ms.
+// Basado en el tiempo real: dura lo mismo a 60, 120 o 144 Hz.
+function aparecerPrenda(duracion = 400) {
+  if (menosMovimiento.matches) return dibujar();
+  const inicio = performance.now();
+  function cuadro(ahora) {
+    const t = Math.min((ahora - inicio) / duracion, 1);
+    dibujar(t);
+    if (t < 1) requestAnimationFrame(cuadro);
+  }
+  requestAnimationFrame(cuadro);
+}
+
+// Los deslizadores pueden mandar muchos cambios por cuadro: se dibuja solo una vez por cuadro
+let dibujoPendiente = false;
+function dibujarEnElSiguienteCuadro() {
+  if (dibujoPendiente) return;
+  dibujoPendiente = true;
+  requestAnimationFrame(() => {
+    dibujoPendiente = false;
+    dibujar();
+  });
+}
+
+// opacidadPrenda: de 0 (invisible) a 1 (normal); se usa para el fundido de entrada
+function dibujar(opacidadPrenda = 1) {
   if (!fotoPersona) return;
   ctx.globalCompositeOperation = "source-over";
   ctx.clearRect(0, 0, lienzo.width, lienzo.height);
@@ -199,7 +266,9 @@ function dibujar() {
 
   // "multiply" hace que el blanco de la foto de la prenda se vuelva transparente
   ctx.globalCompositeOperation = quitarBlanco.checked ? "multiply" : "source-over";
+  ctx.globalAlpha = opacidadPrenda;
   ctx.drawImage(imagenPrenda, x, y, ancho, alto);
+  ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
 }
 
@@ -255,7 +324,7 @@ campoFoto.addEventListener("change", () => {
   imagen.src = urlFotoPersona;
 });
 
-[escala, moverX, moverY].forEach((c) => c.addEventListener("input", dibujar));
-quitarBlanco.addEventListener("change", dibujar);
+[escala, moverX, moverY].forEach((c) => c.addEventListener("input", dibujarEnElSiguienteCuadro));
+quitarBlanco.addEventListener("change", () => dibujar());
 document.getElementById("reubicar").addEventListener("click", ubicarAutomaticamente);
 document.getElementById("borrar").addEventListener("click", borrarFoto);

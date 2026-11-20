@@ -116,6 +116,7 @@ function tarjetaRecomendacion(item) {
         <p class="precio">${formatoPrecio(p.precio)}</p>
         ${tienda ? `<p class="texto-suave"><a href="tienda.html?id=${encodeURIComponent(tienda.id)}">${escaparHTML(tienda.nombre)}</a></p>` : ""}
         <p class="texto-suave"><strong>Por qué:</strong> ${escaparHTML(item.razones.join(" · "))}</p>
+        ${listaIngredientes(p)}
         ${item.avisos.map((a) => `<p class="texto-suave">${escaparHTML(a)}</p>`).join("")}
         ${whatsapp ? `<a class="boton boton-whatsapp boton-pequeno" href="${whatsapp}" target="_blank" rel="noopener">Preguntar</a>` : ""}
       </div>
@@ -141,14 +142,15 @@ function mostrarResultado(formulario, categoria) {
   const otros = evaluados.filter((e) => !usados.has(e.producto.id));
 
   const avisoMedico = r.condicion
-    ? `<p class="aviso">Por lo que nos cuentas, te recomendamos <strong>consultar a un dermatólogo</strong> antes de usar productos nuevos.
+    ? `<p class="aviso" data-revelar="fundido">Por lo que nos cuentas, te recomendamos <strong>consultar a un dermatólogo</strong> antes de usar productos nuevos.
        Las sugerencias de abajo son solo de referencia.</p>`
     : "";
 
+  // Los pasos entran uno tras otro (data-cascada) con 120 ms entre cada uno (--escalon)
   resultado.innerHTML = `
-    <h2>Tu rutina sugerida</h2>
+    <h2 tabindex="-1" data-revelar>Tu rutina sugerida</h2>
     ${avisoMedico}
-    <ol class="ruta">
+    <ol class="ruta rutina" data-cascada style="--escalon:120ms">
       ${rutina
         .map(
           ({ paso, mejor }, i) => `
@@ -163,10 +165,14 @@ function mostrarResultado(formulario, categoria) {
         )
         .join("")}
     </ol>
-    ${otros.length ? `<h2>Otras opciones para ti</h2>${otros.map(tarjetaRecomendacion).join("")}` : ""}
+    ${otros.length ? `<h2 data-revelar>Otras opciones para ti</h2><div data-cascada>${otros.map(tarjetaRecomendacion).join("")}</div>` : ""}
     ${evaluados.length ? "" : '<p class="vacio">No encontramos productos con esas respuestas. Prueba sin presupuesto o con otras opciones.</p>'}`;
 
-  resultado.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Baja hasta el resultado (suave solo si no se pidió "reducir movimiento")
+  // y lleva el foco al título, para quien usa teclado o lector de pantalla
+  const menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  resultado.scrollIntoView({ behavior: menosMovimiento ? "auto" : "smooth", block: "start" });
+  resultado.querySelector("h2")?.focus({ preventScroll: true });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

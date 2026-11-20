@@ -355,7 +355,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, transparent 25%, rgba(255, 255, 255, 0.8) 50%, transparent 75%);
+  background: linear-gradient(100deg, transparent 25%, color-mix(in srgb, var(--color-superficie) 80%, transparent) 50%, transparent 75%);
   animation: brillo 1100ms var(--curva-vitrina) 500ms both;
 }
 
@@ -467,13 +467,13 @@ select:focus { border-color: var(--color-marca); }
   to   { transform: translate(4%, 3%) rotate(8deg); }
 }
 
-/* Categorías en círculo: sube, el ícono gira un poquito y aparece un anillo rosa */
+/* Categorías en círculo: sube, la foto se acerca por dentro y aparece un anillo rosa */
 .categoria-circulo {
   position: relative;
   transition: translate var(--duracion-corta) var(--curva-seda);
 }
-.categoria-circulo .icono {
-  transition: transform var(--duracion-corta) var(--curva-seda);
+.categoria-recorte img {
+  transition: transform 700ms var(--curva-seda);
 }
 .categoria-circulo::after {
   content: "";
@@ -489,7 +489,7 @@ select:focus { border-color: var(--color-marca); }
 }
 @media (hover: hover) {
   .categoria:hover .categoria-circulo { translate: 0 -4px; }
-  .categoria:hover .categoria-circulo .icono { transform: rotate(-8deg) scale(1.08); }
+  .categoria:hover .categoria-recorte img { transform: scale(1.08); }
   .categoria:hover .categoria-circulo::after { opacity: 1; transform: none; }
 }
 .categoria:focus-visible .categoria-circulo::after { opacity: 1; transform: none; }
@@ -556,10 +556,6 @@ select:focus { border-color: var(--color-marca); }
    movimiento.js le pone el nombre "foto-viajera" solo a la tarjeta que se tocó.
    ========================================================= */
 
-/* Cambio de página suave entre todas las páginas (Chrome/Edge 126+, Safari 18.2+).
-   En otros navegadores la página cambia normal. */
-@view-transition { navigation: auto; }
-
 .tarjeta-imagen,
 .perfil-foto { view-transition-class: foto-tienda; }
 
@@ -586,18 +582,197 @@ select:focus { border-color: var(--color-marca); }
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+    background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--color-superficie) 35%, transparent) 50%, transparent 70%);
     animation: brillo 900ms var(--curva-vitrina) 1000ms both;
   }
 }
 
 /* Mini mapa: el pin cae cuando la sección aparece en pantalla */
 .con-movimiento [data-revelar].visible .pin-cae {
-  animation: caer-pin 500ms var(--curva-seda) 250ms both;
+  animation: caer-pin 500ms var(--curva-seda) 250ms backwards;
+}
+
+/* =========================================================
+   MAPAS (mapa, perfil y salida)
+   ========================================================= */
+
+/* Globito de Leaflet: además del fundido que ya trae, sube 6 px al abrirse.
+   Se usa "translate" porque Leaflet ubica el globito con transform. */
+@media (prefers-reduced-motion: no-preference) {
+  .con-movimiento .leaflet-popup {
+    animation: globito-sube var(--duracion-corta) var(--curva-seda);
+  }
+}
+@keyframes globito-sube {
+  from { translate: 0 6px; }
+}
+
+/* =========================================================
+   MAPA (mapa.html) — momento estrella: "las tiendas aparecen en la ciudad"
+   Los pines caen uno por uno; al filtrar, los que se van se desvanecen primero.
+   ========================================================= */
+
+.con-movimiento .pin-entra {
+  /* "backwards": la animación no se queda pegada al terminar, así el hover funciona */
+  animation: caer-pin 500ms var(--curva-seda) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms + 150ms); /* ✏️ 60ms entre un pin y el siguiente */
+  transition:
+    translate var(--duracion-corta) var(--curva-seda),
+    opacity 180ms var(--curva-vitrina);
+}
+@media (hover: hover) {
+  .pin-entra:hover { translate: 0 -4px; }
+}
+.pin-sale { opacity: 0; }
+
+/* =========================================================
+   SALIDA DE COMPRAS (salida.html) — momento estrella: "la ruta se dibuja"
+   Cuando el mapa aparece en pantalla, vuela hasta el recorrido y luego
+   cada parada aparece en orden, con su tramo de línea justo antes.
+   ========================================================= */
+
+:root {
+  --paso-ruta: 350ms; /* ✏️ espera entre una parada y la siguiente */
+}
+.con-movimiento .marcador-numero {
+  animation: aparecer-parada 420ms var(--curva-pulso) backwards;
+  animation-delay: calc(var(--i, 0) * var(--paso-ruta));
+}
+@keyframes aparecer-parada {
+  from { opacity: 0; transform: scale(0.4); }
+}
+.con-movimiento .ruta-tramo {
+  animation: aparecer-tramo 300ms linear backwards;
+  animation-delay: calc(var(--i, 0) * var(--paso-ruta) + 120ms);
+}
+@keyframes aparecer-tramo {
+  from { opacity: 0; }
+}
+
+/* =========================================================
+   PROBADOR (probador.html) — momento estrella: "la IA te mira (y no guarda nada)"
+   Una franja de luz rosa recorre la foto mientras la IA trabaja.
+   ========================================================= */
+
+.lienzo-contenedor { position: relative; }
+.lienzo-contenedor::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 30%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--color-marca) 35%, transparent),
+    transparent
+  );
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity var(--duracion-corta) var(--curva-seda);
+}
+/* probador.js pone .escaneando mientras la IA carga o busca la silueta */
+.lienzo-contenedor.escaneando::after {
+  opacity: 1;
+  animation: escanear 1.6s var(--curva-vitrina) infinite alternate;
+}
+@keyframes escanear {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(333%); } /* 333 % de su propio alto = todo el recuadro */
+}
+
+/* Puntos de hombros y caderas que encontró la IA: aparecen y se desvanecen */
+.punto-ia {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--color-marca);
+  border: 2px solid var(--color-superficie);
+  pointer-events: none;
+  animation: punto-ia 1300ms var(--curva-seda) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+@keyframes punto-ia {
+  0%   { opacity: 0; transform: scale(0); }
+  25%  { opacity: 1; transform: scale(1); }
+  70%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+/* Entradas rápidas para páginas de herramientas (≤ 400 ms: la persona vino a usar algo) */
+.con-movimiento [data-revelar="rapido"] {
+  --distancia-entrada: 12px;
+  transition-duration: 360ms, 360ms, var(--duracion-corta);
+}
+
+/* =========================================================
+   RECOMENDADOR (recomendador.html) — momento estrella: "tu rutina, paso a paso"
+   ========================================================= */
+
+/* Pestañas "Mi piel" / "Mi cabello": el relleno rosa sube en la pestaña elegida
+   y baja en la otra (usa el mismo relleno de los botones) */
+.pestanas .boton {
+  background: transparent;
+  color: var(--color-marca-oscuro);
+}
+.pestanas .boton[aria-selected="true"] {
+  --relleno-boton: var(--color-marca);
+  color: var(--color-superficie);
+  border-color: var(--color-marca);
+}
+.pestanas .boton[aria-selected="true"]::before { transform: scaleY(1); }
+
+/* El cuestionario que aparece al cambiar de pestaña llega con un fundido */
+.con-movimiento .cuestionario:not([hidden]) {
+  animation: fundido var(--duracion-corta) var(--curva-seda);
+}
+@keyframes fundido {
+  from { opacity: 0; }
+}
+
+/* Cada paso de la rutina entra en orden y su número hace un latido suave */
+.con-movimiento .rutina li.visible .numero {
+  animation: latido 450ms var(--curva-pulso) both;
+  animation-delay: calc(var(--orden, 0) * var(--escalon) + 250ms);
 }
 
 /* Quita la transición por un momento (la usa movimiento.js al volver de un perfil) */
 .sin-transicion { transition: none !important; }
+
+/* =========================================================
+   CAMBIO ENTRE PÁGINAS (View Transitions)
+   Funciona en Chrome/Edge 126+ y Safari 18.2+. En otros navegadores
+   (Firefox) la página cambia normal: no se rompe nada.
+   ========================================================= */
+
+/* "cambio-pagina" es una etiqueta: así estas animaciones solo se usan al cambiar
+   de página y no cuando se filtran tiendas o productos dentro de la misma página */
+@view-transition {
+  navigation: auto;
+  types: cambio-pagina;
+}
+
+/* El encabezado se queda quieto mientras cambia el contenido */
+#encabezado { view-transition-name: encabezado; }
+
+/* El contenido viejo se va rápido (sube un poquito y se desvanece)
+   y el nuevo llega con seda (sube desde abajo). Salir dura ~40 % de entrar. */
+html:active-view-transition-type(cambio-pagina)::view-transition-old(root) {
+  animation: salir-pagina 180ms var(--curva-vitrina) both;
+}
+html:active-view-transition-type(cambio-pagina)::view-transition-new(root) {
+  animation: entrar-pagina 420ms var(--curva-seda) both;
+}
+@keyframes salir-pagina {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes entrar-pagina {
+  from { opacity: 0; transform: translateY(14px); }
+}
 
 /* ---------- 12. Accesibilidad: "reducir movimiento" ---------- */
 /* Sin desplazamientos, sin telones, sin líneas que suben, sin zoom: solo fundidos cortos. */
@@ -615,7 +790,8 @@ select:focus { border-color: var(--color-marca); }
 
   /* Botones: el relleno aparece con un fundido en vez de subir */
   .boton::before { transform: none; opacity: 0; transition: opacity 150ms linear; }
-  .boton:not(:disabled):hover::before { transform: none; opacity: 1; }
+  .boton:not(:disabled):hover::before,
+  .pestanas .boton[aria-selected="true"]::before { transform: none; opacity: 1; }
   .boton:not(:disabled):active,
   .boton-menu:active { transform: none; }
 
@@ -636,13 +812,26 @@ select:focus { border-color: var(--color-marca); }
   /* Inicio y tiendas: sin movimientos de hover ni entradas animadas */
   .categoria:hover .categoria-circulo,
   .herramienta:hover { translate: none; }
-  .categoria:hover .categoria-circulo .icono,
+  .categoria:hover .categoria-recorte img,
   .herramienta:hover .icono-grande,
   .con-movimiento .titulo-seccion[data-revelar]::after,
   .con-movimiento [data-revelar] .sello { transform: none; }
   .con-movimiento .vacio,
   .con-movimiento [data-revelar].visible .pin-cae { animation: none; }
   .boton[data-magnetico] { translate: none !important; }
+
+  /* Mapas, probador y recomendador: todo aparece de una vez */
+  .con-movimiento .pin-entra,
+  .con-movimiento .marcador-numero,
+  .con-movimiento .ruta-tramo,
+  .con-movimiento .cuestionario:not([hidden]),
+  .con-movimiento .rutina li.visible .numero,
+  .lienzo-contenedor.escaneando::after,
+  .punto-ia { animation: none; }
+  .pin-entra:hover { translate: none; }
+  .punto-ia { display: none; }
+  /* El escaneo se queda como una franja quieta y suave arriba del recuadro */
+  .lienzo-contenedor.escaneando::after { transform: none; opacity: 0.6; }
 
   /* Cambios de página y foto viajera: instantáneos */
   ::view-transition-group(*),

@@ -54,6 +54,10 @@ body {
 
 img { max-width: 100%; display: block; }
 
+/* Lo que tiene el atributo hidden se oculta siempre, aunque su clase diga display: grid o flex
+   (por ejemplo, el cuestionario de la pestaña que no está elegida en el recomendador) */
+[hidden] { display: none !important; }
+
 a { color: var(--color-marca-oscuro); }
 
 h1, h2, h3 {
@@ -357,23 +361,6 @@ select {
 .collage-foto:first-child { grid-row: span 2; }
 .collage-foto img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ---------- Franja de ventajas ---------- */
-
-.ventajas {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  box-shadow: var(--sombra);
-  padding: 18px;
-}
-.ventaja { display: flex; gap: 10px; align-items: flex-start; }
-.ventaja .icono { width: 30px; height: 30px; color: var(--color-marca); }
-.ventaja strong { display: block; font-size: 0.9rem; }
-.ventaja span { font-size: 0.8rem; color: var(--color-texto-suave); }
-
 /* ---------- Categorías en círculos ---------- */
 
 .categorias {
@@ -404,7 +391,17 @@ select {
   background: linear-gradient(160deg, var(--color-marca-suave), var(--color-beige));
   color: var(--color-marca-oscuro);
 }
-.categoria-circulo .icono { width: 48px; height: 48px; stroke-width: 1.2; }
+/* Foto de la categoría (assets/img/logos/), recortada en círculo.
+   El recorte va aparte para que la foto pueda acercarse por dentro en el hover. */
+.categoria-recorte {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: var(--sombra);
+}
+.categoria-recorte img { width: 100%; height: 100%; object-fit: cover; }
 /* El hover de las categorías (sube, gira el ícono y aparece un anillo) está en movimiento.css */
 
 /* ---------- Banner promocional ---------- */
@@ -548,6 +545,24 @@ select {
 }
 
 .precio { font-weight: 600; color: var(--color-marca-oscuro); margin: 4px 0; }
+
+/* Descripción e ingredientes de cada producto */
+.descripcion-producto { font-size: 0.82rem; line-height: 1.45; }
+.ingredientes { width: 100%; margin: 6px 0; text-align: left; font-size: 0.78rem; }
+.ingredientes summary {
+  cursor: pointer;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-marca-oscuro);
+  border-top: 1px solid var(--color-borde);
+}
+.ingredientes p { margin: 6px 0 0; color: var(--color-texto-suave); line-height: 1.5; }
+.enlace-fuente { font-size: 0.78rem; }
 
 /* ---------- Avisos ---------- */
 
@@ -732,7 +747,6 @@ select {
   .portada { grid-template-columns: 1.1fr 1fr; padding: 48px 44px; }
   .portada h1 { font-size: 3.1rem; }
   .collage { height: 340px; }
-  .ventajas { grid-template-columns: repeat(4, 1fr); }
   .categorias { grid-template-columns: repeat(4, 1fr); }
   .categoria-circulo { width: 150px; height: 150px; }
   .promo { grid-template-columns: 2fr 3fr; min-height: 380px; }

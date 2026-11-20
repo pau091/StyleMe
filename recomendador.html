@@ -15,20 +15,20 @@
   <header id="encabezado"></header>
 
   <main class="contenedor" style="max-width:860px">
-    <h1>¿Qué producto es para mí?</h1>
-    <p>Responde unas preguntas y te sugerimos una rutina con productos de tiendas de Bucaramanga.</p>
-    <p class="aviso">
+    <h1 data-revelar="rapido">¿Qué producto es para mí?</h1>
+    <p data-revelar="rapido" style="--orden:1">Responde unas preguntas y te sugerimos una rutina con productos de tiendas de Bucaramanga.</p>
+    <p class="aviso" data-revelar="rapido" style="--orden:2">
       Estas sugerencias son <strong>orientativas</strong>. No son un diagnóstico y no reemplazan a un dermatólogo.
       Si tienes alergias, confirma los ingredientes con la tienda.
     </p>
 
-    <div class="pestanas" role="tablist">
+    <div class="pestanas" role="tablist" data-revelar="rapido" style="--orden:3">
       <button class="boton" type="button" role="tab" aria-selected="true" data-panel="panel-piel">Mi piel</button>
       <button class="boton boton-secundario" type="button" role="tab" aria-selected="false" data-panel="panel-cabello">Mi cabello</button>
     </div>
 
     <!-- ===== SKINCARE ===== -->
-    <form id="panel-piel" class="cuestionario" role="tabpanel">
+    <form id="panel-piel" class="cuestionario" role="tabpanel" data-cascada="rapido">
       <fieldset>
         <legend>1. ¿Cómo es tu piel?</legend>
         <label class="casilla"><input type="radio" name="tipoPiel" value="seca" required> Seca: se siente tirante o con descamación</label>
@@ -69,7 +69,7 @@
     </form>
 
     <!-- ===== CUIDADO CAPILAR ===== -->
-    <form id="panel-cabello" class="cuestionario" role="tabpanel" hidden>
+    <form id="panel-cabello" class="cuestionario" role="tabpanel" data-cascada="rapido" hidden>
       <fieldset>
         <legend>1. ¿Cómo es tu cabello?</legend>
         <label class="casilla"><input type="radio" name="tipoCabello" value="liso" required> Liso</label>

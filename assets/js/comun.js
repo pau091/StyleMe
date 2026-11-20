@@ -144,10 +144,24 @@ function tarjetaProducto(producto) {
         <span class="etiqueta">${escaparHTML(CATEGORIAS[producto.categoria]?.nombre)}</span>
         <h3>${escaparHTML(producto.nombre)}</h3>
         <p class="precio">${formatoPrecio(producto.precio)}</p>
+        ${producto.descripcion ? `<p class="texto-suave descripcion-producto">${escaparHTML(producto.descripcion)}</p>` : ""}
+        ${listaIngredientes(producto)}
         ${tienda ? `<a class="texto-suave" href="tienda.html?id=${encodeURIComponent(tienda.id)}">${escaparHTML(tienda.nombre)}</a>` : ""}
+        ${producto.fuente ? `<a class="texto-suave enlace-fuente" href="${escaparHTML(producto.fuente)}" target="_blank" rel="noopener">Ver en la tienda</a>` : ""}
         ${botonProbador}
       </div>
     </article>`;
+}
+
+// Ingredientes (maquillaje, skincare y capilar): se muestran en un desplegable
+// para que la tarjeta no quede muy larga. Toca "Ingredientes" para abrirlo.
+function listaIngredientes(producto) {
+  if (!producto.ingredientes?.length) return "";
+  return `
+    <details class="ingredientes">
+      <summary>Ingredientes</summary>
+      <p>${escaparHTML(producto.ingredientes.join(", "))}</p>
+    </details>`;
 }
 
 /* ---------- Pintar resultados con una transición suave ---------- */
@@ -379,9 +393,13 @@ window.addEventListener(
   true
 );
 
+// El encabezado y el pie se pintan apenas carga este archivo (no esperan a DOMContentLoaded):
+// así ya existen en el primer cuadro y el encabezado se ve "quieto" al cambiar de página.
+// comun.js está al final del <body>, por eso #encabezado y #pie ya existen.
+pintarEncabezado();
+pintarPie();
+
 document.addEventListener("DOMContentLoaded", () => {
-  pintarEncabezado();
-  pintarPie();
   // Se espera un momento para que cada página pinte sus imágenes
   setTimeout(revisarDatos, 500);
 });
