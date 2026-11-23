@@ -1,0 +1,6 @@
+# 🔑 Claves secretas: NUNCA se suben a GitHub
+.env
+
+# Archivos que crea Netlify en tu computador
+.netlify/
+node_modules/

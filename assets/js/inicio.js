@@ -26,6 +26,12 @@ const PALABRAS_CINTA_CIRUELA = ["Hecho en Bucaramanga", "Tiendas locales", "Vamo
 
 const HERRAMIENTAS = [
   {
+    href: "#lia", // abre a Lía, el personaje (assets/js/lia/lia.js)
+    icono: "chat",
+    titulo: "Habla con Lía",
+    texto: "Tu asesora virtual con IA: cuéntale qué buscas y te guía a las tiendas."
+  },
+  {
     href: "probador.html",
     icono: "gancho",
     titulo: "Probador virtual",

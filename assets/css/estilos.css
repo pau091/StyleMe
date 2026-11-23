@@ -436,7 +436,7 @@ select {
 .promo-imagenes { position: relative; height: 200px; }   /* alto de la foto en celular */
 .promo-imagenes img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
-/* Dos tarjetas de herramientas (probador y recomendador) */
+/* Tarjetas de herramientas (Lía, probador y recomendador) */
 .herramientas { display: grid; gap: 16px; }
 .herramienta {
   display: flex;
@@ -799,4 +799,5 @@ select {
     opacity: 1;
   }
   .menu a { padding: 8px 9px; font-size: 0.78rem; }
+  .herramientas { grid-template-columns: repeat(3, 1fr); }
 }

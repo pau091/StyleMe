@@ -1,0 +1,536 @@
+/*
+ * LÍA · ESTILOS DEL PERSONAJE
+ * ---------------------------
+ * Lía es un personaje abajo a la derecha, dentro de un arco de vitrina (como la tienda de la intro).
+ * Habla con un globo de texto que sale de ella; debajo del globo se le responde.
+ *
+ *   data-estado    → cerrada (pequeña) | abierta (grande, con su globo)
+ *   data-emocion   → felicidad | preocupacion | tristeza | duda | neutra  (gestos)
+ *   data-actividad → quieta | pensando | hablando
+ *
+ * Solo se anima transform y opacity (fluido a 120/144 fps).
+ */
+
+/* Texto solo para lectores de pantalla */
+.visualmente-oculto {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.lia {
+  /* ✏️ Tamaños del personaje */
+  --ancho-lia: 180px;
+  --alto-lia: 240px;
+  --escala-cerrada: 0.55;   /* qué tan pequeña se ve cerrada */
+  --escala-abierta: 1;
+
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  z-index: 1500;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  pointer-events: none;     /* solo Lía y su globo reciben clics, no el espacio vacío */
+}
+.lia > * { pointer-events: auto; }
+
+/* ---------- La figura de Lía ---------- */
+.lia-figura {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  transform-origin: bottom right;
+  transform: scale(var(--escala-cerrada));
+  transition: transform var(--duracion-media) var(--curva-seda);
+}
+.lia[data-estado="abierta"] .lia-figura { transform: scale(var(--escala-abierta)); }
+
+.lia-cuerpo { display: block; }
+
+/* El arco de vitrina con Lía adentro */
+.lia-arco {
+  position: relative;
+  display: block;
+  width: var(--ancho-lia);
+  height: var(--alto-lia);
+  border-radius: calc(var(--ancho-lia) / 2) calc(var(--ancho-lia) / 2) 16px 16px;
+  overflow: hidden;
+  border: 3px solid var(--color-ciruela);
+  background: linear-gradient(to bottom, #efe9ee, #e5dde3);
+  box-shadow:
+    0 0 0 7px #efe6dc,                     /* marco de piedra */
+    0 0 0 8px var(--color-borde),
+    0 16px 34px rgba(79, 44, 58, 0.28);
+  transition:
+    rotate var(--duracion-media) var(--curva-seda),
+    translate var(--duracion-media) var(--curva-seda);
+}
+
+/* Lía en 3D (cuando existe assets/lia/lia.vrm): el lienzo reemplaza al retrato */
+.lia-lienzo {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+.lia-con-3d .lia-arco { background: radial-gradient(70% 55% at 50% 35%, #fbf4ef, #e6dbe1); }
+/* En 3D los gestos los hace ella misma: el marco ya no se inclina */
+.lia-con-3d .lia-arco { rotate: none !important; translate: none !important; animation: none !important; }
+/* Reflejo del vidrio */
+.lia-arco::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, 0.22) 36%, transparent 48%);
+}
+/* Aro de luz cuando piensa o habla */
+.lia-arco::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 3px rgba(231, 184, 194, 0.95);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Placa con el nombre */
+.lia-placa {
+  padding: 4px 14px;
+  border-radius: 99px;
+  background: var(--color-ciruela);
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(79, 44, 58, 0.25);
+}
+.lia-placa span {
+  font-family: var(--fuente);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e7b8c2;
+}
+
+@media (hover: hover) {
+  .lia[data-estado="cerrada"] .lia-figura:hover { transform: scale(calc(var(--escala-cerrada) + 0.04)); }
+}
+
+/* ---------- Pensando y hablando ---------- */
+.lia[data-actividad="pensando"] .lia-arco::after,
+.lia[data-actividad="hablando"] .lia-arco::after { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .lia[data-actividad="pensando"] .lia-arco::after { animation: lia-aro 1.2s ease-in-out infinite; }
+}
+@keyframes lia-aro {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+
+/* ---------- Invitación (globo corto cuando está cerrada) ---------- */
+.lia-invitacion {
+  position: absolute;
+  right: calc(var(--ancho-lia) * var(--escala-cerrada) + 16px);
+  bottom: calc(var(--alto-lia) * var(--escala-cerrada) * 0.55);
+  width: max-content;
+  max-width: 220px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 18px 18px 4px 18px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  box-shadow: 0 10px 26px rgba(79, 44, 58, 0.18);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  cursor: pointer;
+  transform-origin: bottom right;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lia-invitacion:not([hidden]) { animation: lia-globo-sale var(--duracion-media) var(--curva-pulso); }
+}
+
+/* ---------- La escena: globo + respuestas ---------- */
+.lia-escena {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: min(360px, calc(100vw - var(--ancho-lia) - 60px));
+  max-height: calc(100vh - 40px);
+  margin-bottom: 50px; /* el globo queda a la altura de la cara de Lía */
+}
+.lia-escena[hidden] { display: none; }
+
+/* El globo de texto */
+.lia-globo {
+  position: relative;
+  width: 100%;
+  max-height: min(52vh, 460px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px 16px 14px;
+  border-radius: 22px 22px 6px 22px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  box-shadow: 0 14px 34px rgba(79, 44, 58, 0.18);
+  transform-origin: bottom right;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lia-escena:not([hidden]) .lia-globo { animation: lia-globo-sale var(--duracion-media) var(--curva-pulso); }
+}
+@keyframes lia-globo-sale {
+  from { opacity: 0; transform: scale(0.85) translateY(10px); }
+}
+/* La colita del globo apunta hacia la cara de Lía */
+.lia-escena { position: relative; }
+.lia-escena::before {
+  content: "";
+  position: absolute;
+  top: 46px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-superficie);
+  border-right: 1px solid var(--color-borde);
+  border-top: 1px solid var(--color-borde);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.lia-globo-barra {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 -8px 6px;
+}
+.lia-mini {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 99px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+}
+.lia-mini:hover { background: var(--color-marca-suave); color: var(--color-marca-oscuro); }
+.lia-ver-historial { margin-right: auto; }
+.lia-nueva, .lia-cerrar { width: 32px; padding: 0; font-size: 0.95rem; text-transform: none; }
+
+/* Lo que se ha hablado */
+.lia-historial {
+  max-height: 160px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: var(--color-fondo);
+  font-size: 0.8rem;
+}
+.lia-linea { margin: 0 0 6px; line-height: 1.4; }
+.lia-linea-persona { color: var(--color-marca-oscuro); }
+
+/* Lo último que dijo la persona */
+.lia-tu {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--color-texto-suave);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Lo que dice Lía */
+.lia-dice {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+/* Tres puntos mientras piensa */
+.lia-puntos { display: inline-flex; gap: 5px; padding: 6px 0; }
+.lia-puntos i { width: 8px; height: 8px; border-radius: 50%; background: var(--color-marca); opacity: 0.4; }
+@media (prefers-reduced-motion: no-preference) {
+  .lia-puntos i { animation: lia-punto 1s ease-in-out infinite; }
+  .lia-puntos i:nth-child(2) { animation-delay: 0.15s; }
+  .lia-puntos i:nth-child(3) { animation-delay: 0.3s; }
+}
+@keyframes lia-punto {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50%      { opacity: 1; transform: translateY(-4px); }
+}
+
+/* Productos y acciones dentro del globo */
+.lia-productos { display: grid; gap: 8px; margin-top: 10px; }
+.lia-producto {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--duracion-micro) var(--curva-seda), translate var(--duracion-corta) var(--curva-seda);
+}
+@media (hover: hover) {
+  .lia-producto:hover { border-color: var(--color-marca); translate: 0 -2px; }
+}
+.lia-producto-foto {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-beige);
+}
+.lia-producto-foto img { width: 100%; height: 100%; object-fit: cover; }
+.lia-producto-foto .marcador-imagen { font-size: 0.6rem; padding: 2px; }
+.lia-producto-datos { display: flex; flex-direction: column; line-height: 1.3; font-size: 0.82rem; }
+.lia-producto-datos .precio { margin: 2px 0 0; }
+.lia-producto-datos .texto-suave { margin: 0; font-size: 0.75rem; }
+
+.lia-acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.lia-accion {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--color-marca);
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-marca-oscuro);
+  text-decoration: none;
+  background: var(--color-superficie);
+}
+.lia-accion:hover { background: var(--color-marca-suave); }
+.lia-accion-whatsapp { border-color: var(--color-exito); color: var(--color-exito); }
+.lia-modo { margin: 8px 0 0; font-size: 0.7rem; color: var(--color-texto-suave); }
+
+/* Respuestas rápidas: burbujas que la persona toca para contestar */
+.lia-respuestas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.lia-respuesta {
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--color-marca);
+  border-radius: 18px 18px 4px 18px;
+  background: var(--color-marca-suave);
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--color-marca-oscuro);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79, 44, 58, 0.1);
+  transition: background var(--duracion-micro) var(--curva-seda), translate var(--duracion-corta) var(--curva-seda);
+}
+@media (hover: hover) {
+  .lia-respuesta:hover { background: var(--color-marca); color: #fff; translate: 0 -2px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lia-respuesta { animation: aparecer var(--duracion-corta) var(--curva-seda) both; }
+  .lia-respuesta:nth-child(2) { animation-delay: 60ms; }
+  .lia-respuesta:nth-child(3) { animation-delay: 120ms; }
+}
+
+/* Escribirle a Lía */
+.lia-responder {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  padding: 6px;
+  border-radius: 99px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  box-shadow: 0 10px 24px rgba(79, 44, 58, 0.14);
+}
+.lia-responder input {
+  flex: 1;
+  min-height: 42px;
+  border: 0;
+  border-radius: 99px;
+  padding: 6px 12px;
+  background: transparent;
+}
+.lia-responder input:focus { outline: none; }
+.lia-responder:focus-within { border-color: var(--color-marca); }
+.lia-responder button {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-marca);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.lia-responder button:hover { background: var(--color-marca-oscuro); }
+.lia-aviso {
+  margin: 0;
+  max-width: 100%;
+  font-size: 0.66rem;
+  line-height: 1.3;
+  color: var(--color-texto-suave);
+  text-align: right;
+  text-shadow: 0 0 6px var(--color-fondo);
+}
+
+/* ---------- Celular: Lía pequeña abajo y el globo encima, a lo ancho ---------- */
+@media (max-width: 719px) {
+  .lia {
+    --escala-cerrada: 0.42;
+    --escala-abierta: 0.58;
+    right: 10px;
+    bottom: 8px;
+  }
+  .lia-escena {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: calc(var(--alto-lia) * var(--escala-abierta) + 56px);
+    width: auto;
+    max-height: calc(100vh - var(--alto-lia) * var(--escala-abierta) - 80px);
+    margin: 0;
+  }
+  .lia-globo { max-height: 46vh; border-radius: 22px 22px 6px 22px; }
+  /* En celular Lía está debajo: la colita apunta hacia abajo */
+  .lia-escena::before {
+    top: auto;
+    bottom: -14px;
+    right: 34px;
+    transform: rotate(135deg);
+  }
+  .lia-placa span { display: none; }
+}
+
+/* ---------- Menos movimiento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .lia-figura { transition: none; }
+  .lia-arco { transition: none; }
+}
+
+
+/* Las cuatro poses comparten el busto de la foto principal. */
+.lia-retrato, .lia-retrato-cabeza, .lia-retrato-pose, .lia-retrato-boca {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.lia-retrato {
+  background: #d6ccce url("../img/lia/principal.webp") center / 100% 100% no-repeat;
+  perspective: 420px;
+}
+.lia-con-3d .lia-retrato { display: none; }
+.lia-retrato-cabeza {
+  transform-origin: 51% 65%;
+  transform: rotateX(var(--lia-inclinacion, 0deg)) rotateY(calc(var(--mirar-x, 0) * 5deg)) rotateZ(var(--lia-giro, 0deg));
+  transition: transform 330ms ease-out;
+}
+.lia-retrato-pose, .lia-retrato-boca {
+  background: var(--lia-foto) center var(--lia-posicion, 0%) / var(--lia-ancho, 100%) var(--lia-alto, 100%) no-repeat;
+}
+.lia-retrato-pose {
+  clip-path: polygon(7% 0, 93% 0, 98% 49%, 96% 75%, 81% 78%, 71% 70%, 63% 65%, 56% 66%, 46% 67%, 38% 64%, 29% 69%, 19% 78%, 4% 77%, 4% 54%);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.lia-pose-principal { --lia-foto: url("../img/lia/principal.webp"); opacity: 1; }
+.lia-pose-feliz, .lia-pose-duda { --lia-ancho: 102%; --lia-alto: 108%; --lia-posicion: 70%; }
+.lia-pose-feliz { --lia-foto: url("../img/lia/feliz.webp"); }
+.lia-pose-duda { --lia-foto: url("../img/lia/confundida.webp"); }
+.lia-pose-asombro { --lia-foto: url("../img/lia/sorprendida.webp"); --lia-alto: 99%; }
+.lia[data-emocion="felicidad"] .lia-pose-feliz,
+.lia[data-emocion="duda"] .lia-pose-duda,
+.lia[data-emocion="asombro"] .lia-pose-asombro { opacity: 1; }
+.lia[data-emocion="duda"], .lia[data-actividad="pensando"] { --lia-giro: -3deg; }
+.lia[data-emocion="asombro"] { --lia-inclinacion: -11deg; }
+.lia-retrato-boca {
+  opacity: 0;
+  /* Se deforma solo la zona alrededor de los labios. */
+  transform-origin: 51% var(--lia-labios, 59%);
+  mask-image: radial-gradient(ellipse 12% 5% at 51% var(--lia-labios, 59%), #000 62%, transparent 100%);
+}
+.lia-pose-feliz, .lia-pose-duda { --lia-labios: 57%; }
+.lia-pose-asombro { --lia-labios: 60%; }
+.lia-interrogacion {
+  position: absolute;
+  z-index: 2;
+  top: 20%;
+  right: 1%;
+  display: grid;
+  place-items: center;
+  width: 1.55em;
+  height: 1.55em;
+  border: 1px solid #e4c2cc;
+  border-radius: 50% 50% 50% 18%;
+  background: #fff9f6;
+  color: #64394a;
+  box-shadow: 0 3px 12px #57273f40;
+  font: 700 1.6rem/1 system-ui, sans-serif;
+  opacity: 0;
+  transform: translateY(5px) scale(.82);
+  transition: opacity 200ms, transform 200ms;
+}
+.lia[data-estado="abierta"][data-emocion="duda"] .lia-interrogacion {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lia[data-actividad="hablando"] .lia-retrato-boca { opacity: 1; animation: lia-labios 280ms ease-in-out infinite alternate; }
+  .lia[data-emocion="felicidad"][data-actividad="hablando"] .lia-retrato-cabeza { animation: lia-asiente 640ms ease-in-out 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lia-retrato-cabeza { transform: none; }
+  .lia-retrato-pose, .lia-interrogacion { transition: none; }
+}
+@keyframes lia-labios { from { scale: 1 .96; } to { scale: .97 1.16; } }
+@keyframes lia-asiente { 50% { rotate: x 8deg; } }
+
+.lia-retrato-parpadeo {
+  position: absolute;
+  inset: 0;
+  background: url("../img/lia/feliz.webp") center 70% / 102% 108% no-repeat;
+  mask-image: radial-gradient(ellipse 13% 5% at 36% 44%, #000 65%, transparent),
+              radial-gradient(ellipse 13% 5% at 66% 44%, #000 65%, transparent);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lia-retrato-parpadeo { animation: lia-parpadea 3s linear infinite; }
+  .lia[data-emocion="felicidad"] .lia-retrato-parpadeo { opacity: 0; animation-name: none; }
+}
+@keyframes lia-parpadea {
+  0%, 94%, 100% { opacity: 0; }
+  96%, 97% { opacity: 1; }
+}

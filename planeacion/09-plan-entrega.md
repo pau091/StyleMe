@@ -23,10 +23,11 @@ Una página web donde cualquier persona de Bucaramanga, cuando se pregunte *"¿y
 | 7 | **Probador virtual** (`probador.html`) | **Solo ropa.** IA en el navegador (MediaPipe) que detecta hombros y caderas y coloca la prenda sobre la foto. Solo mayores de 18 años; la foto no sale del dispositivo | ✅ Programada |
 | 8 | **Acerca de** (`acerca.html`) | Qué es StyleMe, privacidad, aviso académico y contacto | ✅ Programada |
 | 9 | **Recomendador** (`recomendador.html`) | Cuestionario de piel o de cabello que arma una **rutina por pasos** con productos del catálogo. Funciona con reglas, sin diagnósticos, y sugiere ir al dermatólogo si la persona marca una condición | ✅ Programada |
+| 10 | **Lía** | Asesora con Gemini que responde preguntas abiertas, recomienda productos del catálogo y gesticula mientras conversa. | Programada. Pendiente de verificar con la clave de Gemini en Netlify. |
 
 ## 3. Qué NO incluye (queda para después) 🔮
 
-Cuentas e inicio de sesión, registro de comerciantes, panel de administrador, reseñas con corazones, favoritos guardados en servidor, asesor de moda con IA, probador virtual con IA generativa, probador de maquillaje, comparación avanzada y pagos.
+Cuentas e inicio de sesión, registro de comerciantes, panel de administrador, reseñas con corazones, favoritos guardados en servidor, tienda 3D con recorrido por pasillos, probador virtual con IA generativa, probador de maquillaje, comparación avanzada y pagos.
 
 ## 4. Tecnología ✅
 
@@ -89,7 +90,7 @@ Archivo `data/productos.js`: hay 20 productos **de ejemplo** (2 por tienda). Ree
 | Mañana | Productos reales del Instagram (fotos, precios, tipo de prenda) | ⏳ Tú |
 | Mañana | Probar el probador con 3–4 prendas y fotos diferentes | ⏳ Tú + asesor |
 | Mañana | Cambiar el correo de contacto en `acerca.html` | ⏳ Tú |
-| Mañana | Revisar en celular y publicar en GitHub Pages | ⏳ Tú |
+| Mañana | Revisar en celular y publicar en Netlify | ⏳ Tú |
 
 ## 9. Lista final antes de entregar
 

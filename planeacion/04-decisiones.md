@@ -35,6 +35,19 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-029 | 2026-11-16 | Documentación separada del código, en la carpeta `planeacion/` | ✅ Confirmada | Orden del proyecto |
 | D-030 | 2026-11-16 | El **recomendador de skincare y cuidado capilar** entra en la entrega, basado en reglas (aprueba P-004 para esta versión) | ✅ Confirmada | Decisión de la autora |
 | D-031 | 2026-11-16 | **Queen** (Cra 35 #52-146, Cabecera) reemplaza a Sea & Seams | ✅ Confirmada | Sea & Seams no aparece en Google Maps |
+| D-032 | 2026-11-20 | Hay **tiempo amplio** para la entrega final: se busca un proyecto bien hecho. La experiencia pasa a ser **3D y guiada** | ✅ Confirmada | El profesor pide que no sea solo una página de maquillaje |
+| D-033 | 2026-11-20 | **Lía**, asesora virtual en 3D, guía a la persona dentro de la tienda | ✅ Confirmada | Decisión de la autora. Ver [12 - Lía](12-lia-asesora-virtual.md) |
+| D-034 | 2026-11-20 | Lía debe verse **limpia y elegante**, con rasgos inspirados en la referencia de la autora (cabello largo liso rubio con raya al medio, ojos azules, pestañas largas, pecas suaves, aretes plateados, cuello tortuga negro) | ✅ Confirmada | Identidad del personaje |
+| D-035 | 2026-11-20 | Lía es un **bot funcional**: conversación real y fluida con el cliente | ✅ Confirmada | Uso real de IA en el proyecto |
+| D-036 | 2026-11-20 | Imagen oficial del avatar de Lía: `assets/img/lia/lia-referencia.png` (incluye broche de flor rosa) | ✅ Confirmada | Decisión de la autora. Ver [13 - Avatar y emociones](13-lia-avatar-y-emociones.md) |
+| D-037 | 2026-11-20 | Lía tiene **movimientos fluidos** y **expresiones faciales** con al menos 4 emociones: **preocupación, felicidad, tristeza y duda** | ✅ Confirmada | Decisión de la autora |
+| D-038 | 2026-11-20 | La función del servidor de Lía se publica en **Netlify** (aprueba P-010) | ✅ Confirmada | Decisión de la autora |
+| D-039 | 2026-11-20 | El modelo 3D de Lía se hace en **VRoid Studio** y se exporta en VRM (aprueba P-011) | ✅ Confirmada | Decisión de la autora |
+| D-040 | 2026-11-20 | Por ahora **no se modifica el catálogo** (`data/productos.js` y `data/tiendas.js`) | ✅ Confirmada | Decisión de la autora |
+| D-041 | 2026-11-20 | La fecha de entrega no está confirmada: **1 semana o más**, depende del profesor | ✅ Confirmada (fecha ⏳) | Se planea por semanas |
+| D-042 | 2026-11-20 | Proveedor de IA de Lía: **Gemini** (aprueba P-016) | ✅ Confirmada | Plan gratuito; el código permite cambiarlo |
+| D-043 | 2026-11-20 | Lía en 3D debe verse **similar** a la referencia, no idéntica | ✅ Confirmada | Decisión de la autora |
+| D-044 | 2026-11-20 | Lía aparece como un **personaje** que habla con **globos de texto**, y la persona le responde ahí mismo. **No** es una ventana de chat | ✅ Confirmada | Que sea interactiva y se sienta como un personaje |
 
 ## Propuestas en espera de aprobación 💡
 
@@ -48,3 +61,11 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | P-006 | Mostrar la fecha de última actualización en precios y disponibilidad + botón "Consultar disponibilidad" | [05 - Riesgos](05-riesgos.md) |
 | P-007 | Piloto con 5–10 tiendas en una sola zona, o datos de demostración marcados como ficticios | [05 - Riesgos](05-riesgos.md) |
 | P-008 | Validar los problemas con una encuesta y entrevistas antes de diseñar | [08 - Validación](08-validacion.md) |
+| P-009 | Lía con **RAG**: embeddings del catálogo + modelo de lenguaje que solo recomienda productos reales | [12 - Lía](12-lia-asesora-virtual.md) §5 |
+| ~~P-010~~ | ✅ Aprobada como D-038 (Netlify) | — |
+| ~~P-011~~ | ✅ Aprobada como D-039 (VRoid Studio). Pendiente confirmar Three.js / three-vrm para mostrarla | [13 - Avatar](13-lia-avatar-y-emociones.md) |
+| ~~P-016~~ | ✅ Aprobada como D-042 (Gemini) | — |
+| P-012 | Construir por fases: primero el cerebro (chat 2D funcional), luego el cuerpo 3D, luego la tienda 3D | [12 - Lía](12-lia-asesora-virtual.md) §9 |
+| P-013 | Modo ligero (sin 3D) obligatorio y plan B con el recomendador por reglas si la IA falla | [12 - Lía](12-lia-asesora-virtual.md) §4 y §6 |
+| P-014 | Voz con la Web Speech API; Lía habla en voz alta solo si la persona lo activa | [12 - Lía](12-lia-asesora-virtual.md) §5 |
+| P-015 | Conjunto de prueba de 30 preguntas para medir la IA en la sustentación | [12 - Lía](12-lia-asesora-virtual.md) §10 |
