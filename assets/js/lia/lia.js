@@ -10,7 +10,7 @@
  *   - La conversación se recuerda durante la visita (aunque cambies de página).
  *     "Conversación" muestra lo que se ha hablado.
  *
- * Por ahora Lía es su retrato (assets/img/lia/lia-retrato.jpg). En la Fase 2, Lía en 3D
+ * Por ahora Lía es su retrato 2D (assets/lia/2d/). Lía en 3D (assets/lia/3d/)
  * se dibujará DENTRO de .lia-figura (mismo lugar), escuchando estos eventos:
  *   "lia:emocion"  → { emocion, intensidad }
  *   "lia:pensando" → true / false
@@ -417,14 +417,14 @@
   /* ---------- Lía en 3D (Fase 2) ---------- */
   // ✏️ Cuando exportes a Lía desde VRoid, guárdala aquí. Si el archivo existe,
   //    Lía aparece en 3D sola; si no, se queda su retrato.
-  const MODELO_3D = "assets/lia/lia.vrm";
+  const MODELO_3D = "assets/lia/3d/lia.vrm";
   async function cargar3D() {
     // Navegadores muy viejos (sin "importmap") se quedan con el retrato
     if (!HTMLScriptElement.supports?.("importmap")) return;
     try {
       const existe = await fetch(MODELO_3D, { method: "HEAD" });
       if (!existe.ok) return;
-      const modulo = await import(new URL("assets/js/lia/lia-3d.js", document.baseURI).href);
+      const modulo = await import(new URL("assets/lia/3d/lia-3d.js", document.baseURI).href);
       lia3d = await modulo.montarLia3D($(".lia-arco"), MODELO_3D);
       lia.classList.add("lia-con-3d");
       lia3d.ponerEmocion(lia.dataset.emocion);

@@ -4,8 +4,8 @@
 > Convención: ✅ confirmado · 💡 sugerencia · ⏳ pendiente. Fecha: 2026-11-20.
 
 **Referencia oficial del avatar** ✅ (D-036):
-- `assets/img/lia/lia-referencia.png`: original, para diseñar en VRoid.
-- `assets/img/lia/lia-retrato.jpg`: versión liviana (480 px, 61 KB) para el chat y el modo ligero.
+- `assets/lia/3d/lia-referencia.png`: original, para diseñar en VRoid.
+- `assets/lia/2d/`: Lía en 2D (cuatro expresiones en `.webp` + `lia-2d.css`). Es la que se usa mientras no exista `lia.vrm`.
 
 ---
 
@@ -76,7 +76,7 @@
    - Texturas a **1024 px** (2048 solo para la cara).
    - Activar "reducir polígonos" o "combinar materiales", si está disponible.
    - **Meta: menos de 8 MB.**
-4. Guardar como `lia.vrm` y copiarlo en el proyecto: `assets/lia/lia.vrm`.
+4. Guardar como `lia.vrm` y copiarlo en el proyecto: `assets/lia/3d/lia.vrm`.
 5. Antes de exportar, revisar en la vista previa de **expresiones** que tenga alegría, tristeza, sorpresa, enojo, parpadeo y las bocas A, I, U, E, O.
 
 ### 2.6 Aretes y broche (se agregan en la página)
@@ -160,20 +160,24 @@ Mientras habla, la boca de la emoción se reduce a la mitad para no "pelear" con
 ```
 assets/
 ├── lia/
-│   ├── lia.vrm              ← el modelo exportado de VRoid (LO PONE LA AUTORA)
-│   └── LEEME.txt
-├── img/lia/
-│   ├── lia-referencia.png   ← imagen oficial del avatar
-│   └── lia-retrato.jpg      ← retrato (se usa mientras no exista lia.vrm)
+│   ├── 2d/                  ← LÍA EN 2D (la que se usa hoy)
+│   │   ├── principal.webp, feliz.webp, confundida.webp, sorprendida.webp
+│   │   └── lia-2d.css       ← poses, boca que habla y parpadeo
+│   └── 3d/                  ← LÍA EN 3D (se activa sola si existe lia.vrm)
+│       ├── lia.vrm          ← el modelo exportado de VRoid (LO PONE LA AUTORA)
+│       ├── lia-3d.js        ← Three.js + three-vrm: respiración, balanceo, parpadeo, mirada,
+│       │                      ✏️ tabla EMOCIONES, lip sync con vocales, física del cabello
+│       ├── lia-3d.css       ← lienzo 3D; oculta el retrato 2D
+│       ├── lia-referencia.png ← imagen oficial del avatar
+│       └── LEEME.txt
+├── css/lia.css              ← lo común: arco, globo de texto, respuestas
 └── js/lia/
     ├── lia.js               ← el personaje: globos, respuestas, emociones; carga el 3D si existe el modelo
-    ├── lia-3d.js            ← Three.js + three-vrm: respiración, balanceo, parpadeo, mirada,
-    │                          ✏️ tabla EMOCIONES, lip sync con vocales, física del cabello
     └── plan-b.js            ← respuestas sin IA
 ```
 
 - Las librerías 3D se cargan con un `importmap` en cada página (Three.js 0.169.0 y three-vrm 3.0.0).
-- **Funcionamiento:** apenas exista `assets/lia/lia.vrm`, Lía aparece en 3D sola. Si no existe o algo falla, se queda el retrato.
+- **Funcionamiento:** apenas exista `assets/lia/3d/lia.vrm`, Lía aparece en 3D sola. Si no existe o algo falla, se queda el retrato.
 - **Pendiente para más adelante:** gestos con los brazos (saludar, mano en la barbilla) con animaciones VRMA. Hoy los gestos son de cabeza, cuerpo y cara.
 
 ---
@@ -182,7 +186,7 @@ assets/
 
 | Semana | Autora | Claude |
 |---|---|---|
-| **1** | Crea a Lía en VRoid con esta guía y exporta `lia.vrm` | **Fase 1:** el cerebro de Lía (chat 2D funcional con RAG en Netlify), usando `lia-retrato.jpg` como avatar en el chat |
+| **1** | Crea a Lía en VRoid con esta guía y exporta `lia.vrm` | **Fase 1:** el cerebro de Lía (chat 2D funcional con RAG en Netlify), usando el retrato 2D (`assets/lia/2d/`) como avatar |
 | **2** | Revisa las emociones y da su opinión | **Fase 2:** Lía en 3D con movimientos fluidos, las 4 emociones y lip sync |
 | **3+** | Pruebas con personas | **Fase 3:** la tienda 3D guiada |
 

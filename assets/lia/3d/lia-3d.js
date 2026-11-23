@@ -2,7 +2,7 @@
  * LÍA EN 3D (Fase 2)
  * ------------------
  * Dibuja a Lía en 3D dentro de su arco de vitrina, con el modelo que se exporta de VRoid:
- *   assets/lia/lia.vrm
+ *   assets/lia/3d/lia.vrm
  * lia.js carga este archivo SOLO si ese modelo existe. Si no existe o algo falla,
  * Lía sigue siendo su retrato (no se rompe nada).
  *
