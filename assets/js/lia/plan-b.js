@@ -40,6 +40,15 @@
     const t = limpiar(mensaje);
     const sugerenciasBase = ["Busco maquillaje", "Rutina para mi piel", "Algo para mi cabello"];
 
+    const fueraDelCatalogo = "(?:comida|pizza|hamburguesas?|sushi|tacos?|empanadas?|postres?|bebidas?|cerveza|restaurantes?|celulares?|computadoras?|portatiles?|televisores?|videojuegos?|electrodomesticos?|muebles?|vuelos?)";
+    const pideProducto = new RegExp("^\\s*(?:lia[,:]?\\s+)?(?:[\\s¿¡]*)(?:(?:quiero|busco|necesito|venden|tienen|hay|puedo|me vendes|me das|donde (?:compro|consigo|encuentro|pido))\\s+(?:(?:comprar|pedir|ordenar|conseguir|encontrar)\\s+)?(?:un(?:a|as|os)?\\s+)?)?" + fueraDelCatalogo + "(?:[\\s.,!?]|$)", "i");
+    if (pideProducto.test(t)) {
+      return {
+        texto: "Lo siento, eso no está disponible en esta página.",
+        emocion: "neutra", productos: [], acciones: [], sugerencias: []
+      };
+    }
+
     if (PALABRAS_SALUD.test(t)) {
       return {
         texto: "Lo que me cuentas merece atención. No puedo hacer diagnósticos: te recomiendo consultar a un dermatólogo antes de usar productos nuevos. Si quieres, te muestro opciones suaves para piel sensible.",

@@ -108,15 +108,16 @@
 
   /* ---------- Estado del personaje (retrato o 3D) ---------- */
   let finHabla;
+  let finReaccion;
   let lia3d = null; // Lía en 3D, si existe el modelo (ver cargar3D más abajo)
 
   function ponerEmocion(emocion = "neutra", intensidad = 0.6) {
+    clearTimeout(finReaccion);
     lia.dataset.emocion = emocion;
     lia.style.setProperty("--lia-intensidad", Math.max(0, Math.min(1, Number(intensidad) || 0)));
     lia3d?.ponerEmocion(emocion, intensidad);
     document.dispatchEvent(new CustomEvent("lia:emocion", { detail: { emocion, intensidad } }));
     // La tristeza dura poco: Lía vuelve a la expresión amable
-    if (emocion === "tristeza") setTimeout(() => lia.dataset.emocion === "tristeza" && ponerEmocion("neutra"), 2000);
   }
   function ponerActividad(actividad) {
     lia.dataset.actividad = actividad;
@@ -209,7 +210,7 @@
     dice.textContent = ultimaLia.texto;
     pintarExtras(ultimaLia);
     pintarRespuestas(ultimaLia.sugerencias);
-    ponerEmocion(indice < 0 ? "neutra" : ultimaLia.emocion, ultimaLia.intensidad);
+    ponerEmocion("neutra");
     if (!historial.hidden) pintarHistorial();
   }
 
@@ -218,7 +219,7 @@
     const respuesta = await fetch(URL_CEREBRO, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mensaje, historia: historia.slice(-11, -1).map((m) => ({ rol: m.rol, texto: m.texto })) })
+      body: JSON.stringify({ mensaje, historia: historia.slice(-31, -1).map((m) => ({ rol: m.rol, texto: m.texto })) })
     });
     const tipo = respuesta.headers.get("Content-Type") || "";
     if (!respuesta.ok || !tipo.includes("ndjson") || !respuesta.body) throw new Error("sin cerebro");
@@ -261,6 +262,7 @@
 
     // Lía piensa: tres puntos en el globo
     dice.innerHTML = `<span class="lia-puntos" aria-label="Lía está pensando"><i></i><i></i><i></i></span>`;
+    ponerEmocion("neutra");
     ponerActividad("pensando");
 
     let escrito = "";
@@ -291,7 +293,11 @@
     pintarRespuestas(datos.sugerencias);
     // Sigue "hablando" hasta terminar de mover la boca, y luego se queda tranquila
     const restante = Math.min(8000, Math.max(1400, lia3d?.tiempoRestante() ?? 0));
-    finHabla = setTimeout(() => lia.dataset.actividad === "hablando" && ponerActividad("quieta"), restante);
+    if (datos.emocion === "duda") finReaccion = setTimeout(() => ponerEmocion("neutra"), 2200);
+    finHabla = setTimeout(() => {
+      ponerActividad("quieta");
+      if (datos.emocion !== "duda" && lia.dataset.emocion !== "neutra") finReaccion = setTimeout(() => ponerEmocion("neutra"), 1000);
+    }, restante);
 
     historia.push({
       rol: "lia",
@@ -337,6 +343,7 @@
     invitacion.textContent = INVITACION;
     invitacion.hidden = false;
     ponerEmocion("felicidad", 0.5);
+    finReaccion = setTimeout(() => ponerEmocion("neutra"), 2000);
     temporizadorInvitacion = setTimeout(ocultarInvitacion, 7000);
   }
   function ocultarInvitacion() {
@@ -357,6 +364,9 @@
   invitacion.addEventListener("click", () => abrir());
   $(".lia-cerrar").addEventListener("click", cerrar);
   $(".lia-nueva").addEventListener("click", () => {
+    if (ocupada) return;
+    clearTimeout(finHabla);
+    ponerActividad("quieta");
     historia = [];
     guardarHistoria();
     historial.hidden = true;
