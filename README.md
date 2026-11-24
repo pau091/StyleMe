@@ -137,6 +137,7 @@ StyleMe/
 | [13 - Lía: avatar y emociones](planeacion/13-lia-avatar-y-emociones.md) | Guía para crear a Lía en VRoid Studio, movimientos fluidos, emociones y lip sync |
 | [14 - Plan de ramas y fases](planeacion/14-plan-ramas-y-fases.md) | ⭐ Cómo se crean las ramas, qué sube cada una y en qué orden (entrega final) |
 | [15 - Modelo de datos](planeacion/15-modelo-de-datos.md) | ⭐ Las 16 tablas de la base de datos (con pgvector para el RAG), sus campos, relaciones e indicadores |
+| [16 - Arquitectura hexagonal](planeacion/16-arquitectura-hexagonal.md) | ⭐ Cómo se organiza el backend: dominio, puertos, casos de uso y adaptadores |
 
 ### Convención usada en los documentos
 

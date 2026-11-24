@@ -60,6 +60,7 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-054 | 2026-11-23 | El catálogo sigue **congelado** (10 tiendas, 49 productos) al pasarlo a SQL | ✅ Confirmada | Ratifica D-040 |
 | D-055 | 2026-11-23 | Rúbrica oficial: la IA vale el **57 %** (embeddings, búsqueda semántica, RAG, automatización y pruebas de IA). Se agregan **PostgreSQL + pgvector** con índice **HNSW**, las tablas `fragmento_conocimiento` y `evaluacion_ia`, métricas en `conversacion_lia`, y 3 ramas de IA en el plan [14](14-plan-ramas-y-fases.md) | ✅ Confirmada | Alinear el proyecto con lo que se evalúa |
 | D-056 | 2026-11-23 | Mensajes de commit con **Conventional Commits** (`tipo(alcance): descripción`), sin gitmoji | ✅ Confirmada | Preferencia de la autora |
+| D-057 | 2026-11-24 | El backend sigue **arquitectura hexagonal** (puertos y adaptadores) con todas sus reglas: dominio y aplicación en Java puro, dependencias hacia adentro, un modelo por capa, beans registrados en `infrastructure/config` y una prueba ArchUnit que vigila las reglas. Detalle en [16](16-arquitectura-hexagonal.md) | ✅ Confirmada | Decisión de la autora |
 
 ## Propuestas en espera de aprobación 💡
 

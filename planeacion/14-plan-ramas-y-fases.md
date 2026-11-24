@@ -6,6 +6,7 @@
 > ⚠️ Las tecnologías marcadas 💡 son **sugerencias** hasta que se confirmen (PostgreSQL + pgvector, Java 21).
 > ☕ Para instalar y cambiar la versión de Java se usa **SDKMAN** (ver la sección IMPORTANTE del README).
 > 👤 La autora trabaja sola (D-049): todas las ramas y commits son suyos.
+> 🔷 El backend sigue **arquitectura hexagonal** (D-057): cada módulo se construye de adentro hacia afuera (dominio → puertos → casos de uso → adaptadores). Ver [16](16-arquitectura-hexagonal.md).
 
 ---
 
@@ -72,7 +73,9 @@ trabajo   chore/limpieza...  feature/base-de-datos
   | `style` | Formato o diseño visual sin cambiar la lógica |
   | `perf` | Mejora de rendimiento |
 
-- **alcance** (opcional, entre paréntesis): la parte del proyecto → `db`, `api`, `auth`, `ia`, `rag`, `lia`, `frontend`, `n8n`, `docker`, `planeacion`…
+- **alcance** (opcional, entre paréntesis): la parte del proyecto →
+  capas del hexágono: `dominio`, `aplicacion`, `persistencia`, `api`, `seguridad`, `arquitectura` ·
+  temas: `db`, `ia`, `rag`, `lia`, `frontend`, `n8n`, `docker`, `planeacion`…
 - **descripción:** en minúscula, en infinitivo ("agregar", "corregir"), sin punto final, máximo ~70 caracteres.
 
 **Ejemplos:** `feat(api): agregar endpoint de tiendas` · `fix(rag): corregir umbral de similitud` · `docs: actualizar README`
@@ -159,9 +162,10 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 0a | `planeacion/15-modelo-de-datos.md` (ya escrito) | `docs(planeacion): agregar modelo de datos con pgvector` |
-| 0b | `planeacion/14-plan-ramas-y-fases.md` (ya escrito) | `docs(planeacion): alinear plan de ramas con la rúbrica` |
-| 0c | `README.md` + `planeacion/04-decisiones.md` (ya escritos) | `docs: agregar guía de sdkman y decisiones D-049 a D-056` |
+| 0a ✅ | Modelo de datos | `docs(planeacion): agregar modelo de datos con pgvector` |
+| 0b ✅ | Plan de ramas alineado con la rúbrica | `docs(planeacion): alinear plan de ramas con la rúbrica` |
+| 0c ✅ | Guía de SDKMAN y decisiones D-049 a D-056 | `docs: agregar guía de sdkman y decisiones D-049 a D-056` |
+| 0d | `planeacion/16-arquitectura-hexagonal.md` + plan 14 + D-057 + README | `docs(arquitectura): definir arquitectura hexagonal del backend` |
 | 1 | Mover páginas HTML, `assets/` y `data/` a `frontend/`; corregir rutas | `refactor(frontend): mover el sitio a frontend/` |
 | 2 | `planeacion/` → `docs/planeacion/`; crear `docs/diagramas/`, `docs/pruebas/`, `docs/evidencias/`, `docs/informe-datos/` | `docs: crear estructura de documentación` |
 | 3 | `AI_USAGE.md` en la raíz con todo lo hecho con IA hasta hoy | `docs: agregar AI_USAGE.md` |
@@ -193,26 +197,29 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 ### FASE 2 · Backend → `v0.3`
 
 #### Rama 4 · `feature/backend-api`
+*Orden hexagonal: primero el centro, después los adaptadores.*
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Proyecto con Spring Initializr en `backend/` (Web, JPA, PostgreSQL, Validation) + `.sdkmanrc` | `feat(api): crear proyecto spring boot` |
-| 2 | Entidades y repositorios | `feat(api): agregar entidades y repositorios` |
-| 3 | Tiendas y productos (servicios + controladores + filtros) | `feat(api): agregar endpoints de tiendas y productos` |
-| 4 | Reseñas y favoritos | `feat(api): agregar endpoints de reseñas y favoritos` |
-| 5 | Registro de eventos | `feat(api): agregar registro de eventos` |
-| 6 | Endpoints de indicadores (leen las vistas SQL) | `feat(api): agregar endpoints de indicadores` |
-| 7 | Swagger con springdoc-openapi | `docs(api): agregar documentación swagger` |
-| 8 | Pruebas JUnit + Mockito | `test(api): agregar pruebas de servicios` |
+| 1 | Spring Initializr en `backend/` (Web, JPA, PostgreSQL, Validation) + `.sdkmanrc` + paquetes `domain/`, `application/`, `infrastructure/` | `build(backend): crear proyecto spring boot con estructura hexagonal` |
+| 2 | `ArquitecturaHexagonalTest` con ArchUnit (vigila las reglas R1, R2, R3 y R7) | `test(arquitectura): agregar reglas hexagonales con archunit` |
+| 3 | **Dominio** del catálogo: Tienda, Producto, Categoria, Zona, Ingrediente, Etiqueta + excepciones + pruebas | `feat(dominio): agregar modelo del catálogo` |
+| 4 | **Puertos** (in/out) y **casos de uso** del catálogo + pruebas con puertos falsos | `feat(aplicacion): agregar casos de uso del catálogo` |
+| 5 | **Adaptador de salida** JPA: entidades, repositorios Spring Data, mappers | `feat(persistencia): agregar adaptador jpa del catálogo` |
+| 6 | **Adaptador de entrada** REST: controladores, DTO, `ManejadorErrores`, `BeanConfig` | `feat(api): agregar endpoints de tiendas y productos` |
+| 7 | Reseñas y favoritos: dominio (corazones 1–5, una de dos) + casos de uso | `feat(dominio): agregar reglas de reseñas y favoritos` |
+| 8 | Reseñas y favoritos: adaptadores JPA y REST | `feat(api): agregar endpoints de reseñas y favoritos` |
+| 9 | Analítica: eventos e indicadores (dominio → casos de uso → adaptadores que leen las vistas SQL) | `feat(analitica): agregar eventos e indicadores` |
+| 10 | Swagger con springdoc-openapi | `docs(api): agregar documentación swagger` |
 
 #### Rama 5 · `feature/autenticacion`
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Spring Security + registro e inicio de sesión (BCrypt) | `feat(auth): agregar registro e inicio de sesión` |
-| 2 | Token JWT | `feat(auth): agregar autenticación con jwt` |
-| 3 | Permisos por rol | `feat(auth): agregar permisos por rol` |
-| 4 | Pruebas de endpoints protegidos | `test(auth): agregar pruebas de seguridad` |
+| 1 | Dominio Usuario, Rol, Correo + puertos `CifradorContrasenaPort`, `GeneradorTokenPort` + casos de uso de registro e inicio de sesión | `feat(usuario): agregar registro e inicio de sesión` |
+| 2 | Adaptadores `BCryptCifradorAdapter` y `JwtGeneradorTokenAdapter` | `feat(seguridad): agregar adaptadores bcrypt y jwt` |
+| 3 | `SecurityConfig` + filtro JWT + permisos por rol | `feat(seguridad): proteger endpoints por rol` |
+| 4 | Pruebas de endpoints protegidos | `test(seguridad): agregar pruebas de seguridad` |
 
 ➡️ **Fin de Fase 2:** `release: fase 2 - backend`.
 
@@ -225,25 +232,25 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Cliente de Gemini en Java para pedir embeddings (clave en variable de entorno) | `feat(ia): agregar cliente de embeddings de gemini` |
-| 2 | Convertir tiendas, productos y guías en **fragmentos de texto** (chunking) | `feat(ia): generar fragmentos de conocimiento` |
-| 3 | Calcular embeddings y guardarlos en pgvector; recalcular solo si el texto cambió (hash) | `feat(ia): guardar embeddings en pgvector` |
-| 4 | Endpoint de reindexación (solo admin) | `feat(ia): agregar endpoint de reindexación` |
-| 5 | `GET /api/busqueda?q=` → búsqueda semántica por similitud coseno (top-k + umbral) | `feat(ia): agregar búsqueda semántica` |
-| 6 | Búsqueda **híbrida**: semántica + filtros (categoría, precio, zona) | `feat(ia): agregar búsqueda híbrida con filtros` |
-| 7 | Pruebas de recuperación ("crema para piel grasa" debe traer productos de piel grasa) | `test(ia): agregar pruebas de búsqueda semántica` |
+| 1 | Dominio: `FragmentoConocimiento`, `Embedding`, `FragmentadorConocimiento` (chunking de tiendas, productos y guías) + pruebas | `feat(dominio): agregar fragmentos de conocimiento y chunking` |
+| 2 | Puertos `EmbeddingPort`, `VectorStorePort` + `IndexarConocimientoService` (recalcula solo si cambió el hash) | `feat(ia): agregar caso de uso de indexación` |
+| 3 | `GeminiEmbeddingAdapter` (clave en variable de entorno) | `feat(ia): agregar adaptador de embeddings de gemini` |
+| 4 | `PgVectorAdapter`: guardar vectores y buscar con `<=>` sobre el índice HNSW | `feat(ia): agregar adaptador pgvector` |
+| 5 | `BuscarSemanticoService`: top-k + umbral + filtros (búsqueda **híbrida**) | `feat(ia): agregar búsqueda semántica híbrida` |
+| 6 | Adaptadores de entrada: `BusquedaController`, `AdminIndexacionController`, `ReindexacionScheduler` | `feat(api): agregar endpoints de búsqueda y reindexación` |
+| 7 | Pruebas con Testcontainers (pgvector real): "crema para piel grasa" trae productos de piel grasa | `test(ia): agregar pruebas de búsqueda semántica` |
 
 #### Rama 7 · `feature/rag-lia`
 *Criterio: arquitectura RAG (9).*
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | `POST /api/lia/chat` con respuesta por partes (streaming) | `feat(lia): agregar endpoint de chat` |
-| 2 | **Recuperar**: buscar los fragmentos más parecidos a la pregunta (usa la rama 6) | `feat(rag): recuperar contexto con búsqueda vectorial` |
-| 3 | **Aumentar**: armar el prompt con reglas + contexto + historial corto | `feat(rag): construir prompt con contexto recuperado` |
-| 4 | **Generar** y **validar**: Gemini responde; se descartan productos que no existan (anti-alucinación) | `feat(rag): validar productos recomendados` |
-| 5 | Plan B por reglas si Gemini falla | `feat(lia): agregar respuesta de respaldo sin ia` |
-| 6 | Guardar el resumen de la conversación + métricas (tokens, latencia, similitud) | `feat(lia): registrar métricas de conversación` |
+| 1 | Dominio: `ConversacionLia`, `RespuestaLia`, `ValidadorRecomendaciones` (anti-alucinación), `ResumidorConversacion` + pruebas | `feat(dominio): agregar validación de respuestas de lía` |
+| 2 | Puerto `ModeloLenguajePort` + `ChatearConLiaService`: recuperar → aumentar → generar → validar, con plan B | `feat(rag): agregar caso de uso del flujo rag` |
+| 3 | Instrucciones de Lía como plantilla en `resources/prompts/` | `feat(rag): agregar plantilla de instrucciones de lía` |
+| 4 | `GeminiChatAdapter` con respuesta por partes (streaming) | `feat(ia): agregar adaptador de chat de gemini` |
+| 5 | Guardar resumen y métricas de la conversación (adaptador JPA) | `feat(lia): registrar métricas de conversación` |
+| 6 | `LiaController` (`POST /api/lia/chat`) | `feat(api): agregar endpoint de chat de lía` |
 | 7 | El frontend de Lía usa el backend | `refactor(frontend): conectar lía con el backend` |
 | 8 | Borrar `netlify/functions/lia.mjs` | `chore: eliminar función de netlify` |
 
@@ -255,7 +262,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 1 | Conjunto de **30 preguntas** con lo esperado (catálogo, fuera de tema, salud, ambiguas) | `test(ia): agregar conjunto de preguntas de evaluación` |
 | 2 | Prueba automática de recuperación: **precisión@k** y **recall@k** | `test(ia): medir precisión de la recuperación` |
 | 3 | Prueba de respuestas: sin productos inventados, rechaza lo ajeno, no da consejos médicos | `test(ia): validar respuestas de lía` |
-| 4 | Guardar cada ejecución en la tabla `evaluacion_ia` | `feat(ia): registrar resultados de evaluación` |
+| 4 | `EvaluarIaUseCase` + adaptador que guarda cada ejecución en `evaluacion_ia` | `feat(ia): registrar resultados de evaluación` |
 | 5 | Informe de calidad de IA en `docs/pruebas/` | `docs(pruebas): agregar informe de calidad de ia` |
 
 ➡️ **Fin de Fase 3:** `release: fase 3 - inteligencia artificial`.
@@ -286,7 +293,8 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 1 | Dockerfiles del backend y del frontend (nginx) | `build(docker): agregar dockerfiles` |
 | 2 | `docker-compose.yml`: pgvector, backend, frontend, n8n | `build(docker): agregar docker compose` |
 | 3 | `.env.example` con todas las variables | `chore: completar variables de entorno` |
-| 4 | n8n: **moderación de reseñas con Gemini** → cambia el estado a PUBLICADA/RECHAZADA | `feat(n8n): agregar moderación de reseñas con ia` |
+| 4 | Adaptadores n8n: `N8nNotificadorAdapter` (salida) y `ModeracionWebhookController` (entrada) | `feat(n8n): agregar adaptadores de n8n` |
+| 4b | n8n: **moderación de reseñas con Gemini** → cambia el estado a PUBLICADA/RECHAZADA | `feat(n8n): agregar moderación de reseñas con ia` |
 | 5 | n8n: producto creado o editado → **reindexar su embedding** | `feat(n8n): agregar reindexación automática de embeddings` |
 | 6 | n8n: **reporte semanal** de indicadores con resumen escrito por IA | `feat(n8n): agregar reporte semanal con ia` |
 | 7 | Exportar los workflows a `n8n/*.json` | `chore(n8n): exportar workflows` |
