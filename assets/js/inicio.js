@@ -4,7 +4,7 @@
  * ✏️ FOTOS DE LAS CATEGORÍAS (círculos de "Explora por categoría")
  * Al hacer clic en un círculo, la persona va al catálogo con esa categoría ya filtrada.
  * ⚡ Se usan las versiones LIVIANAS de assets/img/categorias/ (480 px, ~40 KB cada una).
- *    Las originales siguen en assets/img/logos/ (la de maquillaje pesaba 2,3 MB).
+ *    (Las originales pesadas se borraron porque no se usaban.)
  *    Si cambias una foto, guárdala pequeña: unos 480 px de ancho y menos de 100 KB.
  *   foto   → ruta de la imagen
  *   centro → qué parte de la foto se ve dentro del círculo
