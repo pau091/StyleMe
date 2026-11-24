@@ -1,0 +1,42 @@
+# SERVICIOS DE STYLEME
+# --------------------
+# Por ahora solo la base de datos (PostgreSQL + pgvector).
+# En la rama feature/n8n-docker se agregan el backend, la iu y n8n.
+#
+# Los valores ${...} se leen del archivo .env (copia de .env.example).
+#
+# Comandos:
+#   docker compose up -d       → enciende la base de datos en segundo plano
+#   docker compose ps          → muestra el estado (debe decir "healthy")
+#   docker compose down        → la apaga (los datos se conservan)
+#   docker compose down -v     → la apaga y BORRA los datos (para volver a correr los scripts)
+
+services:
+  basedatos:
+    # PostgreSQL 17 con la extensión pgvector ya instalada (embeddings + índice HNSW)
+    image: pgvector/pgvector:pg17
+    container_name: styleme-basedatos
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: America/Bogota
+      PGTZ: America/Bogota
+    ports:
+      # puerto de tu computador : puerto de Postgres dentro del contenedor
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Los datos sobreviven aunque se apague el contenedor
+      - datos-postgres:/var/lib/postgresql/data
+      # Los .sql de basedatos/ se ejecutan solos, en orden alfabético, la PRIMERA vez que se crea la base
+      - ./basedatos:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # Docker revisa cada 5 s si la base ya acepta conexiones
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  datos-postgres:
