@@ -10,8 +10,7 @@
  *   - La conversación se recuerda durante la visita (aunque cambies de página).
  *     "Conversación" muestra lo que se ha hablado.
  *
- * Por ahora Lía es su retrato 2D (assets/lia/2d/). Lía en 3D (assets/lia/3d/)
- * se dibujará DENTRO de .lia-figura (mismo lugar), escuchando estos eventos:
+ * Lía es un retrato 2D con expresiones (assets/lia/). Avisa sus cambios con estos eventos:
  *   "lia:emocion"  → { emocion, intensidad }
  *   "lia:pensando" → true / false
  *   "lia:hablando" → true / false
@@ -106,22 +105,19 @@
   const botonHistorial = $(".lia-ver-historial");
   const invitacion = $(".lia-invitacion");
 
-  /* ---------- Estado del personaje (retrato o 3D) ---------- */
+  /* ---------- Estado del personaje ---------- */
   let finHabla;
   let finReaccion;
-  let lia3d = null; // Lía en 3D, si existe el modelo (ver cargar3D más abajo)
 
   function ponerEmocion(emocion = "neutra", intensidad = 0.6) {
     clearTimeout(finReaccion);
     lia.dataset.emocion = emocion;
     lia.style.setProperty("--lia-intensidad", Math.max(0, Math.min(1, Number(intensidad) || 0)));
-    lia3d?.ponerEmocion(emocion, intensidad);
     document.dispatchEvent(new CustomEvent("lia:emocion", { detail: { emocion, intensidad } }));
     // La tristeza dura poco: Lía vuelve a la expresión amable
   }
   function ponerActividad(actividad) {
     lia.dataset.actividad = actividad;
-    lia3d?.ponerActividad(actividad);
     document.dispatchEvent(new CustomEvent("lia:pensando", { detail: actividad === "pensando" }));
     document.dispatchEvent(new CustomEvent("lia:hablando", { detail: actividad === "hablando" }));
   }
@@ -271,7 +267,6 @@
       datos = await preguntarAlCerebro(texto, (delta) => {
         if (!escrito) ponerActividad("hablando");
         escrito += delta;
-        lia3d?.decir(delta); // la boca se mueve con las vocales
         dice.textContent = sinMarkdown(escrito.trimStart());
       });
       datos.texto = sinMarkdown(escrito.trim());
@@ -283,7 +278,6 @@
         ponerActividad("hablando");
         await new Promise((r) => setTimeout(r, 450));
         datos = { ...LiaPlanB.responder(texto, historia.slice(0, -1)), basico: true };
-        lia3d?.decir(datos.texto);
       }
     }
 
@@ -291,8 +285,8 @@
     ponerEmocion(datos.emocion, datos.intensidad);
     pintarExtras(datos);
     pintarRespuestas(datos.sugerencias);
-    // Sigue "hablando" hasta terminar de mover la boca, y luego se queda tranquila
-    const restante = Math.min(8000, Math.max(1400, lia3d?.tiempoRestante() ?? 0));
+    // Sigue "hablando" un momento, y luego se queda tranquila
+    const restante = 1400;
     if (datos.emocion === "duda") finReaccion = setTimeout(() => ponerEmocion("neutra"), 2200);
     finHabla = setTimeout(() => {
       ponerActividad("quieta");
@@ -398,11 +392,11 @@
     abrir();
   });
 
-  /* ---------- Mientras no hay 3D: el retrato sigue al mouse ---------- */
+  /* ---------- El retrato sigue al mouse ---------- */
   // La foto se desplaza un poquito hacia donde está el cursor, como si mirara.
   let pendienteMirada = false;
   window.addEventListener("pointermove", (e) => {
-    if (lia3d || pendienteMirada) return;
+    if (pendienteMirada) return;
     pendienteMirada = true;
     requestAnimationFrame(() => {
       const caja = figura.getBoundingClientRect();
@@ -414,31 +408,9 @@
     });
   }, { passive: true });
 
-  /* ---------- Lía en 3D (Fase 2) ---------- */
-  // ✏️ Cuando exportes a Lía desde VRoid, guárdala aquí. Si el archivo existe,
-  //    Lía aparece en 3D sola; si no, se queda su retrato.
-  const MODELO_3D = "assets/lia/3d/lia.vrm";
-  async function cargar3D() {
-    // Navegadores muy viejos (sin "importmap") se quedan con el retrato
-    if (!HTMLScriptElement.supports?.("importmap")) return;
-    try {
-      const existe = await fetch(MODELO_3D, { method: "HEAD" });
-      if (!existe.ok) return;
-      const modulo = await import(new URL("assets/lia/3d/lia-3d.js", document.baseURI).href);
-      lia3d = await modulo.montarLia3D($(".lia-arco"), MODELO_3D);
-      lia.classList.add("lia-con-3d");
-      lia3d.ponerEmocion(lia.dataset.emocion);
-      lia3d.ponerActividad(lia.dataset.actividad);
-    } catch (error) {
-      lia3d = null;
-      console.warn("StyleMe · Lía 3D no se pudo cargar; se usa el retrato.", error);
-    }
-  }
-
   document.body.append(lia);
   if (leerSesion(CLAVE_ABIERTA)) abrir(false);
   else programarInvitacion();
-  cargar3D();
 
   window.Lia = { abrir, cerrar, enviar };
 })();
