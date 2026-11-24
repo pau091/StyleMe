@@ -296,7 +296,7 @@ Una fila por pregunta en cada ejecución de las pruebas (rama `test/evaluacion-i
 | `tipoPiel: ["mixta", "grasa"]` | 2 filas en `producto_etiqueta` (grupo `tipo_piel`) |
 | `paso: "serum"` | 1 fila en `producto_etiqueta` (grupo `paso`) |
 
-> Catálogo congelado (D-040 / D-054): se pasan **los mismos** 10 tiendas y 49 productos, sin agregar ni quitar.
+> En esta rama se pasan **los mismos** 10 tiendas y 49 productos de hoy. El catálogo se completa después, en la rama `feature/catalogo-completo` (D-064).
 
 ---
 

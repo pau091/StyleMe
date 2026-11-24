@@ -20,9 +20,9 @@
 | Implementación de arquitectura RAG | 9 | 12,0 % | 6 · `feature/rag-lia` |
 | Automatización e integración de servicios de IA | 8 | 10,7 % | 11 · `feature/n8n-docker` |
 | Calidad de respuestas, validación y pruebas de IA | 8 | 10,7 % | 7 · `test/evaluacion-ia` |
-| Análisis de datos e indicadores | 8 | 10,7 % | 8 · `feature/comunidad-analitica`, 12 · `docs/entrega-final` |
+| Análisis de datos e indicadores | 8 | 10,7 % | 8 · `feature/comunidad-analitica`, 14 · `docs/entrega-final` |
 | Integración funcional de la aplicación | 7 | 9,3 % | 10 · `feature/iu-api`, 11 · `feature/n8n-docker` |
-| Documentación, control de versiones y sustentación | 7 | 9,3 % | Todas + 12 · `docs/entrega-final` |
+| Documentación, control de versiones y sustentación | 7 | 9,3 % | Todas + 14 · `docs/entrega-final` |
 
 > 🎯 **La IA vale el 57 %** (embeddings + búsqueda + RAG + automatización + pruebas). Por eso la **Fase 3** es la más importante,
 > y las fases 1 y 2 se recortaron a lo que la IA necesita para llegar antes a ella (D-059).
@@ -71,7 +71,7 @@ trabajo   chore/limpieza...  feature/base-de-datos
   | `test` | Agregar o cambiar pruebas |
   | `chore` | Mantenimiento (borrar archivos, configuración) |
   | `build` | Docker, Maven, dependencias |
-  | `style` | Formato o diseño visual sin cambiar la lógica |
+  | `style` | Formato o diseño visual sin cambiar la lógica (rama `style/iu-visual`) |
   | `perf` | Mejora de rendimiento |
 
 - **alcance** (opcional, entre paréntesis): la parte del proyecto →
@@ -321,9 +321,35 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 ---
 
-### FASE 5 · Entrega → `v1.0`
+### FASE 5 · Catálogo completo y parte visual → `v0.6`
 
-#### Rama 12 · `docs/entrega-final`
+> Empieza **solo cuando toda la lógica que pide el profesor esté terminada** (fases 1 a 4) (D-063).
+
+#### Rama 12 · `feature/catalogo-completo`
+*Antes de lo visual: registrar todas las tiendas con la información completa (D-064).*
+
+| # | Qué se hace | Commit |
+|---|---|---|
+| 1 | Completar las tiendas: descripción, dirección, horario, coordenadas, WhatsApp, Instagram, web | `feat(db): completar información de contacto de las tiendas` |
+| 2 | Completar los productos: descripción, precio, ingredientes, etiquetas y fotos | `feat(db): completar información de los productos` |
+| 3 | Marcar como verificados los datos confirmados con cada tienda | `feat(db): marcar datos verificados del catálogo` |
+| 4 | Reindexar los embeddings con el catálogo nuevo y volver a correr la evaluación de IA | `test(ia): reevaluar la ia con el catálogo completo` |
+
+#### Rama 13 · `style/iu-visual`
+*Rama dedicada **solo** a la parte visual de la página (D-063). Se planea en detalle cuando empiece.*
+
+| Tema | Idea |
+|---|---|
+| Cambios visuales de la iu | Los que la autora defina al llegar a esta fase |
+| **Probador con IA** 💡 | La persona toma o sube una foto de **cuerpo completo**; la IA la adapta como si estuviera **dentro de la tienda** probándose la ropa, con aspecto **humanoide**, y con **4 poses predeterminadas básicas** para apreciar cómo quedan los outfits (P-017). Requiere decidir el modelo de IA de imágenes, la privacidad de las fotos y el aviso para mayores de 18 |
+
+➡️ **Fin de Fase 5:** `release: fase 5 - catálogo y visual`.
+
+---
+
+### FASE 6 · Entrega → `v1.0`
+
+#### Rama 14 · `docs/entrega-final`
 
 | # | Qué se hace | Commit |
 |---|---|---|
@@ -354,6 +380,7 @@ Lo ideal: al menos 2 o 3 en todo el proyecto.
 | 2 · Backend base | `feature/backend-base` | v0.3 |
 | 3 · Inteligencia artificial | `feature/embeddings-busqueda`, `feature/rag-lia`, `test/evaluacion-ia` | v0.4 |
 | 4 · Comunidad, seguridad e integración | `feature/comunidad-analitica`, `feature/autenticacion`, `feature/iu-api`, `feature/n8n-docker` | v0.5 |
-| 5 · Entrega | `docs/entrega-final` | v1.0 |
+| 5 · Catálogo completo y visual | `feature/catalogo-completo`, `style/iu-visual` | v0.6 |
+| 6 · Entrega | `docs/entrega-final` | v1.0 |
 
-**Total:** 2 permanentes + 12 de trabajo + las `fix/...` que salgan.
+**Total:** 2 permanentes + 14 de trabajo + las `fix/...` que salgan.
