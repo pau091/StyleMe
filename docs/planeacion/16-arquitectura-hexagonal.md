@@ -66,7 +66,7 @@ Así las reglas no dependen de la memoria: las vigila una prueba (y suma en "pru
 
 ```
 StyleMe/
-├── iu/                 La página (HTML, CSS, JS, Lía 2D/3D). Es un CLIENTE del backend
+├── iu/                 La página (HTML, CSS, JS, Lía 2D). Es un CLIENTE del backend
 ├── backend/                  Spring Boot con arquitectura hexagonal (sección 4)
 ├── basedatos/                Scripts SQL: esquema, índices, datos iniciales, vistas
 ├── n8n/                      Workflows exportados en JSON
