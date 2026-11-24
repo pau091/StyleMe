@@ -5,3 +5,12 @@
 .netlify/
 node_modules/
 
+# Java / Maven (backend)
+target/
+*.class
+*.log
+HELP.md
+
+# Editores
+.idea/
+*.iml
