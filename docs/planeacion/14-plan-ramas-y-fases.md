@@ -119,7 +119,10 @@ git push -u origin NOMBRE-DE-LA-RAMA
 ```
 
 **Paso 4 · Pull request en GitHub**
-1. **Compare & pull request** → **base: `develop`** ← **compare: `NOMBRE-DE-LA-RAMA`**.
+1. **Compare & pull request**. GitHub propone **`base: main`** porque `main` es la rama principal (D-061).
+   ⚠️ **Antes de crear el PR**, en el primer menú de la izquierda cambia **`base: main` → `base: develop`**.
+   Debe quedar: **base: `develop`** ← **compare: `NOMBRE-DE-LA-RAMA`**.
+   Comprobación: arriba del PR debe decir *"wants to merge N commits into **develop**"*. Si dice `main`, toca **Edit** junto al título y cambia la base.
 2. Título en formato Conventional Commits (ej.: `feat(db): base de datos con pgvector`). Descripción:
    ```
    ## Qué hace
@@ -138,7 +141,7 @@ git pull origin develop
 git branch -d NOMBRE-DE-LA-RAMA
 ```
 
-**Paso 6 · Fin de FASE: `develop → main`**
+**Paso 6 · Fin de FASE: `develop → main`** (el único PR que se deja con `base: main`)
 PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombre`. Merge con *Create a merge commit* (**no** borres `develop`).
 (Opcional) *Releases → Draft a new release* → etiqueta `v0.N`.
 
@@ -156,7 +159,8 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 2 | `refactor: :truck: separar Lía en carpetas 2d y 3d` |
 | 3 | `docs: :memo: borrar plan de entrega y agregar plan de ramas` |
 
-> ⚠️ El PR #1 se unió a `main` en vez de `develop`. Se corrige poniendo `develop` al día con `main` (ver el chat del 2026-11-23).
+> ⚠️ Los PR #1 y #2 se unieron a `main` en vez de `develop`. Se corrigió poniendo `develop` al día con `main`
+> (`git checkout develop` → `git merge origin/main` → `git push origin develop`). Por eso la Fase 0 llegó a `main` sin PR de release.
 > Desde ahora, en cada PR revisa que diga **base: `develop`**.
 
 #### Rama 2 · `refactor/estructura-proyecto`
