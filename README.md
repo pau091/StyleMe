@@ -2,7 +2,7 @@
 
 Página web para descubrir tiendas físicas de moda y belleza de Bucaramanga (Santander, Colombia): dónde quedan, cómo contactarlas, cómo armar una salida de compras y un probador virtual con inteligencia artificial.
 
-> Proyecto académico. ⚠️ En reorganización: se está agregando backend (Spring Boot), base de datos, n8n y Docker (ver [decisiones](planeacion/04-decisiones.md), D-045).
+> Proyecto académico. ⚠️ En reorganización: se está agregando backend (Spring Boot), base de datos, n8n y Docker (ver [decisiones](docs/planeacion/04-decisiones.md), D-045).
 
 ## ⚠️ IMPORTANTE: versión de Java (SDKMAN)
 
@@ -104,7 +104,7 @@ StyleMe/
 │   ├── lia/3d/         Lía en 3D: se activa sola si existe lia.vrm (ver LEEME.txt)
 │   └── img/            Fotos de tiendas y productos
 │
-└── planeacion/         Documentos de planeación (no son parte de la página)
+└── docs/               Documentación: planeación, diagramas, pruebas, evidencias e informe de datos
 ```
 
 ## Tecnología
@@ -123,21 +123,21 @@ StyleMe/
 
 | Documento | Contenido |
 |---|---|
-| [01 - Visión](planeacion/01-vision.md) | Qué es StyleMe, qué problemas busca resolver y para quién |
-| [02 - Alcance y fases](planeacion/02-alcance-y-fases.md) | Funciones confirmadas, opcionales y futuras; etapas (MVP) |
-| [03 - Roles y permisos](planeacion/03-roles-y-permisos.md) | Qué puede hacer cada tipo de usuario |
-| [04 - Registro de decisiones](planeacion/04-decisiones.md) | Decisiones tomadas, con fecha y motivo |
-| [05 - Riesgos](planeacion/05-riesgos.md) | Riesgos identificados y cómo mitigarlos |
-| [06 - Pendientes y preguntas](planeacion/06-pendientes.md) | Decisiones abiertas y preguntas por responder |
-| [07 - Historias de usuario MVP 1](planeacion/07-historias-mvp1.md) | Borrador de lo que debe poder hacer cada usuario en la primera versión |
-| [08 - Plan de validación](planeacion/08-validacion.md) | Encuesta y entrevistas para comprobar los problemas planteados |
-| [10 - Proyecto completo](planeacion/10-proyecto-completo.md) | Visión original: qué buscar, implementar y mejorar después |
-| [11 - Contexto visual](planeacion/11-contexto-visual.md) | Resumen del proyecto + dirección visual, animaciones y fluidez |
-| [12 - Lía, asesora virtual](planeacion/12-lia-asesora-virtual.md) | ⭐ Planeación de Lía: personaje 3D, IA (RAG + embeddings), conversación, tienda 3D y fases |
-| [13 - Lía: avatar y emociones](planeacion/13-lia-avatar-y-emociones.md) | Guía para crear a Lía en VRoid Studio, movimientos fluidos, emociones y lip sync |
-| [14 - Plan de ramas y fases](planeacion/14-plan-ramas-y-fases.md) | ⭐ Cómo se crean las ramas, qué sube cada una y en qué orden (entrega final) |
-| [15 - Modelo de datos](planeacion/15-modelo-de-datos.md) | ⭐ Las 16 tablas de la base de datos (con pgvector para el RAG), sus campos, relaciones e indicadores |
-| [16 - Arquitectura hexagonal](planeacion/16-arquitectura-hexagonal.md) | ⭐ Cómo se organiza el backend: dominio, puertos, casos de uso y adaptadores |
+| [01 - Visión](docs/planeacion/01-vision.md) | Qué es StyleMe, qué problemas busca resolver y para quién |
+| [02 - Alcance y fases](docs/planeacion/02-alcance-y-fases.md) | Funciones confirmadas, opcionales y futuras; etapas (MVP) |
+| [03 - Roles y permisos](docs/planeacion/03-roles-y-permisos.md) | Qué puede hacer cada tipo de usuario |
+| [04 - Registro de decisiones](docs/planeacion/04-decisiones.md) | Decisiones tomadas, con fecha y motivo |
+| [05 - Riesgos](docs/planeacion/05-riesgos.md) | Riesgos identificados y cómo mitigarlos |
+| [06 - Pendientes y preguntas](docs/planeacion/06-pendientes.md) | Decisiones abiertas y preguntas por responder |
+| [07 - Historias de usuario MVP 1](docs/planeacion/07-historias-mvp1.md) | Borrador de lo que debe poder hacer cada usuario en la primera versión |
+| [08 - Plan de validación](docs/planeacion/08-validacion.md) | Encuesta y entrevistas para comprobar los problemas planteados |
+| [10 - Proyecto completo](docs/planeacion/10-proyecto-completo.md) | Visión original: qué buscar, implementar y mejorar después |
+| [11 - Contexto visual](docs/planeacion/11-contexto-visual.md) | Resumen del proyecto + dirección visual, animaciones y fluidez |
+| [12 - Lía, asesora virtual](docs/planeacion/12-lia-asesora-virtual.md) | ⭐ Planeación de Lía: personaje 3D, IA (RAG + embeddings), conversación, tienda 3D y fases |
+| [13 - Lía: avatar y emociones](docs/planeacion/13-lia-avatar-y-emociones.md) | Guía para crear a Lía en VRoid Studio, movimientos fluidos, emociones y lip sync |
+| [14 - Plan de ramas y fases](docs/planeacion/14-plan-ramas-y-fases.md) | ⭐ Cómo se crean las ramas, qué sube cada una y en qué orden (entrega final) |
+| [15 - Modelo de datos](docs/planeacion/15-modelo-de-datos.md) | ⭐ Las 16 tablas de la base de datos (con pgvector para el RAG), sus campos, relaciones e indicadores |
+| [16 - Arquitectura hexagonal](docs/planeacion/16-arquitectura-hexagonal.md) | ⭐ Cómo se organiza el backend: dominio, puertos, casos de uso y adaptadores |
 
 ### Convención usada en los documentos
 

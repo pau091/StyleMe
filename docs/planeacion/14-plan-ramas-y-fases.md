@@ -167,7 +167,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 0c ✅ | Guía de SDKMAN y decisiones D-049 a D-056 | `docs: agregar guía de sdkman y decisiones D-049 a D-056` |
 | 0d ✅ | `planeacion/16-arquitectura-hexagonal.md` + plan 14 + D-057 + README | `docs(arquitectura): definir arquitectura hexagonal del backend` |
 | 1 ✅ | Mover páginas HTML, `assets/` y `data/` a `frontend/` | `refactor(frontend): mover el sitio a frontend/` |
-| 1b | Renombrar `frontend/` → `iu/` (nombres en español, D-058) | `refactor(iu): renombrar frontend a iu` |
+| 1b ✅ | Renombrar `frontend/` → `iu/` (nombres en español, D-058) | `refactor(iu): renombrar frontend a iu` |
 | 2 | `planeacion/` → `docs/planeacion/`; crear `docs/diagramas/`, `docs/pruebas/`, `docs/evidencias/`, `docs/informe-datos/` | `docs: crear estructura de documentación` |
 | 3 | `AI_USAGE.md` en la raíz con todo lo hecho con IA hasta hoy | `docs: agregar AI_USAGE.md` |
 | 4 | `.env.ejemplo` → `.env.example`; carpetas `backend/`, `basedatos/`, `n8n/` con `LEEME.md`; `.gitignore` para Java y Docker | `chore: preparar estructura de backend, base de datos y n8n` |
