@@ -28,7 +28,7 @@
 
 ## 2. Crear a Lía en VRoid Studio (paso a paso)
 
-> **Quién hace qué:** VRoid Studio es un programa de escritorio que se maneja con el mouse y controles deslizantes, así que **lo usa la autora**. Claude no puede abrirlo. Esta guía dice qué tocar y qué valores usar. Los nombres de los menús pueden variar un poco según la versión de VRoid.
+> **Quién hace qué:** VRoid Studio es un programa de escritorio que se maneja con el mouse y controles deslizantes, así que **lo usa la autora**. Esta guía dice qué tocar y qué valores usar. Los nombres de los menús pueden variar un poco según la versión de VRoid.
 >
 > **Expectativa honesta:** VRoid tiene un estilo de dibujo animado (sombreado "MToon"). Lía se va a ver **estilizada y elegante, no fotorrealista** como la imagen. Eso es bueno en 3D: lo hiperrealista se ve inquietante cuando se mueve. El parecido se logra con los colores, el cabello, las pestañas, las pecas y la ropa.
 
@@ -184,10 +184,10 @@ assets/
 
 ## 7. Orden de trabajo sugerido 💡
 
-| Semana | Autora | Claude |
+| Semana | Modelo 3D (VRoid) | Desarrollo |
 |---|---|---|
 | **1** | Crea a Lía en VRoid con esta guía y exporta `lia.vrm` | **Fase 1:** el cerebro de Lía (chat 2D funcional con RAG en Netlify), usando el retrato 2D (`assets/lia/2d/`) como avatar |
 | **2** | Revisa las emociones y da su opinión | **Fase 2:** Lía en 3D con movimientos fluidos, las 4 emociones y lip sync |
 | **3+** | Pruebas con personas | **Fase 3:** la tienda 3D guiada |
 
-Así nadie espera a nadie. Mientras se hace el modelo 3D, el cerebro ya funciona con el retrato.
+Mientras se hace el modelo 3D, el cerebro ya funciona con el retrato.

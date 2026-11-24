@@ -1,6 +1,6 @@
 # 11 · Contexto del proyecto y dirección visual
 
-> **Para qué sirve este documento:** reunir en un solo lugar *qué es StyleMe* y *cómo debe verse y moverse*. Es la fuente que leen las skills de `.claude/skills/styleme-*` antes de tocar el diseño. Si algo cambia aquí, cambia en todas.
+> **Para qué sirve este documento:** reunir en un solo lugar *qué es StyleMe* y *cómo debe verse y moverse*. Es la guía de diseño del proyecto: todo cambio visual debe seguirla.
 >
 > Convención: ✅ confirmado por la autora · 💡 sugerencia (dirección visual propuesta) · ⏳ pendiente.
 
@@ -164,16 +164,12 @@ Imágenes: las fotos de categorías se usan desde `assets/img/categorias/` (480 
 
 ---
 
-## 8. Cómo trabajar con las skills
+## 8. Orden para pulir una página
 
-| Skill | Cuándo usarla |
-|---|---|
-| `styleme-identidad-visual` | Antes de cualquier cambio visual: colores, tipografía, espaciado, tono |
-| `styleme-animaciones` | Entradas al hacer scroll, cascadas, portada, keyframes |
-| `styleme-transiciones` | Cambio entre páginas (View Transitions), menú, pestañas, filtros |
-| `styleme-microinteracciones` | Hover, presionar, botones, tarjetas, corazones, cursor |
-| `styleme-rendimiento-120fps` | Cualquier animación con JS, imágenes, scroll, mapas, probador |
-| `styleme-efectos-por-pagina` | Recetas concretas del "momento estrella" de cada página |
-| `styleme-revision-visual` | Al terminar: checklist de calidad, accesibilidad y fluidez |
-
-**Orden recomendado para pulir una página:** identidad → animaciones → microinteracciones → efecto de la página → transiciones → rendimiento → revisión.
+1. **Identidad:** colores, tipografía, espaciado y tono.
+2. **Animaciones:** entradas al hacer scroll, cascadas, portada.
+3. **Microinteracciones:** hover, presionar, botones, tarjetas, corazones.
+4. **Efecto de la página:** el "momento estrella" de cada página.
+5. **Transiciones:** cambio entre páginas, menú, pestañas, filtros.
+6. **Rendimiento:** fluidez a 120/144 fps, imágenes sin saltos.
+7. **Revisión:** calidad, accesibilidad (`prefers-reduced-motion`, foco visible) y fluidez.

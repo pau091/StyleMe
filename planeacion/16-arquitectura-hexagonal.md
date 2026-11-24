@@ -46,16 +46,16 @@ solo se escribe un adaptador nuevo; los casos de uso y las reglas no se tocan. E
 
 | # | Regla | Qué significa en la práctica |
 |---|---|---|
-| R1 | **Las dependencias apuntan hacia adentro** | `infrastructure` → `application` → `domain`. Nunca al revés |
-| R2 | **El dominio es Java puro** | En `domain` no hay `@Entity`, `@Service`, `@Autowired`, ni imports de Spring, JPA, Jackson o Gemini |
-| R3 | **La aplicación tampoco depende del framework** | En `application` no hay anotaciones de Spring. Los casos de uso se registran como beans en `infrastructure/config` |
-| R4 | **Puertos de entrada = interfaces de casos de uso** | Un caso de uso por acción: `BuscarSemanticoUseCase`, `ChatearConLiaUseCase`… Los controladores **solo** llaman a estas interfaces |
-| R5 | **Puertos de salida = interfaces que define el centro** | `TiendaRepositoryPort`, `EmbeddingPort`, `VectorStorePort`… Se declaran en `application` y se **implementan** en `infrastructure` |
-| R6 | **Cada capa tiene su propio modelo** | Dominio (`Tienda`) ≠ entidad JPA (`TiendaEntity`) ≠ DTO de la API (`TiendaResponse`). Se convierten con **mappers** en los adaptadores |
+| R1 | **Las dependencias apuntan hacia adentro** | `infraestructura` → `aplicacion` → `dominio`. Nunca al revés |
+| R2 | **El dominio es Java puro** | En `dominio` no hay `@Entity`, `@Service`, `@Autowired`, ni imports de Spring, JPA, Jackson o Gemini |
+| R3 | **La aplicación tampoco depende del framework** | En `aplicacion` no hay anotaciones de Spring. Los casos de uso se registran como beans en `infraestructura/configuracion` |
+| R4 | **Puertos de entrada = interfaces de casos de uso** | Un caso de uso por acción: `BuscarSemanticoCasoUso`, `ChatearConLiaCasoUso`… Los controladores **solo** llaman a estas interfaces |
+| R5 | **Puertos de salida = interfaces que define el centro** | `TiendaRepositorioPuerto`, `EmbeddingPuerto`, `AlmacenVectorialPuerto`… Se declaran en `aplicacion` y se **implementan** en `infraestructura` |
+| R6 | **Cada capa tiene su propio modelo** | Dominio (`Tienda`) ≠ entidad JPA (`TiendaEntidad`) ≠ DTO de la API (`TiendaRespuesta`). Se convierten con **mappers** en los adaptadores |
 | R7 | **Los adaptadores no se hablan entre sí** | El controlador REST no usa un repositorio JPA directo; pasa siempre por un caso de uso |
 | R8 | **Las reglas de negocio viven en el dominio** | "Corazones entre 1 y 5", "una reseña es de una tienda o de un producto", "Lía no puede recomendar productos que no existen" |
 | R9 | **Errores del dominio = excepciones del dominio** | `TiendaNoEncontradaException` nace en el dominio; el adaptador REST la traduce a HTTP 404 |
-| R10 | **Transacciones y seguridad son infraestructura** | `@Transactional`, Spring Security y JWT viven en `infrastructure` (en la configuración o en los adaptadores) |
+| R10 | **Transacciones y seguridad son infraestructura** | `@Transactional`, Spring Security y JWT viven en `infraestructura` (en la configuración o en los adaptadores) |
 
 **Comprobación automática:** una prueba con **ArchUnit** (`ArquitecturaHexagonalTest`) falla si alguien rompe R1, R2, R3 o R7.
 Así las reglas no dependen de la memoria: las vigila una prueba (y suma en "pruebas" y "dominio del código").
@@ -66,9 +66,9 @@ Así las reglas no dependen de la memoria: las vigila una prueba (y suma en "pru
 
 ```
 StyleMe/
-├── frontend/                 La página (HTML, CSS, JS, Lía 2D/3D). Es un CLIENTE del backend
+├── iu/                 La página (HTML, CSS, JS, Lía 2D/3D). Es un CLIENTE del backend
 ├── backend/                  Spring Boot con arquitectura hexagonal (sección 4)
-├── database/                 Scripts SQL: esquema, índices, datos iniciales, vistas
+├── basedatos/                Scripts SQL: esquema, índices, datos iniciales, vistas
 ├── n8n/                      Workflows exportados en JSON
 ├── docs/
 │   ├── planeacion/           Estos documentos
@@ -82,7 +82,7 @@ StyleMe/
 └── README.md
 ```
 
-> La arquitectura hexagonal es del **backend**. El frontend, n8n y la base de datos son "el mundo de afuera":
+> La arquitectura hexagonal es del **backend**. La iu, n8n y la base de datos son "el mundo de afuera":
 > se conectan al hexágono por medio de adaptadores.
 
 ---
@@ -91,6 +91,12 @@ StyleMe/
 
 Paquete base: `co.styleme`. Primero las **capas** del hexágono; dentro de cada una, los **módulos**
 (`catalogo`, `comunidad`, `analitica`, `ia`, `usuario`).
+
+**Nombres en español (D-058):** capas `dominio`, `aplicacion`, `infraestructura`; puertos en `puerto/entrada` y `puerto/salida`;
+casos de uso en `casodeuso`; adaptadores en `adaptador/entrada` y `adaptador/salida`.
+Las clases usan sufijos en español: `...CasoUso` (puerto de entrada), `...Puerto` (puerto de salida), `...Servicio` (caso de uso),
+`...Adaptador`, `...Controlador`, `...Entidad`, `...Mapeador`, `...Solicitud` / `...Respuesta` (DTO).
+Se mantienen en inglés solo las convenciones de Java y JUnit: `...Exception` y `...Test`.
 
 ```
 backend/
@@ -101,61 +107,61 @@ backend/
     │   ├── java/co/styleme/
     │   │   ├── StyleMeApplication.java
     │   │   │
-    │   │   ├── domain/                    🟢 CENTRO · Java puro
-    │   │   │   ├── model/
+    │   │   ├── dominio/                   🟢 CENTRO · Java puro
+    │   │   │   ├── modelo/
     │   │   │   │   ├── catalogo/          Tienda, Producto, Categoria, Zona, Ingrediente, Etiqueta
     │   │   │   │   ├── comunidad/         Resena, Favorito, Corazones (valor 1–5), EstadoResena
     │   │   │   │   ├── usuario/           Usuario, Rol, Correo
     │   │   │   │   ├── analitica/         Evento, TipoEvento, Indicador
     │   │   │   │   └── ia/                FragmentoConocimiento, Embedding, ResultadoBusqueda,
     │   │   │   │                          ConversacionLia, RespuestaLia, EvaluacionIa
-    │   │   │   ├── service/               Reglas que usan varios modelos:
+    │   │   │   ├── servicio/              Reglas que usan varios modelos:
     │   │   │   │                          ValidadorRecomendaciones (anti-alucinación),
     │   │   │   │                          FragmentadorConocimiento (chunking), ResumidorConversacion
-    │   │   │   └── exception/             TiendaNoEncontradaException, ResenaDuplicadaException…
+    │   │   │   └── excepcion/             TiendaNoEncontradaException, ResenaDuplicadaException…
     │   │   │
-    │   │   ├── application/               🟡 CASOS DE USO · Java puro
-    │   │   │   ├── port/
-    │   │   │   │   ├── in/                Interfaces de casos de uso (qué puede hacer StyleMe)
-    │   │   │   │   │   ├── catalogo/      ConsultarTiendasUseCase, ConsultarProductosUseCase
-    │   │   │   │   │   ├── comunidad/     CalificarUseCase, GestionarFavoritosUseCase, ModerarResenaUseCase
-    │   │   │   │   │   ├── usuario/       RegistrarUsuarioUseCase, IniciarSesionUseCase
-    │   │   │   │   │   ├── analitica/     RegistrarEventoUseCase, ConsultarIndicadoresUseCase
-    │   │   │   │   │   └── ia/            IndexarConocimientoUseCase, BuscarSemanticoUseCase,
-    │   │   │   │   │                      ChatearConLiaUseCase, EvaluarIaUseCase
-    │   │   │   │   └── out/               Interfaces de lo que StyleMe NECESITA de afuera
-    │   │   │   │       ├── persistencia/  TiendaRepositoryPort, ProductoRepositoryPort, ResenaRepositoryPort…
-    │   │   │   │       ├── ia/            EmbeddingPort, VectorStorePort, ModeloLenguajePort
-    │   │   │   │       ├── seguridad/     CifradorContrasenaPort, GeneradorTokenPort
-    │   │   │   │       └── notificacion/  NotificadorPort
-    │   │   │   └── usecase/               Implementaciones: ConsultarTiendasService, BuscarSemanticoService,
-    │   │   │                              ChatearConLiaService (el flujo RAG), IndexarConocimientoService…
+    │   │   ├── aplicacion/                🟡 CASOS DE USO · Java puro
+    │   │   │   ├── puerto/
+    │   │   │   │   ├── entrada/           Interfaces de casos de uso (qué puede hacer StyleMe)
+    │   │   │   │   │   ├── catalogo/      ConsultarTiendasCasoUso, ConsultarProductosCasoUso
+    │   │   │   │   │   ├── comunidad/     CalificarCasoUso, GestionarFavoritosCasoUso, ModerarResenaCasoUso
+    │   │   │   │   │   ├── usuario/       RegistrarUsuarioCasoUso, IniciarSesionCasoUso
+    │   │   │   │   │   ├── analitica/     RegistrarEventoCasoUso, ConsultarIndicadoresCasoUso
+    │   │   │   │   │   └── ia/            IndexarConocimientoCasoUso, BuscarSemanticoCasoUso,
+    │   │   │   │   │                      ChatearConLiaCasoUso, EvaluarIaCasoUso
+    │   │   │   │   └── salida/            Interfaces de lo que StyleMe NECESITA de afuera
+    │   │   │   │       ├── persistencia/  TiendaRepositorioPuerto, ProductoRepositorioPuerto, ResenaRepositorioPuerto…
+    │   │   │   │       ├── ia/            EmbeddingPuerto, AlmacenVectorialPuerto, ModeloLenguajePuerto
+    │   │   │   │       ├── seguridad/     CifradorContrasenaPuerto, GeneradorTokenPuerto
+    │   │   │   │       └── notificacion/  NotificadorPuerto
+    │   │   │   └── casodeuso/             Implementaciones: ConsultarTiendasServicio, BuscarSemanticoServicio,
+    │   │   │                              ChatearConLiaServicio (el flujo RAG), IndexarConocimientoServicio…
     │   │   │
-    │   │   └── infrastructure/            🔵 ADAPTADORES · aquí sí hay Spring
-    │   │       ├── adapter/
-    │   │       │   ├── in/
-    │   │       │   │   ├── rest/          Controladores + dto/ (Request, Response) + mapper/
+    │   │   └── infraestructura/           🔵 ADAPTADORES · aquí sí hay Spring
+    │   │       ├── adaptador/
+    │   │       │   ├── entrada/
+    │   │       │   │   ├── rest/          Controladores + dto/ (Solicitud, Respuesta) + mapeador/
     │   │       │   │   │                  + ManejadorErrores (excepción del dominio → HTTP)
     │   │       │   │   ├── webhook/       Lo que llama n8n (ej. resultado de moderación)
-    │   │       │   │   └── scheduler/     Tareas programadas (ej. reindexar de noche)
-    │   │       │   └── out/
-    │   │       │       ├── persistencia/  entity/ (TiendaEntity…), repository/ (Spring Data),
-    │   │       │       │                  mapper/, y los adaptadores que implementan *RepositoryPort
-    │   │       │       ├── vector/        PgVectorAdapter (JdbcTemplate + operador <=>) → VectorStorePort
-    │   │       │       ├── gemini/        GeminiEmbeddingAdapter → EmbeddingPort
-    │   │       │       │                  GeminiChatAdapter → ModeloLenguajePort
-    │   │       │       ├── seguridad/     BCryptCifradorAdapter, JwtGeneradorTokenAdapter
-    │   │       │       └── n8n/           N8nNotificadorAdapter → NotificadorPort (llama webhooks)
-    │   │       └── config/                BeanConfig (registra los casos de uso), SecurityConfig,
-    │   │                                  OpenApiConfig (Swagger), CorsConfig, GeminiProperties
+    │   │       │   │   └── programador/   Tareas programadas (ej. reindexar de noche)
+    │   │       │   └── salida/
+    │   │       │       ├── persistencia/  entidad/ (TiendaEntidad…), repositorio/ (Spring Data),
+    │   │       │       │                  mapeador/, y los adaptadores que implementan *RepositorioPuerto
+    │   │       │       ├── vector/        PgVectorAdaptador (JdbcTemplate + operador <=>) → AlmacenVectorialPuerto
+    │   │       │       ├── gemini/        GeminiEmbeddingAdaptador → EmbeddingPuerto
+    │   │       │       │                  GeminiChatAdaptador → ModeloLenguajePuerto
+    │   │       │       ├── seguridad/     BCryptCifradorAdaptador, JwtGeneradorTokenAdaptador
+    │   │       │       └── n8n/           N8nNotificadorAdaptador → NotificadorPuerto (llama webhooks)
+    │   │       └── configuracion/         ConfiguracionBeans (registra los casos de uso), ConfiguracionSeguridad,
+    │   │                                  ConfiguracionOpenApi (Swagger), ConfiguracionCors, PropiedadesGemini
     │   └── resources/
     │       ├── application.yml            Lee todo de variables de entorno (nada secreto aquí)
     │       └── prompts/                   Instrucciones de Lía (texto), fuera del código
     └── test/java/co/styleme/
         ├── arquitectura/                  ArquitecturaHexagonalTest (ArchUnit: vigila las reglas)
-        ├── domain/                        Pruebas del dominio (sin Spring, rapidísimas)
-        ├── application/                   Pruebas de casos de uso con puertos falsos (Mockito)
-        ├── infrastructure/                Pruebas de adaptadores (Testcontainers con pgvector)
+        ├── dominio/                       Pruebas del dominio (sin Spring, rapidísimas)
+        ├── aplicacion/                    Pruebas de casos de uso con puertos falsos (Mockito)
+        ├── infraestructura/               Pruebas de adaptadores (Testcontainers con pgvector)
         └── evaluacion/                    Evaluación de IA: 30 preguntas, precisión@k (rama test/evaluacion-ia)
 ```
 
@@ -163,35 +169,35 @@ backend/
 
 ## 5. Puertos y adaptadores de StyleMe
 
-| Puerto (interfaz, en `application`) | Tipo | Adaptador (clase, en `infrastructure`) | Conecta con |
+| Puerto (interfaz, en `aplicacion`) | Tipo | Adaptador (clase, en `infraestructura`) | Conecta con |
 |---|---|---|---|
-| `ConsultarTiendasUseCase`, `ConsultarProductosUseCase` | Entrada | `TiendaController`, `ProductoController` | Página web |
-| `CalificarUseCase`, `GestionarFavoritosUseCase` | Entrada | `ResenaController`, `FavoritoController` | Página web |
-| `ModerarResenaUseCase` | Entrada | `ModeracionWebhookController` | n8n |
-| `RegistrarEventoUseCase`, `ConsultarIndicadoresUseCase` | Entrada | `EventoController`, `IndicadorController` | Página web, panel admin, n8n |
-| `BuscarSemanticoUseCase` | Entrada | `BusquedaController` | Página web |
-| `ChatearConLiaUseCase` | Entrada | `LiaController` | Lía (página) |
-| `IndexarConocimientoUseCase` | Entrada | `AdminIndexacionController`, `ReindexacionScheduler` | Admin, n8n, tarea nocturna |
-| `TiendaRepositoryPort`, `ProductoRepositoryPort`… | Salida | `TiendaPersistenceAdapter`… (JPA) | PostgreSQL |
-| `VectorStorePort` | Salida | `PgVectorAdapter` | pgvector (índice HNSW) |
-| `EmbeddingPort` | Salida | `GeminiEmbeddingAdapter` | Gemini (embeddings) |
-| `ModeloLenguajePort` | Salida | `GeminiChatAdapter` | Gemini (respuestas) |
-| `NotificadorPort` | Salida | `N8nNotificadorAdapter` | n8n (webhooks) |
-| `CifradorContrasenaPort`, `GeneradorTokenPort` | Salida | `BCryptCifradorAdapter`, `JwtGeneradorTokenAdapter` | Spring Security |
+| `ConsultarTiendasCasoUso`, `ConsultarProductosCasoUso` | Entrada | `TiendaControlador`, `ProductoControlador` | Página web |
+| `CalificarCasoUso`, `GestionarFavoritosCasoUso` | Entrada | `ResenaControlador`, `FavoritoControlador` | Página web |
+| `ModerarResenaCasoUso` | Entrada | `ModeracionWebhookControlador` | n8n |
+| `RegistrarEventoCasoUso`, `ConsultarIndicadoresCasoUso` | Entrada | `EventoControlador`, `IndicadorControlador` | Página web, panel admin, n8n |
+| `BuscarSemanticoCasoUso` | Entrada | `BusquedaControlador` | Página web |
+| `ChatearConLiaCasoUso` | Entrada | `LiaControlador` | Lía (página) |
+| `IndexarConocimientoCasoUso` | Entrada | `AdminIndexacionControlador`, `ReindexacionProgramador` | Admin, n8n, tarea nocturna |
+| `TiendaRepositorioPuerto`, `ProductoRepositorioPuerto`… | Salida | `TiendaPersistenciaAdaptador`… (JPA) | PostgreSQL |
+| `AlmacenVectorialPuerto` | Salida | `PgVectorAdaptador` | pgvector (índice HNSW) |
+| `EmbeddingPuerto` | Salida | `GeminiEmbeddingAdaptador` | Gemini (embeddings) |
+| `ModeloLenguajePuerto` | Salida | `GeminiChatAdaptador` | Gemini (respuestas) |
+| `NotificadorPuerto` | Salida | `N8nNotificadorAdaptador` | n8n (webhooks) |
+| `CifradorContrasenaPuerto`, `GeneradorTokenPuerto` | Salida | `BCryptCifradorAdaptador`, `JwtGeneradorTokenAdaptador` | Spring Security |
 
-### El RAG dentro del hexágono (`ChatearConLiaService`)
+### El RAG dentro del hexágono (`ChatearConLiaServicio`)
 ```
-LiaController ──▶ ChatearConLiaUseCase
-                     │ 1. EmbeddingPort.generar(pregunta)            → GeminiEmbeddingAdapter
-                     │ 2. VectorStorePort.buscarParecidos(vector, 5)  → PgVectorAdapter (HNSW)
+LiaControlador ──▶ ChatearConLiaCasoUso
+                     │ 1. EmbeddingPuerto.generar(pregunta)            → GeminiEmbeddingAdaptador
+                     │ 2. AlmacenVectorialPuerto.buscarParecidos(vector, 5)  → PgVectorAdaptador (HNSW)
                      │ 3. arma el prompt: reglas + fragmentos + historial corto
-                     │ 4. ModeloLenguajePort.responder(prompt)        → GeminiChatAdapter
+                     │ 4. ModeloLenguajePuerto.responder(prompt)        → GeminiChatAdaptador
                      │ 5. ValidadorRecomendaciones (DOMINIO) descarta productos inexistentes
-                     │ 6. guarda el resumen (ConversacionRepositoryPort)
+                     │ 6. guarda el resumen (ConversacionRepositorioPuerto)
                      ▼
                  RespuestaLia
 ```
-Si `ModeloLenguajePort` falla, el caso de uso responde con el **plan B** (reglas) y marca la conversación como `PLAN_B`.
+Si `ModeloLenguajePuerto` falla, el caso de uso responde con el **plan B** (reglas) y marca la conversación como `PLAN_B`.
 
 ---
 
@@ -199,16 +205,16 @@ Si `ModeloLenguajePort` falla, el caso de uso responde con el **plan B** (reglas
 
 | Hoy | Destino | Cuándo (rama) |
 |---|---|---|
-| `*.html`, `assets/`, `data/` | `frontend/` | 2 · `refactor/estructura-proyecto` |
+| `*.html`, `assets/`, `data/` | `iu/` (antes `frontend/`) | 2 · `refactor/estructura-proyecto` |
 | `planeacion/` | `docs/planeacion/` | 2 |
 | `.env.ejemplo` | `.env.example` | 2 |
-| `data/*.js` | `database/02-datos-iniciales.sql` (y luego se borra) | 3 y 9 |
+| `data/*.js` | `basedatos/02-datos-iniciales.sql` (y luego se borra) | 3 y 9 |
 | `netlify/functions/lia.mjs` → reglas de Lía | `backend/src/main/resources/prompts/` | 7 · `feature/rag-lia` |
-| `lia.mjs` → llamada a embeddings | `GeminiEmbeddingAdapter` | 6 · `feature/embeddings-busqueda` |
-| `lia.mjs` → similitud coseno en memoria | `PgVectorAdapter` (la hace la base de datos con HNSW) | 6 |
+| `lia.mjs` → llamada a embeddings | `GeminiEmbeddingAdaptador` | 6 · `feature/embeddings-busqueda` |
+| `lia.mjs` → similitud coseno en memoria | `PgVectorAdaptador` (la hace la base de datos con HNSW) | 6 |
 | `lia.mjs` → validación de productos y emoción | `ValidadorRecomendaciones` (dominio) | 7 |
-| `lia.mjs` → llamada a Gemini con streaming | `GeminiChatAdapter` | 7 |
-| `frontend/assets/js/lia/plan-b.js` | Se queda (respaldo si el backend no responde) | — |
+| `lia.mjs` → llamada a Gemini con streaming | `GeminiChatAdaptador` | 7 |
+| `iu/assets/js/lia/plan-b.js` | Se queda (respaldo si el backend no responde) | — |
 | `netlify/`, `netlify.toml` | Se borran | 7 y 10 |
 
 ---
@@ -218,7 +224,7 @@ Si `ModeloLenguajePort` falla, el caso de uso responde con el **plan B** (reglas
 > Modo tutoría: este es **el molde de una sola tienda**. Productos, reseñas, favoritos, etc. los escribe la autora
 > siguiendo este patrón, y después se revisan.
 
-**Dominio** (`domain/model/catalogo/Tienda.java`) · sin anotaciones
+**Dominio** (`dominio/modelo/catalogo/Tienda.java`) · sin anotaciones
 ```java
 public record Tienda(Long id, String slug, String nombre, Categoria categoriaPrincipal,
                      Zona zona, Coordenadas coordenadas, boolean verificada) {
@@ -229,27 +235,27 @@ public record Tienda(Long id, String slug, String nombre, Categoria categoriaPri
 }
 ```
 
-**Puerto de salida** (`application/port/out/persistencia/TiendaRepositoryPort.java`)
+**Puerto de salida** (`aplicacion/puerto/salida/persistencia/TiendaRepositorioPuerto.java`)
 ```java
-public interface TiendaRepositoryPort {
+public interface TiendaRepositorioPuerto {
     List<Tienda> buscarActivas(String categoriaSlug);
     Optional<Tienda> buscarPorSlug(String slug);
 }
 ```
 
-**Puerto de entrada** (`application/port/in/catalogo/ConsultarTiendasUseCase.java`)
+**Puerto de entrada** (`aplicacion/puerto/entrada/catalogo/ConsultarTiendasCasoUso.java`)
 ```java
-public interface ConsultarTiendasUseCase {
+public interface ConsultarTiendasCasoUso {
     List<Tienda> listar(String categoriaSlug);
     Tienda obtener(String slug);   // lanza TiendaNoEncontradaException
 }
 ```
 
-**Caso de uso** (`application/usecase/ConsultarTiendasService.java`) · sin `@Service`
+**Caso de uso** (`aplicacion/casodeuso/ConsultarTiendasServicio.java`) · sin `@Service`
 ```java
-public class ConsultarTiendasService implements ConsultarTiendasUseCase {
-    private final TiendaRepositoryPort repositorio;
-    public ConsultarTiendasService(TiendaRepositoryPort repositorio) { this.repositorio = repositorio; }
+public class ConsultarTiendasServicio implements ConsultarTiendasCasoUso {
+    private final TiendaRepositorioPuerto repositorio;
+    public ConsultarTiendasServicio(TiendaRepositorioPuerto repositorio) { this.repositorio = repositorio; }
 
     @Override public Tienda obtener(String slug) {
         return repositorio.buscarPorSlug(slug).orElseThrow(() -> new TiendaNoEncontradaException(slug));
@@ -258,20 +264,20 @@ public class ConsultarTiendasService implements ConsultarTiendasUseCase {
 }
 ```
 
-**Registro del bean** (`infrastructure/config/BeanConfig.java`)
+**Registro del bean** (`infraestructura/configuracion/ConfiguracionBeans.java`)
 ```java
 @Configuration
-public class BeanConfig {
+public class ConfiguracionBeans {
     @Bean
-    ConsultarTiendasUseCase consultarTiendas(TiendaRepositoryPort repositorio) {
-        return new ConsultarTiendasService(repositorio);
+    ConsultarTiendasCasoUso consultarTiendas(TiendaRepositorioPuerto repositorio) {
+        return new ConsultarTiendasServicio(repositorio);
     }
 }
 ```
 
 **Lo que falta en este molde (lo completa la autora):**
-- `TiendaEntity` + `TiendaJpaRepository` + `TiendaPersistenceMapper` + `TiendaPersistenceAdapter implements TiendaRepositoryPort`.
-- `TiendaController` (usa `ConsultarTiendasUseCase`) + `TiendaResponse` + `TiendaRestMapper`.
+- `TiendaEntidad` + `TiendaJpaRepositorio` + `TiendaPersistenciaMapeador` + `TiendaPersistenciaAdaptador implements TiendaRepositorioPuerto`.
+- `TiendaControlador` (usa `ConsultarTiendasCasoUso`) + `TiendaRespuesta` + `TiendaRestMapeador`.
 - Traducir `TiendaNoEncontradaException` a 404 en `ManejadorErrores`.
 
 ---
@@ -282,6 +288,6 @@ public class BeanConfig {
 1. Dominio (modelo + reglas)  →  2. Prueba del dominio
 3. Puertos (in y out)         →  4. Caso de uso + prueba con puertos falsos
 5. Adaptador de salida        →  6. Adaptador de entrada (REST)
-7. Registrar en BeanConfig    →  8. Probar en Swagger / Postman
+7. Registrar en ConfiguracionBeans    →  8. Probar en Swagger / Postman
 ```
 De adentro hacia afuera: así el centro nunca depende de los adaptadores.

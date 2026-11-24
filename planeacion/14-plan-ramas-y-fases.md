@@ -21,7 +21,7 @@
 | Automatización e integración de servicios de IA | 8 | 10,7 % | 10 · `feature/n8n-docker` |
 | Calidad de respuestas, validación y pruebas de IA | 8 | 10,7 % | 8 · `test/evaluacion-ia` |
 | Análisis de datos e indicadores | 8 | 10,7 % | 3 · `feature/base-de-datos`, 11 · `docs/entrega-final` |
-| Integración funcional de la aplicación | 7 | 9,3 % | 9 · `feature/frontend-api`, 10 · `feature/n8n-docker` |
+| Integración funcional de la aplicación | 7 | 9,3 % | 9 · `feature/iu-api`, 10 · `feature/n8n-docker` |
 | Documentación, control de versiones y sustentación | 7 | 9,3 % | Todas + 11 · `docs/entrega-final` |
 
 > 🎯 **La IA vale el 57 %** (embeddings + búsqueda + RAG + automatización + pruebas). Por eso la **Fase 3** es la más importante.
@@ -75,7 +75,7 @@ trabajo   chore/limpieza...  feature/base-de-datos
 
 - **alcance** (opcional, entre paréntesis): la parte del proyecto →
   capas del hexágono: `dominio`, `aplicacion`, `persistencia`, `api`, `seguridad`, `arquitectura` ·
-  temas: `db`, `ia`, `rag`, `lia`, `frontend`, `n8n`, `docker`, `planeacion`…
+  temas: `db`, `ia`, `rag`, `lia`, `iu`, `n8n`, `docker`, `planeacion`…
 - **descripción:** en minúscula, en infinitivo ("agregar", "corregir"), sin punto final, máximo ~70 caracteres.
 
 **Ejemplos:** `feat(api): agregar endpoint de tiendas` · `fix(rag): corregir umbral de similitud` · `docs: actualizar README`
@@ -165,11 +165,12 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 0a ✅ | Modelo de datos | `docs(planeacion): agregar modelo de datos con pgvector` |
 | 0b ✅ | Plan de ramas alineado con la rúbrica | `docs(planeacion): alinear plan de ramas con la rúbrica` |
 | 0c ✅ | Guía de SDKMAN y decisiones D-049 a D-056 | `docs: agregar guía de sdkman y decisiones D-049 a D-056` |
-| 0d | `planeacion/16-arquitectura-hexagonal.md` + plan 14 + D-057 + README | `docs(arquitectura): definir arquitectura hexagonal del backend` |
-| 1 | Mover páginas HTML, `assets/` y `data/` a `frontend/`; corregir rutas | `refactor(frontend): mover el sitio a frontend/` |
+| 0d ✅ | `planeacion/16-arquitectura-hexagonal.md` + plan 14 + D-057 + README | `docs(arquitectura): definir arquitectura hexagonal del backend` |
+| 1 ✅ | Mover páginas HTML, `assets/` y `data/` a `frontend/` | `refactor(frontend): mover el sitio a frontend/` |
+| 1b | Renombrar `frontend/` → `iu/` (nombres en español, D-058) | `refactor(iu): renombrar frontend a iu` |
 | 2 | `planeacion/` → `docs/planeacion/`; crear `docs/diagramas/`, `docs/pruebas/`, `docs/evidencias/`, `docs/informe-datos/` | `docs: crear estructura de documentación` |
 | 3 | `AI_USAGE.md` en la raíz con todo lo hecho con IA hasta hoy | `docs: agregar AI_USAGE.md` |
-| 4 | `.env.ejemplo` → `.env.example`; carpetas `backend/`, `database/`, `n8n/` con `LEEME.md`; `.gitignore` para Java y Docker | `chore: preparar estructura de backend, base de datos y n8n` |
+| 4 | `.env.ejemplo` → `.env.example`; carpetas `backend/`, `basedatos/`, `n8n/` con `LEEME.md`; `.gitignore` para Java y Docker | `chore: preparar estructura de backend, base de datos y n8n` |
 | 5 | README con la nueva estructura | `docs: actualizar README con la estructura del proyecto` |
 
 ➡️ **Fin de Fase 0:** PR `develop → main` → `release: fase 0 - organización`.
@@ -184,11 +185,11 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | # | Qué se hace | Commit |
 |---|---|---|
 | 1 | Diagrama entidad-relación en `docs/diagramas/` (DBML + PNG) | `docs(db): agregar diagrama entidad-relación` |
-| 2 | `database/01-esquema.sql`: extensión **pgvector**, 16 tablas, llaves, `CHECK` | `feat(db): crear esquema con pgvector` |
+| 2 | `basedatos/01-esquema.sql`: extensión **pgvector**, 16 tablas, llaves, `CHECK` | `feat(db): crear esquema con pgvector` |
 | 3 | Índices, incluido el índice vectorial **HNSW** de `fragmento_conocimiento` | `feat(db): agregar índices e índice vectorial hnsw` |
-| 4 | `database/02-datos-iniciales.sql`: 10 tiendas y 49 productos reales | `feat(db): cargar datos iniciales del catálogo` |
-| 5 | `database/03-datos-prueba.sql`: usuarios, reseñas, favoritos, eventos de prueba (marcados) | `feat(db): agregar datos de prueba para el análisis` |
-| 6 | `database/04-vistas-indicadores.sql`: vistas de los indicadores | `feat(db): agregar vistas de indicadores` |
+| 4 | `basedatos/02-datos-iniciales.sql`: 10 tiendas y 49 productos reales | `feat(db): cargar datos iniciales del catálogo` |
+| 5 | `basedatos/03-datos-prueba.sql`: usuarios, reseñas, favoritos, eventos de prueba (marcados) | `feat(db): agregar datos de prueba para el análisis` |
+| 6 | `basedatos/04-vistas-indicadores.sql`: vistas de los indicadores | `feat(db): agregar vistas de indicadores` |
 
 ✅ **Terminada cuando:** los scripts corren sin errores en una base vacía (con Docker: imagen `pgvector/pgvector`).
 
@@ -201,12 +202,12 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Spring Initializr en `backend/` (Web, JPA, PostgreSQL, Validation) + `.sdkmanrc` + paquetes `domain/`, `application/`, `infrastructure/` | `build(backend): crear proyecto spring boot con estructura hexagonal` |
+| 1 | Spring Initializr en `backend/` (Web, JPA, PostgreSQL, Validation) + `.sdkmanrc` + paquetes `dominio/`, `aplicacion/`, `infraestructura/` | `build(backend): crear proyecto spring boot con estructura hexagonal` |
 | 2 | `ArquitecturaHexagonalTest` con ArchUnit (vigila las reglas R1, R2, R3 y R7) | `test(arquitectura): agregar reglas hexagonales con archunit` |
 | 3 | **Dominio** del catálogo: Tienda, Producto, Categoria, Zona, Ingrediente, Etiqueta + excepciones + pruebas | `feat(dominio): agregar modelo del catálogo` |
 | 4 | **Puertos** (in/out) y **casos de uso** del catálogo + pruebas con puertos falsos | `feat(aplicacion): agregar casos de uso del catálogo` |
 | 5 | **Adaptador de salida** JPA: entidades, repositorios Spring Data, mappers | `feat(persistencia): agregar adaptador jpa del catálogo` |
-| 6 | **Adaptador de entrada** REST: controladores, DTO, `ManejadorErrores`, `BeanConfig` | `feat(api): agregar endpoints de tiendas y productos` |
+| 6 | **Adaptador de entrada** REST: controladores, DTO, `ManejadorErrores`, `ConfiguracionBeans` | `feat(api): agregar endpoints de tiendas y productos` |
 | 7 | Reseñas y favoritos: dominio (corazones 1–5, una de dos) + casos de uso | `feat(dominio): agregar reglas de reseñas y favoritos` |
 | 8 | Reseñas y favoritos: adaptadores JPA y REST | `feat(api): agregar endpoints de reseñas y favoritos` |
 | 9 | Analítica: eventos e indicadores (dominio → casos de uso → adaptadores que leen las vistas SQL) | `feat(analitica): agregar eventos e indicadores` |
@@ -216,9 +217,9 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Dominio Usuario, Rol, Correo + puertos `CifradorContrasenaPort`, `GeneradorTokenPort` + casos de uso de registro e inicio de sesión | `feat(usuario): agregar registro e inicio de sesión` |
-| 2 | Adaptadores `BCryptCifradorAdapter` y `JwtGeneradorTokenAdapter` | `feat(seguridad): agregar adaptadores bcrypt y jwt` |
-| 3 | `SecurityConfig` + filtro JWT + permisos por rol | `feat(seguridad): proteger endpoints por rol` |
+| 1 | Dominio Usuario, Rol, Correo + puertos `CifradorContrasenaPuerto`, `GeneradorTokenPuerto` + casos de uso de registro e inicio de sesión | `feat(usuario): agregar registro e inicio de sesión` |
+| 2 | Adaptadores `BCryptCifradorAdaptador` y `JwtGeneradorTokenAdaptador` | `feat(seguridad): agregar adaptadores bcrypt y jwt` |
+| 3 | `ConfiguracionSeguridad` + filtro JWT + permisos por rol | `feat(seguridad): proteger endpoints por rol` |
 | 4 | Pruebas de endpoints protegidos | `test(seguridad): agregar pruebas de seguridad` |
 
 ➡️ **Fin de Fase 2:** `release: fase 2 - backend`.
@@ -233,11 +234,11 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | # | Qué se hace | Commit |
 |---|---|---|
 | 1 | Dominio: `FragmentoConocimiento`, `Embedding`, `FragmentadorConocimiento` (chunking de tiendas, productos y guías) + pruebas | `feat(dominio): agregar fragmentos de conocimiento y chunking` |
-| 2 | Puertos `EmbeddingPort`, `VectorStorePort` + `IndexarConocimientoService` (recalcula solo si cambió el hash) | `feat(ia): agregar caso de uso de indexación` |
-| 3 | `GeminiEmbeddingAdapter` (clave en variable de entorno) | `feat(ia): agregar adaptador de embeddings de gemini` |
-| 4 | `PgVectorAdapter`: guardar vectores y buscar con `<=>` sobre el índice HNSW | `feat(ia): agregar adaptador pgvector` |
-| 5 | `BuscarSemanticoService`: top-k + umbral + filtros (búsqueda **híbrida**) | `feat(ia): agregar búsqueda semántica híbrida` |
-| 6 | Adaptadores de entrada: `BusquedaController`, `AdminIndexacionController`, `ReindexacionScheduler` | `feat(api): agregar endpoints de búsqueda y reindexación` |
+| 2 | Puertos `EmbeddingPuerto`, `AlmacenVectorialPuerto` + `IndexarConocimientoServicio` (recalcula solo si cambió el hash) | `feat(ia): agregar caso de uso de indexación` |
+| 3 | `GeminiEmbeddingAdaptador` (clave en variable de entorno) | `feat(ia): agregar adaptador de embeddings de gemini` |
+| 4 | `PgVectorAdaptador`: guardar vectores y buscar con `<=>` sobre el índice HNSW | `feat(ia): agregar adaptador pgvector` |
+| 5 | `BuscarSemanticoServicio`: top-k + umbral + filtros (búsqueda **híbrida**) | `feat(ia): agregar búsqueda semántica híbrida` |
+| 6 | Adaptadores de entrada: `BusquedaControlador`, `AdminIndexacionControlador`, `ReindexacionProgramador` | `feat(api): agregar endpoints de búsqueda y reindexación` |
 | 7 | Pruebas con Testcontainers (pgvector real): "crema para piel grasa" trae productos de piel grasa | `test(ia): agregar pruebas de búsqueda semántica` |
 
 #### Rama 7 · `feature/rag-lia`
@@ -246,12 +247,12 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | # | Qué se hace | Commit |
 |---|---|---|
 | 1 | Dominio: `ConversacionLia`, `RespuestaLia`, `ValidadorRecomendaciones` (anti-alucinación), `ResumidorConversacion` + pruebas | `feat(dominio): agregar validación de respuestas de lía` |
-| 2 | Puerto `ModeloLenguajePort` + `ChatearConLiaService`: recuperar → aumentar → generar → validar, con plan B | `feat(rag): agregar caso de uso del flujo rag` |
+| 2 | Puerto `ModeloLenguajePuerto` + `ChatearConLiaServicio`: recuperar → aumentar → generar → validar, con plan B | `feat(rag): agregar caso de uso del flujo rag` |
 | 3 | Instrucciones de Lía como plantilla en `resources/prompts/` | `feat(rag): agregar plantilla de instrucciones de lía` |
-| 4 | `GeminiChatAdapter` con respuesta por partes (streaming) | `feat(ia): agregar adaptador de chat de gemini` |
+| 4 | `GeminiChatAdaptador` con respuesta por partes (streaming) | `feat(ia): agregar adaptador de chat de gemini` |
 | 5 | Guardar resumen y métricas de la conversación (adaptador JPA) | `feat(lia): registrar métricas de conversación` |
-| 6 | `LiaController` (`POST /api/lia/chat`) | `feat(api): agregar endpoint de chat de lía` |
-| 7 | El frontend de Lía usa el backend | `refactor(frontend): conectar lía con el backend` |
+| 6 | `LiaControlador` (`POST /api/lia/chat`) | `feat(api): agregar endpoint de chat de lía` |
+| 7 | La iu de Lía usa el backend | `refactor(iu): conectar lía con el backend` |
 | 8 | Borrar `netlify/functions/lia.mjs` | `chore: eliminar función de netlify` |
 
 #### Rama 8 · `test/evaluacion-ia`
@@ -262,7 +263,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 1 | Conjunto de **30 preguntas** con lo esperado (catálogo, fuera de tema, salud, ambiguas) | `test(ia): agregar conjunto de preguntas de evaluación` |
 | 2 | Prueba automática de recuperación: **precisión@k** y **recall@k** | `test(ia): medir precisión de la recuperación` |
 | 3 | Prueba de respuestas: sin productos inventados, rechaza lo ajeno, no da consejos médicos | `test(ia): validar respuestas de lía` |
-| 4 | `EvaluarIaUseCase` + adaptador que guarda cada ejecución en `evaluacion_ia` | `feat(ia): registrar resultados de evaluación` |
+| 4 | `EvaluarIaCasoUso` + adaptador que guarda cada ejecución en `evaluacion_ia` | `feat(ia): registrar resultados de evaluación` |
 | 5 | Informe de calidad de IA en `docs/pruebas/` | `docs(pruebas): agregar informe de calidad de ia` |
 
 ➡️ **Fin de Fase 3:** `release: fase 3 - inteligencia artificial`.
@@ -271,29 +272,29 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 ### FASE 4 · Integración y automatización → `v0.5`
 
-#### Rama 9 · `feature/frontend-api`
+#### Rama 9 · `feature/iu-api`
 *Criterio: integración funcional (7).*
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Módulo que llama a la API | `feat(frontend): agregar cliente de la api` |
-| 2 | Tiendas, perfil y productos desde la API | `feat(frontend): cargar tiendas y productos desde la api` |
-| 3 | El buscador de productos usa la **búsqueda semántica** | `feat(frontend): usar búsqueda semántica en el catálogo` |
-| 4 | Inicio de sesión y registro | `feat(frontend): agregar inicio de sesión` |
-| 5 | Reseñas y favoritos | `feat(frontend): agregar reseñas y favoritos` |
-| 6 | Registro de eventos | `feat(frontend): registrar eventos de uso` |
-| 7 | Panel de admin con gráficos de indicadores | `feat(frontend): agregar panel de indicadores` |
-| 8 | Borrar `frontend/data/*.js` | `chore(frontend): eliminar datos locales` |
+| 1 | Módulo que llama a la API | `feat(iu): agregar cliente de la api` |
+| 2 | Tiendas, perfil y productos desde la API | `feat(iu): cargar tiendas y productos desde la api` |
+| 3 | El buscador de productos usa la **búsqueda semántica** | `feat(iu): usar búsqueda semántica en el catálogo` |
+| 4 | Inicio de sesión y registro | `feat(iu): agregar inicio de sesión` |
+| 5 | Reseñas y favoritos | `feat(iu): agregar reseñas y favoritos` |
+| 6 | Registro de eventos | `feat(iu): registrar eventos de uso` |
+| 7 | Panel de admin con gráficos de indicadores | `feat(iu): agregar panel de indicadores` |
+| 8 | Borrar `iu/data/*.js` | `chore(iu): eliminar datos locales` |
 
 #### Rama 10 · `feature/n8n-docker`
 *Criterios: automatización e integración de servicios de IA (8), integración funcional.*
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Dockerfiles del backend y del frontend (nginx) | `build(docker): agregar dockerfiles` |
-| 2 | `docker-compose.yml`: pgvector, backend, frontend, n8n | `build(docker): agregar docker compose` |
+| 1 | Dockerfiles del backend y de la iu (nginx) | `build(docker): agregar dockerfiles` |
+| 2 | `docker-compose.yml`: pgvector, backend, iu, n8n | `build(docker): agregar docker compose` |
 | 3 | `.env.example` con todas las variables | `chore: completar variables de entorno` |
-| 4 | Adaptadores n8n: `N8nNotificadorAdapter` (salida) y `ModeracionWebhookController` (entrada) | `feat(n8n): agregar adaptadores de n8n` |
+| 4 | Adaptadores n8n: `N8nNotificadorAdaptador` (salida) y `ModeracionWebhookControlador` (entrada) | `feat(n8n): agregar adaptadores de n8n` |
 | 4b | n8n: **moderación de reseñas con Gemini** → cambia el estado a PUBLICADA/RECHAZADA | `feat(n8n): agregar moderación de reseñas con ia` |
 | 5 | n8n: producto creado o editado → **reindexar su embedding** | `feat(n8n): agregar reindexación automática de embeddings` |
 | 6 | n8n: **reporte semanal** de indicadores con resumen escrito por IA | `feat(n8n): agregar reporte semanal con ia` |
@@ -323,7 +324,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 ### Ramas `fix/...`
 
-Cuando aparezca un error, con la receta de la sección 5. Ej.: `fix/rutas-frontend` → `fix(frontend): corregir rutas de imágenes`.
+Cuando aparezca un error, con la receta de la sección 5. Ej.: `fix/rutas-iu` → `fix(iu): corregir rutas de imágenes`.
 Lo ideal: al menos 2 o 3 en todo el proyecto.
 
 ---
@@ -336,7 +337,7 @@ Lo ideal: al menos 2 o 3 en todo el proyecto.
 | 1 · Base de datos | `feature/base-de-datos` | v0.2 |
 | 2 · Backend | `feature/backend-api`, `feature/autenticacion` | v0.3 |
 | 3 · Inteligencia artificial | `feature/embeddings-busqueda`, `feature/rag-lia`, `test/evaluacion-ia` | v0.4 |
-| 4 · Integración y automatización | `feature/frontend-api`, `feature/n8n-docker` | v0.5 |
+| 4 · Integración y automatización | `feature/iu-api`, `feature/n8n-docker` | v0.5 |
 | 5 · Entrega | `docs/entrega-final` | v1.0 |
 
 **Total:** 2 permanentes + 11 de trabajo + las `fix/...` que salgan.
