@@ -92,5 +92,5 @@ El detalle y el motivo de cada decisión están en [docs/planeacion/04-decisione
 |---|---|---|
 | `chore/limpieza-archivos` | Claude | Identificó archivos sin uso, separó Lía en 2D/3D y redactó el plan de ramas |
 | `refactor/estructura-proyecto` | Claude | Modelo de datos, arquitectura hexagonal, mover el sitio a `iu/`, estructura de `docs/` y este documento |
-| `feature/base-de-datos` | Claude | Generó el `docker-compose.yml` de PostgreSQL + pgvector (a pedido de la autora) y configuró las variables locales |
+| `feature/base-de-datos` | Claude | Generó el `docker-compose.yml` de PostgreSQL + pgvector (a pedido de la autora), configuró las variables locales y Live Server, y generó el diagrama entidad-relación (DBML y Mermaid) con su explicación de formas normales, a partir del modelo de datos acordado |
 | *(siguientes ramas)* | | *(se completa al terminar cada rama)* |
