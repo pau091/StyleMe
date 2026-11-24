@@ -9,6 +9,10 @@
  *   data-actividad → quieta | pensando | hablando
  *
  * Solo se anima transform y opacity (fluido a 120/144 fps).
+ *
+ * Este archivo tiene lo COMÚN (arco, globo, chat). El aspecto de Lía está aparte:
+ *   assets/lia/2d/lia-2d.css → Lía como retrato con expresiones (la que se usa hoy)
+ *   assets/lia/3d/lia-3d.css → Lía en 3D (solo se activa si existe assets/lia/3d/lia.vrm)
  */
 
 /* Texto solo para lectores de pantalla */
@@ -78,16 +82,6 @@
     translate var(--duracion-media) var(--curva-seda);
 }
 
-/* Lía en 3D (cuando existe assets/lia/lia.vrm): el lienzo reemplaza al retrato */
-.lia-lienzo {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-}
-.lia-con-3d .lia-arco { background: radial-gradient(70% 55% at 50% 35%, #fbf4ef, #e6dbe1); }
-/* En 3D los gestos los hace ella misma: el marco ya no se inclina */
-.lia-con-3d .lia-arco { rotate: none !important; translate: none !important; animation: none !important; }
 /* Reflejo del vidrio */
 .lia-arco::before {
   content: "";
@@ -441,49 +435,7 @@
   .lia-arco { transition: none; }
 }
 
-
-/* Las cuatro poses comparten el busto de la foto principal. */
-.lia-retrato, .lia-retrato-cabeza, .lia-retrato-pose, .lia-retrato-boca {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-.lia-retrato {
-  background: #d6ccce url("../img/lia/principal.webp") center / 100% 100% no-repeat;
-  perspective: 420px;
-}
-.lia-con-3d .lia-retrato { display: none; }
-.lia-retrato-cabeza {
-  transform-origin: 51% 65%;
-  transform: rotateX(var(--lia-inclinacion, 0deg)) rotateY(calc(var(--mirar-x, 0) * 5deg)) rotateZ(var(--lia-giro, 0deg));
-  transition: transform 330ms ease-out;
-}
-.lia-retrato-pose, .lia-retrato-boca {
-  background: var(--lia-foto) center var(--lia-posicion, 0%) / var(--lia-ancho, 100%) var(--lia-alto, 100%) no-repeat;
-}
-.lia-retrato-pose {
-  clip-path: polygon(7% 0, 93% 0, 98% 49%, 96% 75%, 81% 78%, 71% 70%, 63% 65%, 56% 66%, 46% 67%, 38% 64%, 29% 69%, 19% 78%, 4% 77%, 4% 54%);
-  opacity: 0;
-  transition: opacity 200ms ease;
-}
-.lia-pose-principal { --lia-foto: url("../img/lia/principal.webp"); opacity: 1; }
-.lia-pose-feliz, .lia-pose-duda { --lia-ancho: 102%; --lia-alto: 108%; --lia-posicion: 70%; }
-.lia-pose-feliz { --lia-foto: url("../img/lia/feliz.webp"); }
-.lia-pose-duda { --lia-foto: url("../img/lia/confundida.webp"); }
-.lia-pose-asombro { --lia-foto: url("../img/lia/sorprendida.webp"); --lia-alto: 99%; }
-.lia[data-emocion="felicidad"] .lia-pose-feliz,
-.lia[data-emocion="duda"] .lia-pose-duda,
-.lia[data-emocion="asombro"] .lia-pose-asombro { opacity: 1; }
-.lia[data-emocion="duda"], .lia[data-actividad="pensando"] { --lia-giro: -3deg; }
-.lia[data-emocion="asombro"] { --lia-inclinacion: -11deg; }
-.lia-retrato-boca {
-  opacity: 0;
-  /* Se deforma solo la zona alrededor de los labios. */
-  transform-origin: 51% var(--lia-labios, 59%);
-  mask-image: radial-gradient(ellipse 12% 5% at 51% var(--lia-labios, 59%), #000 62%, transparent 100%);
-}
-.lia-pose-feliz, .lia-pose-duda { --lia-labios: 57%; }
-.lia-pose-asombro { --lia-labios: 60%; }
+/* Signo de pregunta cuando Lía duda (sirve en 2D y en 3D) */
 .lia-interrogacion {
   position: absolute;
   z-index: 2;
@@ -507,30 +459,6 @@
   opacity: 1;
   transform: none;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .lia[data-actividad="hablando"] .lia-retrato-boca { opacity: 1; animation: lia-labios 280ms ease-in-out infinite alternate; }
-  .lia[data-emocion="felicidad"][data-actividad="hablando"] .lia-retrato-cabeza { animation: lia-asiente 640ms ease-in-out 2; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .lia-retrato-cabeza { transform: none; }
-  .lia-retrato-pose, .lia-interrogacion { transition: none; }
-}
-@keyframes lia-labios { from { scale: 1 .96; } to { scale: .97 1.16; } }
-@keyframes lia-asiente { 50% { rotate: x 8deg; } }
-
-.lia-retrato-parpadeo {
-  position: absolute;
-  inset: 0;
-  background: url("../img/lia/feliz.webp") center 70% / 102% 108% no-repeat;
-  mask-image: radial-gradient(ellipse 13% 5% at 36% 44%, #000 65%, transparent),
-              radial-gradient(ellipse 13% 5% at 66% 44%, #000 65%, transparent);
-  opacity: 0;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .lia-retrato-parpadeo { animation: lia-parpadea 3s linear infinite; }
-  .lia[data-emocion="felicidad"] .lia-retrato-parpadeo { opacity: 0; animation-name: none; }
-}
-@keyframes lia-parpadea {
-  0%, 94%, 100% { opacity: 0; }
-  96%, 97% { opacity: 1; }
+  .lia-interrogacion { transition: none; }
 }
