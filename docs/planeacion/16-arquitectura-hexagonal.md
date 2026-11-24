@@ -78,7 +78,7 @@ StyleMe/
 │   └── informe-datos/        Informe de análisis de datos
 ├── docker-compose.yml
 ├── .env.example
-├── AI_USAGE.md
+├── IAS_usadas.md
 └── README.md
 ```
 
@@ -208,14 +208,14 @@ Si `ModeloLenguajePuerto` falla, el caso de uso responde con el **plan B** (regl
 | `*.html`, `assets/`, `data/` | `iu/` (antes `frontend/`) | 2 · `refactor/estructura-proyecto` |
 | `planeacion/` | `docs/planeacion/` | 2 |
 | `.env.ejemplo` | `.env.example` | 2 |
-| `data/*.js` | `basedatos/02-datos-iniciales.sql` (y luego se borra) | 3 y 9 |
-| `netlify/functions/lia.mjs` → reglas de Lía | `backend/src/main/resources/prompts/` | 7 · `feature/rag-lia` |
-| `lia.mjs` → llamada a embeddings | `GeminiEmbeddingAdaptador` | 6 · `feature/embeddings-busqueda` |
-| `lia.mjs` → similitud coseno en memoria | `PgVectorAdaptador` (la hace la base de datos con HNSW) | 6 |
-| `lia.mjs` → validación de productos y emoción | `ValidadorRecomendaciones` (dominio) | 7 |
-| `lia.mjs` → llamada a Gemini con streaming | `GeminiChatAdaptador` | 7 |
+| `data/*.js` | `basedatos/03-datos-iniciales.sql` (y luego se borra) | 3 y 10 |
+| `netlify/functions/lia.mjs` → reglas de Lía | `backend/src/main/resources/prompts/` | 6 · `feature/rag-lia` |
+| `lia.mjs` → llamada a embeddings | `GeminiEmbeddingAdaptador` | 5 · `feature/embeddings-busqueda` |
+| `lia.mjs` → similitud coseno en memoria | `PgVectorAdaptador` (la hace la base de datos con HNSW) | 5 |
+| `lia.mjs` → validación de productos y emoción | `ValidadorRecomendaciones` (dominio) | 6 |
+| `lia.mjs` → llamada a Gemini con streaming | `GeminiChatAdaptador` | 6 |
 | `iu/assets/js/lia/plan-b.js` | Se queda (respaldo si el backend no responde) | — |
-| `netlify/`, `netlify.toml` | Se borran | 7 y 10 |
+| `netlify/`, `netlify.toml` | Se borran | 6 y 11 |
 
 ---
 

@@ -3,7 +3,7 @@
 Lo que debe incluir (según la especificación):
 
 1. **Indicadores calculados.**
-2. **Consultas SQL utilizadas** (las vistas están en `basedatos/04-vistas-indicadores.sql`).
+2. **Consultas SQL utilizadas** (las vistas están en `basedatos/05-vistas-indicadores.sql`).
 3. **Interpretación de los resultados.**
 4. **Al menos tres conclusiones respaldadas por evidencia** (cifras, tablas o gráficos).
 

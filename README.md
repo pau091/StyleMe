@@ -65,7 +65,7 @@ Lía funciona en dos modos:
 2. ⚠️ La clave es secreta: **nunca** la pegues en un archivo `.js` ni en un `.html`, y nunca la subas a GitHub.
 
 ### 2. Probar en tu computador
-1. Copia el archivo `.env.ejemplo`, llama a la copia **`.env`** y pega tu clave en `GEMINI_API_KEY=`. El archivo `.env` está en `.gitignore`, así que no se sube a GitHub.
+1. Copia el archivo `.env.example`, llama a la copia **`.env`** y pega tu clave en `GEMINI_API_KEY=`. El archivo `.env` está en `.gitignore`, así que no se sube a GitHub.
 2. En la terminal de VS Code (una sola vez): `npm install -g netlify-cli`
 3. En la carpeta del proyecto: `netlify dev`
 4. Abre la dirección que aparece (normalmente `http://localhost:8888`) y toca **"Habla con Lía"**.
