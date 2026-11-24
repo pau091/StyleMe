@@ -153,8 +153,8 @@ La clave de Gemini se saca gratis en [Google AI Studio](https://aistudio.google.
 ### 2. La página (interfaz de usuario)
 La página usa módulos de JavaScript, así que **no funciona con doble clic**. Se abre con un servidor local:
 
-1. En VS Code, clic derecho sobre `iu/index.html` → **Open with Live Server**.
-2. Se abre en `http://127.0.0.1:5500/iu/index.html`.
+1. En VS Code, toca **Go Live** (barra azul de abajo, a la derecha) o clic derecho sobre `iu/index.html` → **Open with Live Server**.
+2. Se abre en `http://127.0.0.1:5500/`. El archivo `.vscode/settings.json` le indica a Live Server que la página está en `iu/`.
 
 ### 3. Lía con IA (versión temporal, hasta la Fase 3)
 Con Live Server, Lía funciona en **modo básico** (reglas, sin IA). Para probarla con Gemini:
