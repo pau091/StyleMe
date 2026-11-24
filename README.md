@@ -2,7 +2,7 @@
 
 Página web para descubrir tiendas físicas de moda y belleza de Bucaramanga (Santander, Colombia): dónde quedan, cómo contactarlas, cómo armar una salida de compras y un probador virtual con inteligencia artificial.
 
-> Proyecto académico. Versión actual: **versión sencilla para la entrega** (ver [plan de entrega](planeacion/09-plan-entrega.md)).
+> Proyecto académico. ⚠️ En reorganización: se está agregando backend (Spring Boot), base de datos, n8n y Docker (ver [decisiones](planeacion/04-decisiones.md), D-045).
 
 ## Cómo abrir la página en tu computador
 
@@ -58,6 +58,8 @@ StyleMe/
 ├── assets/
 │   ├── css/estilos.css Diseño (los colores se cambian arriba, en :root)
 │   ├── js/             Un archivo por página + comun.js (compartido)
+│   ├── lia/2d/         Lía en 2D: retrato con expresiones (la que se usa hoy)
+│   ├── lia/3d/         Lía en 3D: se activa sola si existe lia.vrm (ver LEEME.txt)
 │   └── img/            Fotos de tiendas y productos
 │
 └── planeacion/         Documentos de planeación (no son parte de la página)
@@ -87,11 +89,11 @@ StyleMe/
 | [06 - Pendientes y preguntas](planeacion/06-pendientes.md) | Decisiones abiertas y preguntas por responder |
 | [07 - Historias de usuario MVP 1](planeacion/07-historias-mvp1.md) | Borrador de lo que debe poder hacer cada usuario en la primera versión |
 | [08 - Plan de validación](planeacion/08-validacion.md) | Encuesta y entrevistas para comprobar los problemas planteados |
-| [09 - Plan de entrega](planeacion/09-plan-entrega.md) | ⭐ **Versión sencilla** que se construye para la entrega de esta semana |
 | [10 - Proyecto completo](planeacion/10-proyecto-completo.md) | Visión original: qué buscar, implementar y mejorar después |
 | [11 - Contexto visual](planeacion/11-contexto-visual.md) | Resumen del proyecto + dirección visual, animaciones y fluidez (lo usan las skills de `.claude/skills/`) |
 | [12 - Lía, asesora virtual](planeacion/12-lia-asesora-virtual.md) | ⭐ Planeación de Lía: personaje 3D, IA (RAG + embeddings), conversación, tienda 3D y fases |
 | [13 - Lía: avatar y emociones](planeacion/13-lia-avatar-y-emociones.md) | Guía para crear a Lía en VRoid Studio, movimientos fluidos, emociones y lip sync |
+| [14 - Plan de ramas y fases](planeacion/14-plan-ramas-y-fases.md) | ⭐ Cómo se crean las ramas, qué sube cada una y en qué orden (entrega final) |
 
 ### Convención usada en los documentos
 

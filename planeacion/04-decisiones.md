@@ -22,7 +22,7 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-016 | 2026-11-16 | Se entregan **ambas** funciones de IA: probador virtual y recomendador de skincare y cuidado capilar | ✅ Confirmada (alcance a ajustar por el plazo) | Decisión de la autora |
 | D-017 | 2026-11-16 | Público objetivo: **todas las edades** (el probador virtual solo para mayores de edad, ver R-04) | ✅ Confirmada | Decisión de la autora |
 | D-018 | 2026-11-16 | El nombre StyleMe es una creación propia; la verificación de marca y dominio queda para después de la entrega | ✅ Confirmada | No es crítico para la entrega académica (R-13 sigue abierto) |
-| D-019 | 2026-11-16 | Para la entrega se construye una **versión sencilla** ([09](09-plan-entrega.md)); la visión completa queda en [10](10-proyecto-completo.md) para mejorar y monetizar después | ✅ Confirmada | Plazo de 1–2 días |
+| D-019 | 2026-11-16 | Para la entrega se construye una **versión sencilla** (el plan 09 se borró el 2026-11-23, ver D-047); la visión completa queda en [10](10-proyecto-completo.md) para mejorar y monetizar después | ✅ Confirmada | Plazo de 1–2 días |
 | D-020 | 2026-11-16 | Entregable: **página web**. Tecnología: HTML, CSS y JavaScript, con datos en JSON | ✅ Confirmada | Nivel junior, $0, sin servidor |
 | D-021 | 2026-11-16 | La autora trabaja **sola** | ✅ Confirmada | — |
 | D-022 | 2026-11-16 | Máximo **10 tiendas** locales reales en la primera versión | ✅ Confirmada | Alcance manejable |
@@ -39,7 +39,7 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-033 | 2026-11-20 | **Lía**, asesora virtual en 3D, guía a la persona dentro de la tienda | ✅ Confirmada | Decisión de la autora. Ver [12 - Lía](12-lia-asesora-virtual.md) |
 | D-034 | 2026-11-20 | Lía debe verse **limpia y elegante**, con rasgos inspirados en la referencia de la autora (cabello largo liso rubio con raya al medio, ojos azules, pestañas largas, pecas suaves, aretes plateados, cuello tortuga negro) | ✅ Confirmada | Identidad del personaje |
 | D-035 | 2026-11-20 | Lía es un **bot funcional**: conversación real y fluida con el cliente | ✅ Confirmada | Uso real de IA en el proyecto |
-| D-036 | 2026-11-20 | Imagen oficial del avatar de Lía: `assets/img/lia/lia-referencia.png` (incluye broche de flor rosa) | ✅ Confirmada | Decisión de la autora. Ver [13 - Avatar y emociones](13-lia-avatar-y-emociones.md) |
+| D-036 | 2026-11-20 | Imagen oficial del avatar de Lía: `assets/lia/3d/lia-referencia.png` (incluye broche de flor rosa) | ✅ Confirmada | Decisión de la autora. Ver [13 - Avatar y emociones](13-lia-avatar-y-emociones.md) |
 | D-037 | 2026-11-20 | Lía tiene **movimientos fluidos** y **expresiones faciales** con al menos 4 emociones: **preocupación, felicidad, tristeza y duda** | ✅ Confirmada | Decisión de la autora |
 | D-038 | 2026-11-20 | La función del servidor de Lía se publica en **Netlify** (aprueba P-010) | ✅ Confirmada | Decisión de la autora |
 | D-039 | 2026-11-20 | El modelo 3D de Lía se hace en **VRoid Studio** y se exporta en VRM (aprueba P-011) | ✅ Confirmada | Decisión de la autora |
@@ -48,6 +48,10 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-042 | 2026-11-20 | Proveedor de IA de Lía: **Gemini** (aprueba P-016) | ✅ Confirmada | Plan gratuito; el código permite cambiarlo |
 | D-043 | 2026-11-20 | Lía en 3D debe verse **similar** a la referencia, no idéntica | ✅ Confirmada | Decisión de la autora |
 | D-044 | 2026-11-20 | Lía aparece como un **personaje** que habla con **globos de texto**, y la persona le responde ahí mismo. **No** es una ventana de chat | ✅ Confirmada | Que sea interactiva y se sienta como un personaje |
+| D-045 | 2026-11-23 | Requisitos oficiales de la entrega final: frontend + **backend Spring Boot**, script SQL con datos iniciales, diagramas entidad-relación y de arquitectura, workflows de **n8n**, **Docker Compose**, `.env.example`, Swagger/Postman, documento de pruebas, README, presentación, **informe de análisis de datos**, `AI_USAGE.md` y trabajo con ramas y PRs | ✅ Confirmada | Documento del profesor. La IA solo actúa como tutora técnica |
+| D-046 | 2026-11-23 | Lía se separa en `assets/lia/2d/` (retrato con expresiones, **activa**) y `assets/lia/3d/` (en espera). La decisión final entre 2D y 3D se toma cuando se mejore lo visual, según el tiempo | ✅ Confirmada | La autora quiere el 3D, pero el backend tiene prioridad |
+| D-047 | 2026-11-23 | Limpieza: se borran las imágenes sin uso (captura, logos originales, `lia-retrato.jpg`) y el plan 09 (versión sencilla). `data/*.js`, la función de Netlify y `netlify.toml` se borran **cuando su reemplazo (SQL, Spring Boot, Docker) esté listo** | ✅ Confirmada | Decisión de la autora |
+| D-048 | 2026-11-23 | Estrategia de Git: ramas permanentes `main` y `develop` + 9 ramas de trabajo por área (una a la vez, con PR) + ramas `fix/...`. Plan en [14](14-plan-ramas-y-fases.md) | ✅ Confirmada | La autora pidió menos ramas; se agrupan por área con varios commits cada una |
 
 ## Propuestas en espera de aprobación 💡
 

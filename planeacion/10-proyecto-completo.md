@@ -1,7 +1,7 @@
 # 10 · Proyecto completo: StyleMe (visión original)
 
 > Esta es la plataforma que se quiere construir **después** de la entrega académica, para poder ofrecerla a las tiendas y monetizarla.
-> La versión que se entrega esta semana está en [09 - Plan de entrega](09-plan-entrega.md).
+> ⚠️ Con los requisitos de la entrega final (D-045), buena parte de esta visión (roles, reseñas, favoritos, backend) **sí se va a construir**. Este documento se actualizará al organizar las fases.
 >
 > Detalle de cada parte: [01 Visión](01-vision.md) · [02 Alcance](02-alcance-y-fases.md) · [03 Roles](03-roles-y-permisos.md) · [05 Riesgos](05-riesgos.md) · [07 Historias de usuario](07-historias-mvp1.md) · [08 Validación](08-validacion.md)
 
