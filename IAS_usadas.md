@@ -48,7 +48,7 @@ Al recibir la directriz del proyecto, la IA pasa a **modo de tutoría técnica**
 | Diseño, animaciones e intro (`iu/assets/css/*`, `movimiento.js`, `intro.js`) | Claude | Generó estilos, animaciones y la intro 3D siguiendo la guía visual | Definió la identidad visual ("Vitrina de Bucaramanga") y aprobó el resultado |
 | Datos del catálogo (`iu/data/*.js`) | ✏️ | ✏️ | Eligió las tiendas reales; ✏️ |
 | Lía: personaje y chat (`iu/assets/js/lia/`, `iu/assets/css/lia.css`) | Claude | Generó el personaje con globos de texto, emociones y el plan B por reglas | Definió la personalidad, el aspecto y las emociones |
-| Lía: imágenes 2D (`iu/assets/lia/2d/`) y referencia 3D | ✏️ | ✏️ | ✏️ |
+| Lía: imágenes de las expresiones (`iu/assets/lia/`) | ✏️ | ✏️ | ✏️ |
 | Lía: función con RAG (`netlify/functions/lia.mjs`) | Claude | Generó la función: embeddings, similitud, instrucciones del modelo y streaming | Eligió Gemini (D-042), obtuvo la clave, probó |
 | Reorganización del repositorio (rama `refactor/estructura-proyecto`) | Claude | Movió archivos, corrigió rutas, creó la estructura de `docs/` | Decidió la estructura y los nombres, hizo todos los commits |
 | ✏️ (lo que se hizo con ChatGPT) | ChatGPT | ✏️ | ✏️ |
@@ -92,5 +92,5 @@ El detalle y el motivo de cada decisión están en [docs/planeacion/04-decisione
 |---|---|---|
 | `chore/limpieza-archivos` | Claude | Identificó archivos sin uso, separó Lía en 2D/3D y redactó el plan de ramas |
 | `refactor/estructura-proyecto` | Claude | Modelo de datos, arquitectura hexagonal, mover el sitio a `iu/`, estructura de `docs/` y este documento |
-| `feature/base-de-datos` | Claude | Generó el `docker-compose.yml` de PostgreSQL + pgvector (a pedido de la autora), configuró las variables locales y Live Server, y generó el diagrama entidad-relación (DBML y Mermaid) con su explicación de formas normales, a partir del modelo de datos acordado |
+| `feature/base-de-datos` | Claude | Generó el `docker-compose.yml` de PostgreSQL + pgvector (a pedido de la autora), configuró las variables locales y Live Server, y generó el diagrama entidad-relación (DBML y Mermaid) con su explicación de formas normales, a partir del modelo de datos acordado, y quitó el código y la documentación de Lía 3D (a pedido de la autora) |
 | *(siguientes ramas)* | | *(se completa al terminar cada rama)* |
