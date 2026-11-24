@@ -170,10 +170,10 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 1 ✅ | Mover páginas HTML, `assets/` y `data/` a `frontend/` | `refactor(frontend): mover el sitio a frontend/` |
 | 1b ✅ | Renombrar `frontend/` → `iu/` (nombres en español, D-058) | `refactor(iu): renombrar frontend a iu` |
 | 2 ✅ | `planeacion/` → `docs/planeacion/` + carpetas de entregables | `docs: crear estructura de documentación` |
-| 3 | `IAS_usadas.md` en la raíz: registro del uso de IA (D-060) | `docs: agregar registro de uso de ia` |
-| 3b | Reordenar las fases para llegar antes a la IA (D-059) | `docs(planeacion): priorizar la fase de inteligencia artificial` |
-| 4 | `backend/` con las capas `dominio`, `aplicacion`, `infraestructura` (con `package-info.java`); `basedatos/`, `n8n/`; `.env.ejemplo` → `.env.example`; `.gitignore` para Java | `chore: preparar estructura de backend, base de datos y n8n` |
-| 5 | README con la nueva estructura | `docs: actualizar README con la estructura del proyecto` |
+| 3 ✅ | `IAS_usadas.md` en la raíz: registro del uso de IA (D-060) | `docs: agregar registro de uso de ia` |
+| 3b ✅ | Reordenar las fases para llegar antes a la IA (D-059) | `docs(planeacion): priorizar la fase de inteligencia artificial` |
+| 4 ✅ | `backend/` con las capas `dominio`, `aplicacion`, `infraestructura` (con `package-info.java`); `basedatos/`, `n8n/`; `.env.ejemplo` → `.env.example`; `.gitignore` para Java | `chore: preparar estructura de backend, base de datos y n8n` |
+| 5 ✅ | README con la nueva estructura | `docs: actualizar README con la estructura del proyecto` |
 
 ➡️ **Fin de Fase 0:** PR `develop → main` → `release: fase 0 - organización`.
 
