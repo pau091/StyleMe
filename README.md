@@ -24,7 +24,71 @@ artificial que recomienda productos reales del catálogo usando **embeddings, b�
 ```
 
 - **Arquitectura hexagonal** (puertos y adaptadores): [docs/planeacion/16-arquitectura-hexagonal.md](docs/planeacion/16-arquitectura-hexagonal.md)
-- **Modelo de datos** (16 tablas, con búsqueda vectorial): [docs/planeacion/15-modelo-de-datos.md](docs/planeacion/15-modelo-de-datos.md)
+- **Modelo de datos** (16 tablas, con búsqueda vectorial): ver la sección siguiente
+
+---
+
+## Modelo de datos (diagrama entidad-relación)
+
+**16 tablas** en PostgreSQL + pgvector, organizadas en 4 grupos y **normalizadas hasta la cuarta forma normal (4FN)**.
+
+```mermaid
+erDiagram
+    categoria ||--o{ tienda : "categoría principal"
+    zona |o--o{ tienda : "ubica"
+    usuario |o--o{ tienda : "comerciante"
+    tienda ||--o{ producto : "vende"
+    categoria ||--o{ producto : "clasifica"
+    producto ||--o{ producto_ingrediente : "contiene"
+    ingrediente ||--o{ producto_ingrediente : "aparece en"
+    producto ||--o{ producto_etiqueta : "se describe con"
+    etiqueta ||--o{ producto_etiqueta : "describe"
+    usuario ||--o{ resena : "escribe"
+    tienda |o--o{ resena : "recibe"
+    producto |o--o{ resena : "recibe"
+    usuario ||--o{ favorito : "guarda"
+    tienda |o--o{ favorito : "es guardada"
+    producto |o--o{ favorito : "es guardado"
+    usuario |o--o{ evento : "genera"
+    tienda |o--o{ evento : "aparece en"
+    producto |o--o{ evento : "aparece en"
+    categoria |o--o{ evento : "aparece en"
+    usuario |o--o{ conversacion_lia : "conversa"
+    categoria |o--o{ conversacion_lia : "tema"
+    conversacion_lia ||--o{ lia_recomendacion : "recomienda"
+    producto ||--o{ lia_recomendacion : "es recomendado"
+    tienda |o--o{ fragmento_conocimiento : "se describe en"
+    producto |o--o{ fragmento_conocimiento : "se describe en"
+    evaluacion_ia {
+        bigint id PK
+        varchar pregunta
+        numeric precision_k
+        boolean sin_alucinacion
+    }
+    fragmento_conocimiento {
+        bigint id PK
+        text texto
+        char hash_texto
+        vector embedding "768 dim, indice HNSW"
+    }
+```
+
+| Grupo | Tablas | Para qué |
+|---|---|---|
+| **Catálogo** | `categoria`, `zona`, `tienda`, `producto`, `ingrediente`, `producto_ingrediente`, `etiqueta`, `producto_etiqueta` | Tiendas y productos reales, con ingredientes y características |
+| **Comunidad** | `usuario`, `resena`, `favorito` | Usuarios con roles, reseñas de 1 a 5 corazones y favoritos (de tiendas y productos) |
+| **Análisis** | `evento`, `conversacion_lia`, `lia_recomendacion` | Lo que pasa en la página y con Lía, para el informe de indicadores |
+| **IA (RAG)** | `fragmento_conocimiento`, `evaluacion_ia` | Textos con su **embedding** (`vector(768)`, índice **HNSW**) y resultados de las pruebas de IA |
+
+**Normalización:**
+- **1FN:** sin listas en un campo (los ingredientes van en `producto_ingrediente`).
+- **2FN:** en las tablas con llave compuesta, cada dato depende de la llave completa (`orden` depende del producto **y** del ingrediente).
+- **3FN:** sin dependencias transitivas (`tienda` guarda `zona_id`, no el nombre de la zona).
+- **4FN:** ingredientes y etiquetas son hechos independientes, por eso van en tablas separadas.
+
+Diagrama completo con todos los campos y reglas: [docs/diagramas/entidad-relacion.dbml](docs/diagramas/entidad-relacion.dbml) ·
+Explicación detallada: [docs/diagramas/entidad-relacion.md](docs/diagramas/entidad-relacion.md) ·
+Diseño de cada campo: [docs/planeacion/15-modelo-de-datos.md](docs/planeacion/15-modelo-de-datos.md)
 
 ---
 
@@ -38,8 +102,7 @@ StyleMe/
 │   └── assets/
 │       ├── css/            Estilos, animaciones e intro
 │       ├── js/             Un archivo por página + comun.js; lia/ (personaje y plan B)
-│       ├── lia/2d/         Lía en 2D: retrato con expresiones (activa)
-│       ├── lia/3d/         Lía en 3D: se activa si existe lia.vrm
+│       ├── lia/            Lía: retrato 2D con sus expresiones
 │       └── img/            Fotos de tiendas, categorías y decoración
 │
 ├── backend/                API Spring Boot con arquitectura hexagonal
@@ -153,8 +216,8 @@ La clave de Gemini se saca gratis en [Google AI Studio](https://aistudio.google.
 ### 2. La página (interfaz de usuario)
 La página usa módulos de JavaScript, así que **no funciona con doble clic**. Se abre con un servidor local:
 
-1. En VS Code, clic derecho sobre `iu/index.html` → **Open with Live Server**.
-2. Se abre en `http://127.0.0.1:5500/iu/index.html`.
+1. En VS Code, toca **Go Live** (barra azul de abajo, a la derecha) o clic derecho sobre `iu/index.html` → **Open with Live Server**.
+2. Se abre en `http://127.0.0.1:5500/`. El archivo `.vscode/settings.json` le indica a Live Server que la página está en `iu/`.
 
 ### 3. Lía con IA (versión temporal, hasta la Fase 3)
 Con Live Server, Lía funciona en **modo básico** (reglas, sin IA). Para probarla con Gemini:
@@ -198,8 +261,7 @@ Detalle y orden de las ramas: [docs/planeacion/14-plan-ramas-y-fases.md](docs/pl
 | [08 - Plan de validación](docs/planeacion/08-validacion.md) | Encuesta y entrevistas para comprobar los problemas planteados |
 | [10 - Proyecto completo](docs/planeacion/10-proyecto-completo.md) | Visión original: qué buscar, implementar y mejorar después |
 | [11 - Contexto visual](docs/planeacion/11-contexto-visual.md) | Guía de diseño: dirección visual, animaciones y fluidez |
-| [12 - Lía, asesora virtual](docs/planeacion/12-lia-asesora-virtual.md) | Planeación de Lía: personaje, IA (RAG + embeddings) y conversación |
-| [13 - Lía: avatar y emociones](docs/planeacion/13-lia-avatar-y-emociones.md) | Guía para crear a Lía en VRoid Studio, emociones y lip sync |
+| [12 - Lía, asesora virtual](docs/planeacion/12-lia-asesora-virtual.md) | Lía: personaje 2D, expresiones, RAG con embeddings, conversación y cómo se evalúa |
 | [14 - Plan de ramas y fases](docs/planeacion/14-plan-ramas-y-fases.md) | ⭐ Ramas, commits y orden de trabajo de la entrega final |
 | [15 - Modelo de datos](docs/planeacion/15-modelo-de-datos.md) | ⭐ Las 16 tablas (con pgvector para el RAG), relaciones e indicadores |
 | [16 - Arquitectura hexagonal](docs/planeacion/16-arquitectura-hexagonal.md) | ⭐ Dominio, puertos, casos de uso y adaptadores del backend |

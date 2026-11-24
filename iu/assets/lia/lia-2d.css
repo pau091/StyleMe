@@ -4,7 +4,6 @@
  * Lía como foto, con cuatro poses que cambian según su emoción
  * (principal, feliz, duda, asombro), boca que se mueve al hablar y parpadeo.
  * Las imágenes están en esta misma carpeta.
- * Si Lía 3D está activa (clase .lia-con-3d), el retrato se oculta en 3d/lia-3d.css.
  */
 
 /* Las cuatro poses comparten el busto de la foto principal. */

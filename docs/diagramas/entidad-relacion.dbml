@@ -1,0 +1,234 @@
+// =====================================================================
+// STYLEME · DIAGRAMA ENTIDAD-RELACIÓN (DBML)
+// Motor: PostgreSQL 17 + pgvector
+// Para verlo: pegar este texto en https://dbdiagram.io
+// Diseño y justificación: docs/planeacion/15-modelo-de-datos.md
+// =====================================================================
+
+Project StyleMe {
+  database_type: 'PostgreSQL'
+  Note: '16 tablas en 4 grupos: catálogo, comunidad, análisis e IA (RAG). Normalizado hasta 4FN.'
+}
+
+// ---------------------------------------------------------------------
+// GRUPO 1 · CATÁLOGO
+// ---------------------------------------------------------------------
+
+Table categoria {
+  id smallint [pk, increment]
+  slug varchar(20) [not null, unique, note: 'ropa | maquillaje | skincare | capilar']
+  nombre varchar(40) [not null]
+}
+
+Table zona {
+  id smallint [pk, increment]
+  nombre varchar(60) [not null, unique, note: 'Cabecera, Sur, La Aurora...']
+}
+
+Table tienda {
+  id bigint [pk, increment]
+  slug varchar(60) [not null, unique, note: 'mantiene los enlaces tienda.html?id=bohor']
+  nombre varchar(100) [not null]
+  descripcion varchar(500)
+  categoria_principal_id smallint [not null, ref: > categoria.id]
+  zona_id smallint [ref: > zona.id, note: 'NULL si no se sabe']
+  direccion varchar(150)
+  lat "numeric(9,6)" [note: 'NULL = no aparece en el mapa']
+  lng "numeric(9,6)"
+  horario varchar(120)
+  whatsapp varchar(15)
+  telefono varchar(15)
+  instagram varchar(60)
+  web varchar(150)
+  foto varchar(255)
+  verificado boolean [not null, default: false]
+  activa boolean [not null, default: true]
+  comerciante_id bigint [ref: > usuario.id, note: 'dueño (rol COMERCIANTE); NULL si no tiene']
+  fecha_registro timestamp [not null, default: `now()`]
+}
+
+Table producto {
+  id bigint [pk, increment]
+  codigo varchar(10) [not null, unique, note: 'p001, p028...']
+  tienda_id bigint [not null, ref: > tienda.id]
+  categoria_id smallint [not null, ref: > categoria.id]
+  nombre varchar(150) [not null]
+  marca varchar(80)
+  precio integer [note: 'CHECK (precio > 0) · pesos sin decimales · NULL si no se sabe']
+  descripcion varchar(500)
+  foto varchar(500)
+  fuente varchar(500) [note: 'enlace al producto en la tienda']
+  fuente_ingredientes varchar(500)
+  tipo_prenda varchar(10) [note: "CHECK IN ('superior','inferior','completa') · solo ropa"]
+  foto_probador varchar(255) [note: 'PNG sin fondo para el probador']
+  es_ejemplo boolean [not null, default: false, note: 'true = producto de ejemplo, no real']
+  activo boolean [not null, default: true]
+  fecha_registro timestamp [not null, default: `now()`]
+}
+
+Table ingrediente {
+  id bigint [pk, increment]
+  nombre varchar(120) [not null, unique, note: 'nombre INCI: Niacinamide']
+}
+
+Table producto_ingrediente {
+  producto_id bigint [not null, ref: > producto.id]
+  ingrediente_id bigint [not null, ref: > ingrediente.id]
+  orden smallint [not null, note: 'posición en la etiqueta (1 = mayor concentración)']
+  indexes {
+    (producto_id, ingrediente_id) [pk]
+  }
+}
+
+Table etiqueta {
+  id smallint [pk, increment]
+  grupo varchar(15) [not null, note: "CHECK IN ('paso','tipo_piel','tipo_cabello','cuero','objetivo','libre_de')"]
+  valor varchar(30) [not null, note: 'grasa, rizado, hidratar, fragancia, serum...']
+  indexes {
+    (grupo, valor) [unique]
+  }
+}
+
+Table producto_etiqueta {
+  producto_id bigint [not null, ref: > producto.id]
+  etiqueta_id smallint [not null, ref: > etiqueta.id]
+  indexes {
+    (producto_id, etiqueta_id) [pk]
+  }
+}
+
+// ---------------------------------------------------------------------
+// GRUPO 2 · COMUNIDAD
+// ---------------------------------------------------------------------
+
+Table usuario {
+  id bigint [pk, increment]
+  nombre varchar(80) [not null]
+  correo varchar(120) [not null, unique]
+  contrasena_hash varchar(100) [not null, note: 'BCrypt; nunca la contraseña real']
+  rol varchar(15) [not null, default: 'COMPRADOR', note: "CHECK IN ('COMPRADOR','COMERCIANTE','ADMIN')"]
+  activo boolean [not null, default: true]
+  fecha_registro timestamp [not null, default: `now()`]
+  Note: 'Ley 1581: solo datos mínimos'
+}
+
+Table resena {
+  id bigint [pk, increment]
+  usuario_id bigint [not null, ref: > usuario.id]
+  tienda_id bigint [ref: > tienda.id]
+  producto_id bigint [ref: > producto.id]
+  corazones smallint [not null, note: 'CHECK (corazones BETWEEN 1 AND 5)']
+  comentario varchar(500)
+  estado varchar(10) [not null, default: 'PENDIENTE', note: "CHECK IN ('PENDIENTE','PUBLICADA','RECHAZADA') · lo cambia n8n"]
+  fecha timestamp [not null, default: `now()`]
+  indexes {
+    (usuario_id, tienda_id) [unique]
+    (usuario_id, producto_id) [unique]
+  }
+  Note: 'CHECK ((tienda_id IS NULL) <> (producto_id IS NULL)): es de UNA tienda o de UN producto'
+}
+
+Table favorito {
+  id bigint [pk, increment]
+  usuario_id bigint [not null, ref: > usuario.id]
+  tienda_id bigint [ref: > tienda.id]
+  producto_id bigint [ref: > producto.id]
+  fecha timestamp [not null, default: `now()`]
+  indexes {
+    (usuario_id, tienda_id) [unique]
+    (usuario_id, producto_id) [unique]
+  }
+  Note: 'CHECK ((tienda_id IS NULL) <> (producto_id IS NULL))'
+}
+
+// ---------------------------------------------------------------------
+// GRUPO 3 · ANÁLISIS DE DATOS
+// ---------------------------------------------------------------------
+
+Table evento {
+  id bigint [pk, increment]
+  tipo varchar(25) [not null, note: "CHECK IN ('VER_TIENDA','VER_PRODUCTO','CLIC_WHATSAPP','CLIC_COMO_LLEGAR','BUSQUEDA','FILTRAR_CATEGORIA','USAR_PROBADOR','USAR_RECOMENDADOR','ARMAR_SALIDA','ABRIR_LIA')"]
+  sesion_id varchar(36) [not null, note: 'código anónimo de la visita']
+  usuario_id bigint [ref: > usuario.id, note: 'NULL si no inició sesión']
+  tienda_id bigint [ref: > tienda.id]
+  producto_id bigint [ref: > producto.id]
+  categoria_id smallint [ref: > categoria.id]
+  texto_busqueda varchar(100)
+  cantidad_resultados integer [note: '0 = búsqueda sin resultados']
+  dispositivo varchar(10) [note: "CHECK IN ('celular','computador')"]
+  detalle jsonb [note: 'datos extra que cambian según el tipo de evento']
+  fecha_hora timestamp [not null, default: `now()`]
+  indexes {
+    (tipo, fecha_hora)
+  }
+}
+
+Table conversacion_lia {
+  id bigint [pk, increment]
+  sesion_id varchar(36) [not null]
+  usuario_id bigint [ref: > usuario.id]
+  tema varchar(12) [not null, note: "CHECK IN ('catalogo','general','social','aclaracion')"]
+  categoria_id smallint [ref: > categoria.id, note: 'pasillo del que más se habló']
+  sentimiento_final varchar(10) [note: "CHECK IN ('positivo','negativo','neutral')"]
+  cantidad_mensajes smallint [not null]
+  modo varchar(6) [not null, note: "CHECK IN ('IA','PLAN_B','MIXTO')"]
+  similitud_promedio "numeric(4,3)" [note: 'calidad del contexto recuperado (0 a 1)']
+  latencia_promedio_ms integer
+  tokens_entrada integer
+  tokens_salida integer
+  inicio timestamp [not null]
+  fin timestamp
+  Note: 'Un resumen por conversación; NO se guarda el texto de la persona'
+}
+
+Table lia_recomendacion {
+  conversacion_id bigint [not null, ref: > conversacion_lia.id]
+  producto_id bigint [not null, ref: > producto.id]
+  veces smallint [not null, default: 1]
+  indexes {
+    (conversacion_id, producto_id) [pk]
+  }
+}
+
+// ---------------------------------------------------------------------
+// GRUPO 4 · INTELIGENCIA ARTIFICIAL (RAG)
+// ---------------------------------------------------------------------
+
+Table fragmento_conocimiento {
+  id bigint [pk, increment]
+  tipo_fuente varchar(10) [not null, note: "CHECK IN ('tienda','producto','guia')"]
+  tienda_id bigint [ref: > tienda.id]
+  producto_id bigint [ref: > producto.id]
+  titulo varchar(150) [not null]
+  texto text [not null, note: 'lo que se convierte en embedding y se pasa a Gemini como contexto']
+  hash_texto char(64) [not null, note: 'SHA-256 del texto: si no cambia, no se recalcula el embedding']
+  embedding "vector(768)" [not null, note: 'pgvector · gemini-embedding-001 · índice HNSW (vector_cosine_ops)']
+  modelo_embedding varchar(40) [not null]
+  actualizado timestamp [not null, default: `now()`]
+  indexes {
+    embedding [type: 'hnsw', note: 'USING hnsw (embedding vector_cosine_ops)']
+  }
+}
+
+Table evaluacion_ia {
+  id bigint [pk, increment]
+  ejecucion varchar(36) [not null, note: 'agrupa las preguntas de una misma corrida']
+  pregunta varchar(300) [not null]
+  tipo_pregunta varchar(12) [not null, note: "CHECK IN ('catalogo','fuera_tema','salud','ambigua','general')"]
+  esperado jsonb [not null]
+  obtenido jsonb [not null]
+  precision_k "numeric(4,3)"
+  recall_k "numeric(4,3)"
+  sin_alucinacion boolean [not null]
+  aprobada boolean [not null]
+  latencia_ms integer
+  fecha timestamp [not null, default: `now()`]
+}
+
+// ---------------------------------------------------------------------
+// GRUPOS VISUALES (colores en dbdiagram)
+// ---------------------------------------------------------------------
+TableGroup catalogo { categoria zona tienda producto ingrediente producto_ingrediente etiqueta producto_etiqueta }
+TableGroup comunidad { usuario resena favorito }
+TableGroup analisis { evento conversacion_lia lia_recomendacion }
+TableGroup ia_rag { fragmento_conocimiento evaluacion_ia }
