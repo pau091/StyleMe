@@ -51,7 +51,7 @@ SDKMAN solo cambia la versión dentro de Git Bash. Para el resto de Windows, cre
 La página usa un módulo de JavaScript (el probador), así que **no funciona con doble clic** sobre el archivo. Hay que abrirla con un servidor local:
 
 1. En VS Code, instala la extensión **Live Server** (de Ritwick Dey).
-2. Abre `frontend/index.html`.
+2. Abre `iu/index.html`.
 3. Clic derecho → **Open with Live Server**.
 
 ## Cómo activar a Lía (la asesora con IA)
@@ -132,7 +132,7 @@ StyleMe/
 | [07 - Historias de usuario MVP 1](planeacion/07-historias-mvp1.md) | Borrador de lo que debe poder hacer cada usuario en la primera versión |
 | [08 - Plan de validación](planeacion/08-validacion.md) | Encuesta y entrevistas para comprobar los problemas planteados |
 | [10 - Proyecto completo](planeacion/10-proyecto-completo.md) | Visión original: qué buscar, implementar y mejorar después |
-| [11 - Contexto visual](planeacion/11-contexto-visual.md) | Resumen del proyecto + dirección visual, animaciones y fluidez (lo usan las skills de `.claude/skills/`) |
+| [11 - Contexto visual](planeacion/11-contexto-visual.md) | Resumen del proyecto + dirección visual, animaciones y fluidez |
 | [12 - Lía, asesora virtual](planeacion/12-lia-asesora-virtual.md) | ⭐ Planeación de Lía: personaje 3D, IA (RAG + embeddings), conversación, tienda 3D y fases |
 | [13 - Lía: avatar y emociones](planeacion/13-lia-avatar-y-emociones.md) | Guía para crear a Lía en VRoid Studio, movimientos fluidos, emociones y lip sync |
 | [14 - Plan de ramas y fases](planeacion/14-plan-ramas-y-fases.md) | ⭐ Cómo se crean las ramas, qué sube cada una y en qué orden (entrega final) |
