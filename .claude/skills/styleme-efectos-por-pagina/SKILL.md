@@ -7,8 +7,8 @@ description: Recetas del "momento estrella" de cada página de StyleMe - portada
 
 ## Antes de empezar
 - Lee `planeacion/11-contexto-visual.md` (tabla de páginas en §1 y catálogo de efectos en §4.3).
-- Asegúrate de que existan `assets/css/movimiento.css` y `assets/js/movimiento.js` (skill `styleme-animaciones`) y que estén enlazados en la página.
-- Lee el HTML **y** el JS de la página antes de tocarla: casi todo se pinta con `innerHTML` desde `assets/js/<pagina>.js`.
+- Asegúrate de que existan `frontend/assets/css/movimiento.css` y `frontend/assets/js/movimiento.js` (skill `styleme-animaciones`) y que estén enlazados en la página.
+- Lee el HTML **y** el JS de la página antes de tocarla: casi todo se pinta con `innerHTML` desde `frontend/assets/js/<pagina>.js`.
 - **Un solo momento estrella por página.** El resto: revelados suaves y microinteracciones. Principio 7: no agregar cosas solo para que se vea más grande.
 - Español sencillo, comentarios con ✏️ donde la autora pueda cambiar algo, sin git.
 

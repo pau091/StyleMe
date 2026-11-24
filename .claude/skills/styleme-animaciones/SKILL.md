@@ -1,6 +1,6 @@
 ---
 name: styleme-animaciones
-description: Sistema de animación de StyleMe - tokens de movimiento, revelado al hacer scroll, cascadas (stagger), telón con clip-path, títulos línea por línea, scroll-driven animations y prefers-reduced-motion. Usar al agregar o cambiar cualquier animación de entrada, keyframes o efecto de scroll en StyleMe, o al crear assets/css/movimiento.css y assets/js/movimiento.js.
+description: Sistema de animación de StyleMe - tokens de movimiento, revelado al hacer scroll, cascadas (stagger), telón con clip-path, títulos línea por línea, scroll-driven animations y prefers-reduced-motion. Usar al agregar o cambiar cualquier animación de entrada, keyframes o efecto de scroll en StyleMe, o al crear frontend/assets/css/movimiento.css y frontend/assets/js/movimiento.js.
 ---
 
 # StyleMe · Animaciones
@@ -12,7 +12,7 @@ description: Sistema de animación de StyleMe - tokens de movimiento, revelado a
 
 ## 1. Archivos base (créalos si no existen)
 
-### `assets/css/movimiento.css`
+### `frontend/assets/css/movimiento.css`
 Se enlaza en el `<head>` de **todas** las páginas, justo después de `estilos.css`.
 
 ```css
@@ -80,7 +80,7 @@ Se enlaza en el `<head>` de **todas** las páginas, justo después de `estilos.c
 }
 ```
 
-### `assets/js/movimiento.js`
+### `frontend/assets/js/movimiento.js`
 Se carga **al final** de cada página, después del script de la página.
 
 ```js

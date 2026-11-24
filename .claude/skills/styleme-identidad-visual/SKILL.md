@@ -7,7 +7,7 @@ description: Identidad visual de StyleMe (concepto "Vitrina de Bucaramanga"): pa
 
 ## Antes de empezar
 1. Lee `planeacion/11-contexto-visual.md` (secciones 1–3). Es la fuente de verdad.
-2. Lee `assets/css/estilos.css` (los tokens están en `:root`).
+2. Lee `frontend/assets/css/estilos.css` (los tokens están en `:root`).
 3. Responde y comenta el código **en español sencillo**: la autora es programadora junior. Nombres de clases, variables y funciones en español (`tarjeta`, `pintarEncabezado`, `--color-marca`), como el resto del proyecto.
 4. **No hagas commits ni uses git.** La autora hace todo el git.
 
@@ -34,9 +34,9 @@ Seda (movimiento suave y continuo) · Vitrina (las fotos se revelan como un esca
 - Mobile first. Cortes: 720px y 1080px. Sin scroll horizontal nunca.
 
 ### Íconos e imágenes
-- Íconos: solo los de `ICONOS` en `assets/js/comun.js` (línea, `stroke-width 1.5`). Para uno nuevo, agrégalo ahí con el mismo estilo (viewBox 24, sin relleno). Sin emojis en la interfaz.
+- Íconos: solo los de `ICONOS` en `frontend/assets/js/comun.js` (línea, `stroke-width 1.5`). Para uno nuevo, agrégalo ahí con el mismo estilo (viewBox 24, sin relleno). Sin emojis en la interfaz.
 - Fotos: `object-fit: cover`; logos PNG con `contain` (ya existe la regla). Fondo `--color-beige` mientras cargan.
-- Decoración: `assets/img/decoracion/`.
+- Decoración: `frontend/assets/img/decoracion/`.
 
 ### Tono de los textos
 Cercano, en "tú", frases cortas, local ("Bucaramanga", "Cabecera"). Nada de promesas que la IA no cumple (no "tu talla perfecta", no "diagnóstico").

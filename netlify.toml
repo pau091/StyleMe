@@ -1,13 +1,13 @@
 # CONFIGURACIÓN DE NETLIFY
 # ------------------------
-# La página es estática (no necesita "build"): se publica tal cual desde la carpeta raíz.
+# La página es estática (no necesita "build"): se publica tal cual desde la carpeta frontend/.
 # Las funciones del servidor (el cerebro de Lía) están en netlify/functions/.
 #
 # 🔑 La clave de Gemini NO va aquí. Se pone en Netlify:
 #    Site configuration → Environment variables → GEMINI_API_KEY
 
 [build]
-  publish = "."
+  publish = "frontend"
 
 [functions]
   directory = "netlify/functions"

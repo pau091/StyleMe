@@ -51,7 +51,7 @@ SDKMAN solo cambia la versión dentro de Git Bash. Para el resto de Windows, cre
 La página usa un módulo de JavaScript (el probador), así que **no funciona con doble clic** sobre el archivo. Hay que abrirla con un servidor local:
 
 1. En VS Code, instala la extensión **Live Server** (de Ritwick Dey).
-2. Abre `index.html`.
+2. Abre `frontend/index.html`.
 3. Clic derecho → **Open with Live Server**.
 
 ## Cómo activar a Lía (la asesora con IA)
