@@ -4,6 +4,48 @@ Página web para descubrir tiendas físicas de moda y belleza de Bucaramanga (Sa
 
 > Proyecto académico. ⚠️ En reorganización: se está agregando backend (Spring Boot), base de datos, n8n y Docker (ver [decisiones](planeacion/04-decisiones.md), D-045).
 
+## ⚠️ IMPORTANTE: versión de Java (SDKMAN)
+
+El backend usa **Java 21**. Para instalar Java y cambiar de versión cuando haga falta se usa **[SDKMAN](https://sdkman.io/)**.
+
+### 1. Instalar SDKMAN en Windows (una sola vez)
+SDKMAN no funciona en PowerShell: se usa desde **Git Bash** (viene con Git).
+
+1. SDKMAN necesita el programa `zip`, que Git Bash no trae:
+   - Descarga `zip` y `bzip2` de [GnuWin32](https://gnuwin32.sourceforge.net/packages/zip.htm) (los "Binaries").
+   - Copia `zip.exe` y `bzip2.dll` en `C:\Program Files\Git\usr\bin`.
+2. Abre **Git Bash** y ejecuta:
+   ```bash
+   curl -s "https://get.sdkman.io" | bash
+   ```
+3. Cierra y vuelve a abrir Git Bash. Comprueba con `sdk version`.
+
+### 2. Instalar y cambiar la versión de Java
+```bash
+sdk list java                  # lista las versiones; busca una "21.x.x-tem" (Temurin)
+sdk install java 21.x.x-tem    # cambia 21.x.x por la versión exacta que aparezca
+sdk default java 21.x.x-tem    # versión por defecto, para siempre
+sdk use java 17.x.x-tem        # cambia la versión SOLO en esa terminal
+sdk current java               # qué versión está activa
+java -version                  # confirmar
+```
+
+### 3. Que el proyecto elija su versión solo
+En la carpeta `backend/` habrá un archivo `.sdkmanrc` con la versión del proyecto. Al entrar a la carpeta:
+```bash
+cd backend
+sdk env          # activa la versión que dice .sdkmanrc
+```
+(Para crearlo: `sdk env init` dentro de `backend/`.)
+
+### 4. Que VS Code y PowerShell usen esa versión
+SDKMAN solo cambia la versión dentro de Git Bash. Para el resto de Windows, crea la variable de entorno **`JAVA_HOME`**:
+- *Inicio → "Editar las variables de entorno del sistema" → Variables de entorno → Nueva (usuario)*
+- Nombre: `JAVA_HOME` · Valor: `C:\Users\TU_USUARIO\.sdkman\candidates\java\21.x.x-tem`
+- Agrega `%JAVA_HOME%\bin` al `Path` y reinicia VS Code.
+
+> 🐳 Con Docker no hace falta Java instalado para **correr** el proyecto: la imagen del backend trae su propio Java. SDKMAN es para **programar** el backend en tu computador.
+
 ## Cómo abrir la página en tu computador
 
 La página usa un módulo de JavaScript (el probador), así que **no funciona con doble clic** sobre el archivo. Hay que abrirla con un servidor local:
@@ -94,6 +136,7 @@ StyleMe/
 | [12 - Lía, asesora virtual](planeacion/12-lia-asesora-virtual.md) | ⭐ Planeación de Lía: personaje 3D, IA (RAG + embeddings), conversación, tienda 3D y fases |
 | [13 - Lía: avatar y emociones](planeacion/13-lia-avatar-y-emociones.md) | Guía para crear a Lía en VRoid Studio, movimientos fluidos, emociones y lip sync |
 | [14 - Plan de ramas y fases](planeacion/14-plan-ramas-y-fases.md) | ⭐ Cómo se crean las ramas, qué sube cada una y en qué orden (entrega final) |
+| [15 - Modelo de datos](planeacion/15-modelo-de-datos.md) | ⭐ Las 16 tablas de la base de datos (con pgvector para el RAG), sus campos, relaciones e indicadores |
 
 ### Convención usada en los documentos
 

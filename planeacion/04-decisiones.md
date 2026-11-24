@@ -52,6 +52,14 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-046 | 2026-11-23 | Lía se separa en `assets/lia/2d/` (retrato con expresiones, **activa**) y `assets/lia/3d/` (en espera). La decisión final entre 2D y 3D se toma cuando se mejore lo visual, según el tiempo | ✅ Confirmada | La autora quiere el 3D, pero el backend tiene prioridad |
 | D-047 | 2026-11-23 | Limpieza: se borran las imágenes sin uso (captura, logos originales, `lia-retrato.jpg`) y el plan 09 (versión sencilla). `data/*.js`, la función de Netlify y `netlify.toml` se borran **cuando su reemplazo (SQL, Spring Boot, Docker) esté listo** | ✅ Confirmada | Decisión de la autora |
 | D-048 | 2026-11-23 | Estrategia de Git: ramas permanentes `main` y `develop` + 9 ramas de trabajo por área (una a la vez, con PR) + ramas `fix/...`. Plan en [14](14-plan-ramas-y-fases.md) | ✅ Confirmada | La autora pidió menos ramas; se agrupan por área con varios commits cada una |
+| D-049 | 2026-11-23 | La autora **trabaja sola** en la entrega final; las versiones de Java se manejan con **SDKMAN** (instrucciones en el README) | ✅ Confirmada | Decisión de la autora |
+| D-050 | 2026-11-23 | Base de datos con **14 tablas** (ampliadas a 16 en D-055): categoria, zona, usuario, tienda, producto, ingrediente, producto_ingrediente, etiqueta, producto_etiqueta, resena, favorito, evento, conversacion_lia, lia_recomendacion. Detalle en [15](15-modelo-de-datos.md) | ✅ Confirmada | La autora pidió "las tablas necesarias" |
+| D-051 | 2026-11-23 | Las reseñas (1 a 5 corazones) son de **tiendas y de productos** | ✅ Confirmada | Decisión de la autora |
+| D-052 | 2026-11-23 | Los favoritos son de **tiendas y de productos** | ✅ Confirmada | Decisión de la autora |
+| D-053 | 2026-11-23 | De Lía se guarda solo un **resumen por conversación** (tema, categoría, sentimiento, modo, productos recomendados), no el texto. El tema sale del JSON que Gemini ya devuelve: **0 tokens extra**. Embeddings guardados en la base de datos | ✅ Confirmada | Privacidad y ahorro de tokens |
+| D-054 | 2026-11-23 | El catálogo sigue **congelado** (10 tiendas, 49 productos) al pasarlo a SQL | ✅ Confirmada | Ratifica D-040 |
+| D-055 | 2026-11-23 | Rúbrica oficial: la IA vale el **57 %** (embeddings, búsqueda semántica, RAG, automatización y pruebas de IA). Se agregan **PostgreSQL + pgvector** con índice **HNSW**, las tablas `fragmento_conocimiento` y `evaluacion_ia`, métricas en `conversacion_lia`, y 3 ramas de IA en el plan [14](14-plan-ramas-y-fases.md) | ✅ Confirmada | Alinear el proyecto con lo que se evalúa |
+| D-056 | 2026-11-23 | Mensajes de commit con **Conventional Commits** (`tipo(alcance): descripción`), sin gitmoji | ✅ Confirmada | Preferencia de la autora |
 
 ## Propuestas en espera de aprobación 💡
 
