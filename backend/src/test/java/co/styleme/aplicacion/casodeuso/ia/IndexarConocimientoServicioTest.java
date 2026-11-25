@@ -100,6 +100,17 @@ class IndexarConocimientoServicioTest {
     }
 
     @Test
+    @DisplayName("Los productos de ejemplo (no reales) no se indexan: Lía nunca los recomienda")
+    void noIndexaEjemplos() {
+        var ejemplo = new Producto(3L, "p3", pandora.comoReferencia(), skincare, "Producto (ejemplo)", null, null,
+                null, null, null, null, null, true, true, null, null);
+        when(productos.buscar(any())).thenReturn(List.of(producto(1, "Sérum", 50_000), ejemplo));
+        ResultadoIndexacion r = servicio.indexar();
+        assertThat(r.total()).isEqualTo(4); // 1 tienda + 1 producto real + 2 secciones
+        assertThat(almacen.fragmentos.values()).noneMatch(f -> f.titulo().contains("ejemplo"));
+    }
+
+    @Test
     @DisplayName("Los embeddings se piden en lotes, no uno por uno")
     void porLotes() {
         servicio.indexar();

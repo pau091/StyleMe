@@ -21,7 +21,7 @@ import java.util.Objects;
  * Caso de uso: INDEXAR el conocimiento de StyleMe (generación de embeddings + indexación vectorial).
  *
  * Pasos:
- *  1. Arma los fragmentos vigentes: tiendas activas, productos activos y secciones de las guías.
+ *  1. Arma los fragmentos vigentes: tiendas activas, productos reales activos y secciones de las guías.
  *  2. Compara el hash de cada uno con el guardado: si es igual, NO pide el embedding (ahorra tokens).
  *  3. Pide a la IA los embeddings de los nuevos y cambiados, en lotes.
  *  4. Los guarda en el almacén vectorial (pgvector) y borra los que ya no existen.
@@ -54,7 +54,10 @@ public class IndexarConocimientoServicio implements IndexarConocimientoCasoUso {
         // 1. Fragmentos vigentes (LinkedHashMap: sin claves repetidas y en orden estable)
         Map<String, FragmentoConocimiento> vigentes = new LinkedHashMap<>();
         tiendas.buscarActivas(null, null).forEach(t -> agregar(vigentes, fragmentador.deTienda(t)));
-        productos.buscar(FiltroProductos.todos()).forEach(p -> agregar(vigentes, fragmentador.deProducto(p)));
+        // Solo productos REALES: los de ejemplo no tienen precio ni existen en la tienda, Lía no debe recomendarlos
+        productos.buscar(FiltroProductos.todos()).stream()
+                .filter(p -> !p.esEjemplo())
+                .forEach(p -> agregar(vigentes, fragmentador.deProducto(p)));
         guias.listar().forEach(g -> fragmentador.deGuia(g).forEach(f -> agregar(vigentes, f)));
 
         // 2. ¿Cuáles cambiaron? Se compara el hash del texto con el guardado

@@ -57,9 +57,10 @@ class BusquedaSemanticaGeminiIntegracionTest {
     }
 
     @Test
-    @DisplayName("Indexa tiendas, productos y guías; la segunda vez no recalcula nada")
+    @DisplayName("Indexa tiendas, productos reales y guías; la segunda vez no recalcula nada")
     void indexacion() {
-        assertThat(primeraIndexacion.total()).isGreaterThanOrEqualTo(10 + 49 + 15);
+        // 10 tiendas + 41 productos REALES (los 8 de ejemplo no se indexan) + las secciones de las guías
+        assertThat(primeraIndexacion.total()).isGreaterThanOrEqualTo(10 + 41 + 15);
         ResultadoIndexacion segunda = indexar.indexar();
         assertThat(segunda.embeddingsCalculados()).isZero();
         assertThat(segunda.sinCambios()).isEqualTo(segunda.total());
