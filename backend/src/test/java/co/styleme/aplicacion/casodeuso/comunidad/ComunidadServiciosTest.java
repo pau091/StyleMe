@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import co.styleme.aplicacion.casodeuso.analitica.RegistrarEventosServicio;
+import co.styleme.aplicacion.puerto.salida.notificacion.NotificadorPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.EventoRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.FavoritoRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.ProductoRepositorioPuerto;
@@ -34,6 +35,7 @@ class ComunidadServiciosTest {
     private ResenaRepositorioPuerto resenas;
     private TiendaRepositorioPuerto tiendas;
     private ProductoRepositorioPuerto productos;
+    private NotificadorPuerto notificador;
     private GestionarResenasServicio gestionar;
     private ModerarResenasServicio moderar;
 
@@ -42,7 +44,8 @@ class ComunidadServiciosTest {
         resenas = mock(ResenaRepositorioPuerto.class);
         tiendas = mock(TiendaRepositorioPuerto.class);
         productos = mock(ProductoRepositorioPuerto.class);
-        gestionar = new GestionarResenasServicio(resenas, tiendas, productos);
+        notificador = mock(NotificadorPuerto.class);
+        gestionar = new GestionarResenasServicio(resenas, tiendas, productos, notificador);
         moderar = new ModerarResenasServicio(resenas);
         when(tiendas.existe("bohor")).thenReturn(true);
     }
@@ -53,6 +56,17 @@ class ComunidadServiciosTest {
         Resena nueva = Resena.nueva("s1", "Ana", Objetivo.tienda("bohor"), 5, "Excelente");
         when(resenas.guardar(nueva)).thenReturn(nueva);
         assertThat(gestionar.escribir(nueva).estado()).isEqualTo(Resena.Estado.PENDIENTE);
+        verify(notificador).resenaCreada(nueva);
+    }
+
+    @Test
+    @DisplayName("Si avisar a n8n falla, la reseña igual queda guardada (no se pierde)")
+    void avisoFallido() {
+        Resena nueva = Resena.nueva("s1", "Ana", Objetivo.tienda("bohor"), 5, "Excelente");
+        when(resenas.guardar(nueva)).thenReturn(nueva);
+        org.mockito.Mockito.doThrow(new IllegalStateException("n8n apagado")).when(notificador).resenaCreada(any());
+        assertThat(gestionar.escribir(nueva)).isEqualTo(nueva);
+        verify(resenas).guardar(nueva);
     }
 
     @Test
@@ -61,6 +75,7 @@ class ComunidadServiciosTest {
         Resena nueva = Resena.nueva("s1", null, Objetivo.tienda("no-existe"), 4, null);
         assertThatThrownBy(() -> gestionar.escribir(nueva)).isInstanceOf(TiendaNoEncontradaException.class);
         verify(resenas, never()).guardar(any());
+        verify(notificador, never()).resenaCreada(any());
     }
 
     @Test
