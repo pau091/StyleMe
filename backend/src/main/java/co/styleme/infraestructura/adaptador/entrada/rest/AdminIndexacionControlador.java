@@ -5,6 +5,7 @@ import co.styleme.dominio.modelo.ia.ResultadoIndexacion;
 import co.styleme.infraestructura.adaptador.entrada.rest.dto.IndexacionRespuesta;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Adaptador de entrada REST para administrar el índice vectorial.
- * ⚠️ En la rama feature/seguridad-admin este endpoint quedará protegido con la clave de administración.
+ * Protegido con la clave de administración (cabecera X-Admin-Key).
  * También lo usará n8n para reindexar cuando cambie un producto (rama feature/n8n-docker).
  */
 @RestController
+@SecurityRequirement(name = "claveAdmin") // pide la clave de administración (FiltroClaveAdmin)
 @RequestMapping("/api/admin/indexacion")
 @Tag(name = "Administración de la IA", description = "Índice vectorial de tiendas, productos y guías")
 public class AdminIndexacionControlador {

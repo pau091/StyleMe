@@ -8,6 +8,7 @@ import co.styleme.infraestructura.adaptador.entrada.rest.dto.SolicitudModeracion
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Adaptador de entrada REST para moderar reseñas. Lo usará el flujo de n8n (Gemini decide si la reseña
- * es apropiada) o un administrador. En la rama feature/seguridad-admin quedará protegido con clave.
+ * es apropiada) o un administrador. Protegido con la clave de administración.
  */
 @RestController
+@SecurityRequirement(name = "claveAdmin") // pide la clave de administración (FiltroClaveAdmin)
 @RequestMapping("/api/admin/resenas")
 @Tag(name = "Administración de reseñas", description = "Moderación de las reseñas pendientes")
 public class AdminResenaControlador {
