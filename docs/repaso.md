@@ -196,11 +196,18 @@ crear la colección de pruebas.
 |---|---|
 | Catálogo | `GET /api/categorias` · `/api/tiendas` · `/api/tiendas/{slug}` · `/api/tiendas/{slug}/productos` · `/api/productos` · `/api/productos/{codigo}` |
 | IA | `GET /api/busqueda` · `POST /api/lia/chat` |
-| Administración | `POST /api/admin/indexacion` · `POST /api/admin/evaluacion` |
+| Comunidad | `GET/POST /api/resenas` · `GET/POST/DELETE /api/favoritos` |
+| Analítica | `POST /api/eventos` (lotes de hasta 50) |
+| Administración 🔒 | `POST /api/admin/indexacion` · `POST /api/admin/evaluacion` · `GET /api/admin/resenas/pendientes` · `PATCH /api/admin/resenas/{id}` · `GET /api/admin/indicadores` |
+
+**🔒 Clave de administración (D-066).** Las rutas `/api/admin/*` piden la cabecera `X-Admin-Key` con el valor de
+`STYLEME_ADMIN_CLAVE` del `.env`; sin ella responden **401**. En Swagger se escribe una vez con el botón **Authorize**.
+La revisa un **filtro** (`FiltroClaveAdmin`), que corre antes de los controladores. Se eligió una clave en vez de cuentas con
+contraseña porque quien visita StyleMe no necesita registrarse: solo la administradora (y n8n) usan esas rutas.
 
 ---
 
-## 9. Pruebas (141 en verde)
+## 9. Pruebas (168 en verde)
 
 | Tipo | Qué comprueba |
 |---|---|
@@ -208,7 +215,7 @@ crear la colección de pruebas.
 | **Dominio** | Reglas del negocio sin base ni IA: precio, coordenadas, validador anti-alucinación, presupuesto |
 | **Casos de uso** | La lógica con puertos **falsos** (Mockito): el RAG completo sin Gemini |
 | **Adaptadores** | Gemini simulado; pgvector y JPA contra la base real |
-| **API** | Peticiones HTTP reales: 200, 400, 404, CORS, streaming |
+| **API** | Peticiones HTTP reales: 200, 201, 400, 401, 404, 409, CORS, streaming |
 | **IA real** | Indexación, búsqueda, RAG y evaluación completa con Gemini de verdad |
 
 Se ejecutan con `.\mvnw test` en `backend/` (con Docker encendido).
