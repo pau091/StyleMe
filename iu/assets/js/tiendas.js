@@ -1,6 +1,6 @@
 /* LISTA DE TIENDAS con búsqueda por nombre o barrio y filtro por tipo */
 
-document.addEventListener("DOMContentLoaded", () => {
+cuandoHayaDatos(() => {
   const campoTexto = document.getElementById("filtro-texto");
   const campoTipo = document.getElementById("filtro-tipo");
   const lista = document.getElementById("lista-tiendas");
@@ -30,6 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Al filtrar, las tarjetas se reacomodan con suavidad (pintarConTransicion está en comun.js)
   const mostrarConTransicion = () => pintarConTransicion(lista, mostrar);
   campoTexto.addEventListener("input", mostrarConTransicion);
-  campoTipo.addEventListener("change", mostrarConTransicion);
+  campoTipo.addEventListener("change", () => {
+    if (campoTipo.value) StyleMe.registrarEvento("FILTRAR_CATEGORIA", { categoria: campoTipo.value });
+    mostrarConTransicion();
+  });
   mostrar(); // la primera vez entran en cascada
 });

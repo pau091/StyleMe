@@ -95,7 +95,7 @@ function obtenerUbicacion() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+cuandoHayaDatos(() => {
   const formulario = document.getElementById("formulario-salida");
   const campoZona = document.getElementById("zona");
   const resultado = document.getElementById("resultado");
@@ -144,6 +144,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const { ruta, total } = mejorRuta(candidatas, cantidad, ubicacionPersona);
+    // "detalle" lleva solo textos cortos y nada personal (no se manda la ubicación)
+    StyleMe.registrarEvento("ARMAR_SALIDA", { detalle: { paradas: String(ruta.length), zona: zona || "cualquiera", tipos: tipos.join(",") } });
     const kmReales = total * FACTOR_CALLES;
     const minutos = Math.round((kmReales / VELOCIDAD_CAMINANDO_KMH) * 60);
 

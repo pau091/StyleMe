@@ -18,7 +18,7 @@
  * Cómo responde: manda el mensaje al backend (POST /api/lia/chat: RAG con pgvector + Gemini).
  * El texto llega poco a poco. Si el backend no responde, usa el plan B (plan-b.js) y lo avisa.
  *
- * Necesita, antes de este archivo: data/tiendas.js, data/productos.js, comun.js y lia/plan-b.js.
+ * Necesita, antes de este archivo: api.js (catálogo y dirección del backend), comun.js y lia/plan-b.js.
  */
 (function () {
   if (typeof PRODUCTOS === "undefined" || typeof TIENDAS === "undefined") return;
@@ -161,7 +161,7 @@
         const texto = `Hola, vi en StyleMe ${producto ? `el producto "${producto.nombre}"` : "su tienda"}. ¿Me pueden dar más información?`;
         const enlace = enlaceWhatsapp(tienda.whatsapp, texto) || enlaceInstagram(tienda.instagram) || enlaceWeb(tienda.web);
         return enlace
-          ? `<a class="lia-accion lia-accion-whatsapp" href="${enlace}" target="_blank" rel="noopener">Escribir a ${escaparHTML(tienda.nombre)}</a>`
+          ? `<a class="lia-accion lia-accion-whatsapp" href="${enlace}" target="_blank" rel="noopener" ${eventoTienda(tienda)}>Escribir a ${escaparHTML(tienda.nombre)}</a>`
           : `<a class="lia-accion" href="tienda.html?id=${encodeURIComponent(tienda.id)}">Contacto de ${escaparHTML(tienda.nombre)}</a>`;
       }
       case "abrir_probador":
@@ -327,6 +327,7 @@
     lia.dataset.estado = "abierta";
     figura.setAttribute("aria-expanded", "true");
     guardarSesion(CLAVE_ABIERTA, "1");
+    if (enfocar) window.StyleMe?.registrarEvento("ABRIR_LIA"); // solo cuando la persona la abre (no al cambiar de página)
     pintarUltima();
     if (enfocar) entrada.focus({ preventScroll: true });
   }

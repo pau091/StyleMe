@@ -51,6 +51,8 @@ let posicionBase = null;    // { centroX, arriba, ancho } calculado por la IA
 /* ---------- Prendas disponibles ---------- */
 // Solo prendas con fotoProbador (PNG sin fondo). Las fotos de las tiendas tienen fondo
 // y modelo, así que no sirven para ponerlas encima de otra persona.
+// El catálogo llega del backend (api.js): este archivo es un módulo, así que puede esperarlo con await
+await StyleMe.datos.catch(() => {});
 const prendas = PRODUCTOS.filter((p) => p.categoria === "ropa" && p.fotoProbador);
 
 if (!prendas.length) {
@@ -97,7 +99,7 @@ function cargarPrenda() {
     if (fotoPersona) ubicarAutomaticamente();
   };
   imagenPrenda.onerror = () => {
-    estado.textContent = "No se pudo cargar la foto de la prenda. Revisa la ruta en data/productos.js.";
+    estado.textContent = "No se pudo cargar la foto de la prenda (foto_probador en la base de datos).";
   };
   imagenPrenda.src = producto.fotoProbador;
 }
@@ -115,7 +117,7 @@ function mostrarInfoPrenda(producto) {
     <p class="precio">${formatoPrecio(producto.precio)}</p>
     <p>${escaparHTML(tienda.nombre)} · ${escaparHTML(tienda.direccion)}</p>
     <div class="grupo-botones">
-      ${whatsapp ? `<a class="boton boton-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">Preguntar por WhatsApp</a>` : ""}
+      ${whatsapp ? `<a class="boton boton-whatsapp" href="${whatsapp}" target="_blank" rel="noopener" ${eventoTienda(tienda)}>Preguntar por WhatsApp</a>` : ""}
       <a class="boton boton-secundario" href="tienda.html?id=${encodeURIComponent(tienda.id)}">Ver tienda</a>
     </div>`;
 }
@@ -306,6 +308,7 @@ campoFoto.addEventListener("change", () => {
     lienzo.width = Math.round(imagen.naturalWidth * factor);
     lienzo.height = Math.round(imagen.naturalHeight * factor);
     fotoPersona = imagen;
+    StyleMe.registrarEvento("USAR_PROBADOR", { producto: selectorPrenda.value });
 
     // Copia de la foto al tamaño del lienzo, para que los puntos de la IA coincidan
     const copia = document.createElement("canvas");

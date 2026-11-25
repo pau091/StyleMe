@@ -1,6 +1,6 @@
 /* MAPA DE TIENDAS con filtro por tipo */
 
-document.addEventListener("DOMContentLoaded", () => {
+cuandoHayaDatos(() => {
   const mapa = crearMapa("mapa");
   const capaMarcadores = L.layerGroup().addTo(mapa);
   const campoTipo = document.getElementById("filtro-tipo");
