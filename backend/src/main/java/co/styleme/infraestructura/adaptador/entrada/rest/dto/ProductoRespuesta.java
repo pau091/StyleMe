@@ -20,6 +20,7 @@ public record ProductoRespuesta(
         TiendaResumen tienda,
         String tipoPrenda,
         boolean disponibleEnProbador,
+        String fotoProbador,
         boolean esEjemplo,
         List<String> ingredientes,
         Map<String, List<String>> etiquetas) {
