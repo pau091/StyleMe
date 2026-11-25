@@ -37,3 +37,15 @@ server:
   # 8090 porque en este computador el 8080 (Tomcat) y el 8081 (pgAdmin) los usan otros proyectos.
   # Para cambiarlo sin tocar el código: SERVER_PORT=otro-puerto en el .env
   port: ${SERVER_PORT:8090}
+
+styleme:
+  gemini:
+    # Clave de Google AI Studio (https://aistudio.google.com/apikey). Vacía = la IA no está disponible.
+    api-key: ${GEMINI_API_KEY:}
+    url-base: https://generativelanguage.googleapis.com/v1beta
+    modelo-embeddings: ${GEMINI_MODELO_EMBEDDINGS:gemini-embedding-001}
+    tiempo-maximo: 30s
+  ia:
+    # Reindexación automática cada noche (solo recalcula lo que cambió)
+    reindexacion-programada: true
+    reindexacion-cron: "0 0 3 * * *"
