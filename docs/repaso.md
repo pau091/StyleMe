@@ -47,6 +47,11 @@ solos los scripts de `basedatos/`, en orden alfabético:
 | `01-esquema.sql` | Crea las **16 tablas** con llaves, relaciones y reglas `CHECK` (corazones de 1 a 5, precio mayor que 0…) |
 | `02-indices.sql` | **23 índices**, entre ellos el **HNSW**: el índice que hace rápida la búsqueda por similitud |
 | `03-datos-iniciales.sql` | El catálogo real: 10 tiendas, 49 productos, 183 ingredientes y 36 etiquetas |
+| `04-datos-prueba.sql` | Datos **de prueba** para el análisis (marcados como tales): 80 usuarios, unos 11.500 eventos de 900 sesiones, 310 reseñas, 350 favoritos y 240 conversaciones con Lía. Usa `setseed` para que salgan siempre los mismos números |
+| `05-vistas-indicadores.sql` | **13 vistas** (consultas guardadas con nombre, `v_...`) que calculan los indicadores: conversión a WhatsApp por tienda, calificaciones, búsquedas sin resultado, horas y días de más uso, dispositivos, uso de Lía, calidad de los datos… |
+
+> Si la base ya existía antes de la rama `feature/comunidad-analitica`, `04` y `05` se aplican a mano
+> (los comandos están en [basedatos/README.md](../basedatos/README.md)).
 
 **Las 16 tablas, en 4 grupos:**
 
@@ -63,6 +68,11 @@ tabla (1FN); así se puede consultar *"¿qué productos tienen niacinamida?"*. E
 
 **Reglas que protegen los datos.** Ejemplo: una reseña es de una tienda **o** de un producto, nunca de los dos:
 `CHECK ((tienda_id IS NULL) <> (producto_id IS NULL))`. Se probaron 8 datos inválidos y la base los rechazó todos.
+
+**Reseñas y favoritos sin registro (D-066).** La página manda un identificador anónimo de la sesión del navegador. Por cada
+sesión el backend crea un usuario técnico (`<sesión>@sesion.styleme`, sin contraseña ni datos personales). Toda reseña
+nueva queda **PENDIENTE** hasta que se modera (más adelante lo hará n8n con Gemini), y cada sesión puede reseñar una sola
+vez cada tienda o producto (si lo intenta otra vez, la API responde **409**).
 
 ---
 
