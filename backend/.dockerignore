@@ -1,0 +1,6 @@
+# Lo que NO se copia a la imagen (más rápido y sin archivos de este computador)
+target/
+.mvn/wrapper/maven-wrapper.jar
+*.log
+.idea/
+.vscode/
