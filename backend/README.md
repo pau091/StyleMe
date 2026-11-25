@@ -60,6 +60,23 @@ BUSCAR:   consulta → Gemini (RETRIEVAL_QUERY) → pgvector: filtros + ORDER BY
 Las guías de conocimiento están en `src/main/resources/conocimiento/guias/*.md`.
 Si Gemini no está disponible (sin clave o sin cupo), la API responde **503** y el resto del backend sigue funcionando.
 
+## Lía: asesora con RAG
+
+`POST /api/lia/chat` con `{"mensaje": "...", "historia": [{"rol": "persona|lia", "texto": "..."}], "sesionId": "opcional"}`.
+Responde **por partes** en NDJSON (una línea JSON por evento): `{"tipo":"texto","delta":"..."}` mientras habla y
+`{"tipo":"fin","emocion":"...","productos":[...],"acciones":[...],"sugerencias":[...],"basico":false}` al final.
+
+```
+RECUPERAR  pregunta (+ 2 mensajes anteriores) → embedding → pgvector: 8 fragmentos más parecidos (similitud ≥ 0.55,
+           presupuesto como filtro duro: "máximo 50 mil" → precio ≤ 50.000)
+AUMENTAR   plantilla resources/prompts/lia-instrucciones.md + tiendas + CONTEXTO recuperado + historial corto
+GENERAR    Gemini (streamGenerateContent) → el texto se reenvía a la página mientras llega
+VALIDAR    ValidadorRecomendaciones: descarta productos que no estaban en el contexto (anti-alucinación)
+REGISTRAR  resumen en conversacion_lia (tema, modo, similitud, latencia, tokens) — nunca el texto de la persona
+```
+Si Gemini no responde, contesta el **plan B** (reglas + productos reales) y la página muestra "modo básico".
+Límite: 15 mensajes por minuto por persona. CORS: solo Live Server (`STYLEME_CORS_ORIGENES` para cambiarlo).
+
 ## Capas
 
 ```
@@ -67,7 +84,9 @@ src/main/java/co/styleme/
 ├── dominio/                🟢 Modelo y reglas del negocio (Java puro)
 │   ├── modelo/catalogo/        Tienda, Producto, Categoria, Zona, Etiqueta, Coordenadas, Contacto...
 │   ├── modelo/ia/              Embedding, FragmentoConocimiento, Guia, FiltroBusqueda, ResultadoBusqueda...
-│   ├── servicio/               FragmentadorConocimiento (chunking)
+│   ├── modelo/lia/             PreguntaLia, RespuestaLia, ConversacionLia, Prompt...
+│   ├── servicio/               FragmentadorConocimiento (chunking), ValidadorRecomendaciones (anti-alucinación),
+│   │                           LectorRespuestaLia (streaming), LectorPresupuesto, PlanBLia
 │   └── excepcion/              TiendaNoEncontradaException, DatoInvalidoException...
 ├── aplicacion/             🟡 Puertos y casos de uso (Java puro)
 │   ├── puerto/entrada/         interfaces ...CasoUso   (lo que StyleMe permite hacer)
@@ -112,7 +131,7 @@ GET /api/tiendas/bohor
 | API (punta a punta) | `test/.../rest/` | Peticiones HTTP reales: 200, 400, 404 y Swagger | Sí |
 | Adaptador Gemini | `test/.../gemini/` | La forma de las peticiones a Gemini (con un servidor simulado) | No |
 | pgvector | `test/.../vector/` | Guardar vectores, búsqueda por similitud, filtros híbridos y umbral | Sí |
-| IA real | `test/.../ia/` | Indexación y búsqueda con **Gemini real**; embeddings vs. palabras. Solo corre si hay `GEMINI_API_KEY` | Sí + clave |
+| IA real | `test/.../ia/` | Indexación, búsqueda y **RAG de Lía con Gemini real** (productos reales, presupuesto, salud, NDJSON). Solo corre si hay `GEMINI_API_KEY` | Sí + clave |
 
 ## Configuración (`src/main/resources/application.yml`)
 

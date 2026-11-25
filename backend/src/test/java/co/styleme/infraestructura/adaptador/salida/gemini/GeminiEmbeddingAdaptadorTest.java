@@ -44,7 +44,7 @@ class GeminiEmbeddingAdaptadorTest {
     void preparar() {
         RestClient.Builder builder = RestClient.builder().baseUrl(BASE);
         servidor = MockRestServiceServer.bindTo(builder).build();
-        var propiedades = new PropiedadesGemini("clave-de-prueba", BASE, "gemini-embedding-001", Duration.ofSeconds(5));
+        var propiedades = new PropiedadesGemini("clave-de-prueba", BASE, "gemini-embedding-001", "modelo-chat", Duration.ofSeconds(5));
         adaptador = new GeminiEmbeddingAdaptador(propiedades, builder.build());
     }
 
@@ -88,7 +88,7 @@ class GeminiEmbeddingAdaptadorTest {
     @DisplayName("Sin clave configurada no llama a Gemini y avisa con un mensaje claro")
     void sinClave() {
         var sinClave = new GeminiEmbeddingAdaptador(
-                new PropiedadesGemini("", BASE, "gemini-embedding-001", Duration.ofSeconds(5)), RestClient.create());
+                new PropiedadesGemini("", BASE, "gemini-embedding-001", "modelo-chat", Duration.ofSeconds(5)), RestClient.create());
         assertThatThrownBy(() -> sinClave.deConsulta("hola"))
                 .isInstanceOf(ServicioIaNoDisponibleException.class)
                 .hasMessageContaining("GEMINI_API_KEY");

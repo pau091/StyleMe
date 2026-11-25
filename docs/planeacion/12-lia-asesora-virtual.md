@@ -102,8 +102,8 @@ ojos azules, pestañas largas, pecas suaves, aretes plateados y suéter de cuell
  (índice HNSW)
 ```
 
-> **Hoy (temporal):** este flujo vive en `netlify/functions/lia.mjs` con los vectores en memoria.
-> En la Fase 3 (ramas `feature/embeddings-busqueda` y `feature/rag-lia`) pasa al backend con pgvector.
+> ✅ Implementado en las ramas `feature/embeddings-busqueda` y `feature/rag-lia` (antes vivía en una función de Netlify,
+> con los vectores en memoria; esa función se borró).
 
 ### 5.1 RAG: cómo Lía encuentra información sin inventarla
 1. **Indexación (una vez, y cuando algo cambia):** tiendas, productos y guías se convierten en **fragmentos de texto**;

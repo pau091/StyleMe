@@ -78,6 +78,7 @@ class ArquitecturaHexagonalTest {
     static final ArchRule R4_puertos_de_entrada = classes()
             .that().resideInAPackage("co.styleme.aplicacion.puerto.entrada..")
             .and().doNotHaveSimpleName(PACKAGE_INFO)
+            .and().areTopLevelClasses() // no las clases que Java genera solo (por ejemplo, para un switch)
             .should().beInterfaces()
             .andShould().haveSimpleNameEndingWith("CasoUso")
             .allowEmptyShould(true);
@@ -87,6 +88,7 @@ class ArquitecturaHexagonalTest {
     static final ArchRule R5_puertos_de_salida = classes()
             .that().resideInAPackage("co.styleme.aplicacion.puerto.salida..")
             .and().doNotHaveSimpleName(PACKAGE_INFO)
+            .and().areTopLevelClasses() // no las clases que Java genera solo (por ejemplo, para un switch)
             .should().beInterfaces()
             .andShould().haveSimpleNameEndingWith("Puerto")
             .allowEmptyShould(true);
@@ -96,6 +98,7 @@ class ArquitecturaHexagonalTest {
     static final ArchRule casos_de_uso = classes()
             .that().resideInAPackage("co.styleme.aplicacion.casodeuso..")
             .and().doNotHaveSimpleName(PACKAGE_INFO)
+            .and().areTopLevelClasses() // no las clases que Java genera solo (por ejemplo, para un switch)
             .should().notBeInterfaces()
             .andShould().haveSimpleNameEndingWith("Servicio")
             .allowEmptyShould(true);

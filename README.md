@@ -121,7 +121,6 @@ StyleMe/
 │   ├── evidencias/         Swagger y Postman
 │   └── informe-datos/      Informe de análisis de datos
 │
-├── netlify/                Función temporal de Lía (se reemplaza por el backend en la Fase 3)
 ├── .env.example            Variables de entorno (copiar como .env)
 ├── IAS_usadas.md           Registro del uso de inteligencia artificial (AI_USAGE)
 └── README.md
@@ -219,19 +218,18 @@ La página usa módulos de JavaScript, así que **no funciona con doble clic**. 
 1. En VS Code, toca **Go Live** (barra azul de abajo, a la derecha) o clic derecho sobre `iu/index.html` → **Open with Live Server**.
 2. Se abre en `http://127.0.0.1:5500/`. El archivo `.vscode/settings.json` le indica a Live Server que la página está en `iu/`.
 
-### 3. Lía con IA (versión temporal, hasta la Fase 3)
-Con Live Server, Lía funciona en **modo básico** (reglas, sin IA). Para probarla con Gemini:
+### 3. Base de datos y backend (Lía con IA)
 ```
-npm install -g netlify-cli      # una sola vez
-netlify dev                     # en la raíz del proyecto
+docker compose up -d            # en la raíz: PostgreSQL + pgvector
+cd backend
+.\mvnw spring-boot:run          # backend en http://localhost:8090
 ```
-Abre la dirección que aparece (normalmente `http://localhost:8888`). En la Fase 3, Lía pasa al backend.
+La primera vez, construye el índice de la IA con `POST /api/admin/indexacion` desde Swagger
+(http://localhost:8090/swagger-ui.html). Con el backend encendido, **Lía responde con IA** (RAG con Gemini)
+en la página de Live Server. Si el backend está apagado, Lía responde en **modo básico** (reglas, sin IA).
 
-### 4. Base de datos, backend y n8n
-Se documenta aquí a medida que se construye cada parte:
-- **Base de datos:** ver [basedatos/README.md](basedatos/README.md) (rama `feature/base-de-datos`).
-- **Backend:** ver [backend/README.md](backend/README.md) (rama `feature/backend-base`).
-- **Sistema completo** con `docker compose up`: rama `feature/n8n-docker`.
+Detalle: [basedatos/README.md](basedatos/README.md) · [backend/README.md](backend/README.md).
+El **sistema completo** con `docker compose up` llega en la rama `feature/n8n-docker`.
 
 > **Privacidad:** Lía avisa que no se compartan datos personales (Ley 1581 de 2012). De cada conversación solo se guarda un resumen sin el texto de la persona.
 
