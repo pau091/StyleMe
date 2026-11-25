@@ -6,6 +6,7 @@ import co.styleme.infraestructura.adaptador.entrada.rest.dto.IndicadorRespuesta;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Adaptador de entrada REST: indicadores para el panel de administración y el informe de datos. */
 @RestController
+@SecurityRequirement(name = "claveAdmin") // pide la clave de administración (FiltroClaveAdmin)
 @RequestMapping("/api/admin/indicadores")
 @Tag(name = "Administración: indicadores", description = "Indicadores calculados con las vistas SQL (basedatos/05-vistas-indicadores.sql)")
 public class AdminIndicadorControlador {

@@ -23,6 +23,20 @@ Con el backend encendido:
 - **Swagger UI (interactivo):** http://localhost:8090/swagger-ui.html → cada endpoint tiene un botón *"Try it out"* para probarlo.
 - **Especificación OpenAPI (JSON):** http://localhost:8090/v3/api-docs
 
+## Clave de administración
+
+Las rutas **`/api/admin/*`** (indexación, evaluación, moderación de reseñas e indicadores) exigen la cabecera
+**`X-Admin-Key`** con el valor de `STYLEME_ADMIN_CLAVE` del `.env`. El resto de la API es pública.
+
+| Situación | Respuesta |
+|---|---|
+| Sin cabecera o con una clave equivocada | **401** |
+| `STYLEME_ADMIN_CLAVE` vacía | **503** (la administración queda bloqueada) |
+| Clave correcta | La respuesta normal del endpoint |
+
+En **Swagger**: botón **Authorize** (arriba a la derecha) → pegar la clave → *Authorize*. Desde ese momento Swagger la
+manda sola en las rutas de administración. La revisa `FiltroClaveAdmin` (un filtro que corre antes de los controladores).
+
 ## Endpoints del catálogo
 
 | Método | Dirección | Qué devuelve |

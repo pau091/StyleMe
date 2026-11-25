@@ -266,7 +266,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 ### FASE 4 · Comunidad, seguridad e integración → `v0.5`
 
-#### Rama 8 · `feature/comunidad-analitica`
+#### Rama 8 · `feature/comunidad-analitica` ✅ HECHA (PR #11, 2026-11-25)
 *Criterio: análisis de datos e indicadores (8).*
 
 | # | Qué se hace | Commit |
@@ -291,6 +291,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 1 | Filtro que exige la cabecera `X-Admin-Key` (valor en el `.env`) en `/api/admin/*` | `feat(seguridad): proteger endpoints de administración` |
 | 2 | Swagger con el botón "Authorize" para la clave | `docs(api): documentar la clave de administración` |
 | 3 | Pruebas: sin clave 401, con clave 200 | `test(seguridad): agregar pruebas de la clave de administración` |
+| 4 | Documentación (README, repaso, IAS) | `docs: documentar la clave de administración` |
 
 #### Rama 10 · `feature/iu-api`
 *Criterio: integración funcional (7).*

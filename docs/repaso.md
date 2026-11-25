@@ -47,6 +47,11 @@ solos los scripts de `basedatos/`, en orden alfabético:
 | `01-esquema.sql` | Crea las **16 tablas** con llaves, relaciones y reglas `CHECK` (corazones de 1 a 5, precio mayor que 0…) |
 | `02-indices.sql` | **23 índices**, entre ellos el **HNSW**: el índice que hace rápida la búsqueda por similitud |
 | `03-datos-iniciales.sql` | El catálogo real: 10 tiendas, 49 productos, 183 ingredientes y 36 etiquetas |
+| `04-datos-prueba.sql` | Datos **de prueba** para el análisis (marcados como tales): 80 usuarios, unos 11.500 eventos de 900 sesiones, 310 reseñas, 350 favoritos y 240 conversaciones con Lía. Usa `setseed` para que salgan siempre los mismos números |
+| `05-vistas-indicadores.sql` | **13 vistas** (consultas guardadas con nombre, `v_...`) que calculan los indicadores: conversión a WhatsApp por tienda, calificaciones, búsquedas sin resultado, horas y días de más uso, dispositivos, uso de Lía, calidad de los datos… |
+
+> Si la base ya existía antes de la rama `feature/comunidad-analitica`, `04` y `05` se aplican a mano
+> (los comandos están en [basedatos/README.md](../basedatos/README.md)).
 
 **Las 16 tablas, en 4 grupos:**
 
@@ -63,6 +68,11 @@ tabla (1FN); así se puede consultar *"¿qué productos tienen niacinamida?"*. E
 
 **Reglas que protegen los datos.** Ejemplo: una reseña es de una tienda **o** de un producto, nunca de los dos:
 `CHECK ((tienda_id IS NULL) <> (producto_id IS NULL))`. Se probaron 8 datos inválidos y la base los rechazó todos.
+
+**Reseñas y favoritos sin registro (D-066).** La página manda un identificador anónimo de la sesión del navegador. Por cada
+sesión el backend crea un usuario técnico (`<sesión>@sesion.styleme`, sin contraseña ni datos personales). Toda reseña
+nueva queda **PENDIENTE** hasta que se modera (más adelante lo hará n8n con Gemini), y cada sesión puede reseñar una sola
+vez cada tienda o producto (si lo intenta otra vez, la API responde **409**).
 
 ---
 
@@ -186,11 +196,18 @@ crear la colección de pruebas.
 |---|---|
 | Catálogo | `GET /api/categorias` · `/api/tiendas` · `/api/tiendas/{slug}` · `/api/tiendas/{slug}/productos` · `/api/productos` · `/api/productos/{codigo}` |
 | IA | `GET /api/busqueda` · `POST /api/lia/chat` |
-| Administración | `POST /api/admin/indexacion` · `POST /api/admin/evaluacion` |
+| Comunidad | `GET/POST /api/resenas` · `GET/POST/DELETE /api/favoritos` |
+| Analítica | `POST /api/eventos` (lotes de hasta 50) |
+| Administración 🔒 | `POST /api/admin/indexacion` · `POST /api/admin/evaluacion` · `GET /api/admin/resenas/pendientes` · `PATCH /api/admin/resenas/{id}` · `GET /api/admin/indicadores` |
+
+**🔒 Clave de administración (D-066).** Las rutas `/api/admin/*` piden la cabecera `X-Admin-Key` con el valor de
+`STYLEME_ADMIN_CLAVE` del `.env`; sin ella responden **401**. En Swagger se escribe una vez con el botón **Authorize**.
+La revisa un **filtro** (`FiltroClaveAdmin`), que corre antes de los controladores. Se eligió una clave en vez de cuentas con
+contraseña porque quien visita StyleMe no necesita registrarse: solo la administradora (y n8n) usan esas rutas.
 
 ---
 
-## 9. Pruebas (141 en verde)
+## 9. Pruebas (168 en verde)
 
 | Tipo | Qué comprueba |
 |---|---|
@@ -198,7 +215,7 @@ crear la colección de pruebas.
 | **Dominio** | Reglas del negocio sin base ni IA: precio, coordenadas, validador anti-alucinación, presupuesto |
 | **Casos de uso** | La lógica con puertos **falsos** (Mockito): el RAG completo sin Gemini |
 | **Adaptadores** | Gemini simulado; pgvector y JPA contra la base real |
-| **API** | Peticiones HTTP reales: 200, 400, 404, CORS, streaming |
+| **API** | Peticiones HTTP reales: 200, 201, 400, 401, 404, 409, CORS, streaming |
 | **IA real** | Indexación, búsqueda, RAG y evaluación completa con Gemini de verdad |
 
 Se ejecutan con `.\mvnw test` en `backend/` (con Docker encendido).
