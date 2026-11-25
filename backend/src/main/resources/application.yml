@@ -20,6 +20,11 @@ spring:
     username: ${POSTGRES_USER:styleme}
     password: ${POSTGRES_PASSWORD}
 
+  mvc:
+    async:
+      # Lía responde por partes (streaming): se le da tiempo suficiente para terminar
+      request-timeout: 90s
+
   jpa:
     hibernate:
       # validate: Hibernate COMPRUEBA que las entidades coincidan con las tablas,
@@ -37,3 +42,23 @@ server:
   # 8090 porque en este computador el 8080 (Tomcat) y el 8081 (pgAdmin) los usan otros proyectos.
   # Para cambiarlo sin tocar el código: SERVER_PORT=otro-puerto en el .env
   port: ${SERVER_PORT:8090}
+
+styleme:
+  gemini:
+    # Clave de Google AI Studio (https://aistudio.google.com/apikey). Vacía = la IA no está disponible.
+    api-key: ${GEMINI_API_KEY:}
+    url-base: https://generativelanguage.googleapis.com/v1beta
+    modelo-embeddings: ${GEMINI_MODELO_EMBEDDINGS:gemini-embedding-001}
+    # Modelo que genera las respuestas de Lía (el mismo que usaba la función de Netlify)
+    modelo-chat: ${GEMINI_MODELO:gemini-3.1-flash-lite}
+    # Gemini a veces tarda en empezar a responder: se le da hasta 60 s
+    tiempo-maximo: 60s
+  ia:
+    # Reindexación automática cada noche (solo recalcula lo que cambió)
+    reindexacion-programada: true
+    reindexacion-cron: "0 0 3 * * *"
+    # Pausa entre las 30 preguntas de la evaluación (respeta el límite por minuto del plan gratuito de Gemini)
+    evaluacion-pausa-ms: 4500
+  cors:
+    # Desde dónde se permite llamar a la API (Live Server). Separados por coma.
+    origenes: ${STYLEME_CORS_ORIGENES:http://127.0.0.1:5500,http://localhost:5500}

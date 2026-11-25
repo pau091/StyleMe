@@ -41,7 +41,7 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-035 | 2026-11-20 | Lía es un **bot funcional**: conversación real y fluida con el cliente | ✅ Confirmada | Uso real de IA en el proyecto |
 | D-036 | 2026-11-20 | Imagen oficial del avatar de Lía: `lia-referencia.png` (borrada) (incluye broche de flor rosa) | 🔁 Reemplazada por D-062 | Decisión de la autora. |
 | D-037 | 2026-11-20 | Lía tiene **movimientos fluidos** y **expresiones faciales** con al menos 4 emociones: **preocupación, felicidad, tristeza y duda** | ✅ Confirmada | Decisión de la autora |
-| D-038 | 2026-11-20 | La función del servidor de Lía se publica en **Netlify** (aprueba P-010) | ✅ Confirmada | Decisión de la autora |
+| D-038 | 2026-11-20 | La función del servidor de Lía se publica en **Netlify** (aprueba P-010) | 🔁 Reemplazada por D-065 | Decisión de la autora |
 | D-039 | 2026-11-20 | El modelo 3D de Lía se hace en **VRoid Studio** y se exporta en VRM (aprueba P-011) | 🔁 Reemplazada por D-062 | Decisión de la autora |
 | D-040 | 2026-11-20 | Por ahora **no se modifica el catálogo** (`data/productos.js` y `data/tiendas.js`) | 🔁 Reemplazada por D-064 | Decisión de la autora |
 | D-041 | 2026-11-20 | La fecha de entrega no está confirmada: **1 semana o más**, depende del profesor | ✅ Confirmada (fecha ⏳) | Se planea por semanas |
@@ -68,6 +68,7 @@ Cada decisión se registra con fecha, estado y motivo. Si una decisión cambia, 
 | D-062 | 2026-11-24 | **Se cancela Lía en 3D.** Lía queda con su modelo **2D** ya funcional (retrato con expresiones). Se borran el código 3D (Three.js, three-vrm, `lia-3d.js`), la imagen de referencia, la guía de VRoid (documento 13) y la tienda 3D. Los archivos de Lía pasan de `iu/assets/lia/2d/` a `iu/assets/lia/` | ✅ Confirmada | Decisión de la autora |
 | D-063 | 2026-11-24 | Orden de trabajo: **primero toda la lógica** que pide el profesor (backend, base de datos, IA, integración, n8n, Docker); **después** la parte visual, en una rama dedicada solo a eso (`style/iu-visual`) | ✅ Confirmada | Decisión de la autora |
 | D-064 | 2026-11-24 | Se **descongela el catálogo** (reemplaza a D-040 y D-054): antes de la parte visual se registran todas las tiendas con descripción, información de productos y contacto (rama `feature/catalogo-completo`) | ✅ Confirmada | Decisión de la autora |
+| D-065 | 2026-11-24 | **Se elimina Netlify** del proyecto (función y `netlify.toml`): no es requisito de la especificación; el backend Spring Boot guarda la clave de Gemini y hace el RAG, y Docker Compose levanta el sistema. Reemplaza a D-038 | ✅ Confirmada | Decisión de la autora |
 
 ## Propuestas en espera de aprobación 💡
 

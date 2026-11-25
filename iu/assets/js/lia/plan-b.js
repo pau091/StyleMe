@@ -1,7 +1,7 @@
 /*
  * LÍA · PLAN B (sin inteligencia artificial)
  * ------------------------------------------
- * Si el cerebro de Lía (la función de Netlify con Gemini) no responde:
+ * Si el cerebro de Lía (el backend con RAG y Gemini) no responde:
  *   - sin internet,
  *   - se acabó el cupo gratis de Gemini,
  *   - o estás probando con Live Server (que no ejecuta funciones),

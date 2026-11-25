@@ -2,12 +2,14 @@ package co.styleme.infraestructura.adaptador.entrada.rest;
 
 import co.styleme.dominio.excepcion.DatoInvalidoException;
 import co.styleme.dominio.excepcion.RecursoNoEncontradoException;
+import co.styleme.dominio.excepcion.ServicioIaNoDisponibleException;
 import co.styleme.infraestructura.adaptador.entrada.rest.dto.ErrorRespuesta;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -33,10 +35,23 @@ public class ManejadorErrores {
         return responder(HttpStatus.BAD_REQUEST, e.getMessage(), peticion);
     }
 
+    /** La IA no respondió (sin clave, sin cupo, sin internet): 503 = "servicio no disponible por ahora". */
+    @ExceptionHandler(ServicioIaNoDisponibleException.class)
+    public ResponseEntity<ErrorRespuesta> iaNoDisponible(ServicioIaNoDisponibleException e, HttpServletRequest peticion) {
+        LOG.warn("IA no disponible en {}: {}", peticion.getRequestURI(), e.getMessage());
+        return responder(HttpStatus.SERVICE_UNAVAILABLE, "El servicio de inteligencia artificial no está disponible en este momento", peticion);
+    }
+
     /** Por ejemplo, ?precioMaximo=mucho (no es un número). */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorRespuesta> tipoInvalido(MethodArgumentTypeMismatchException e, HttpServletRequest peticion) {
         return responder(HttpStatus.BAD_REQUEST, "El parámetro '" + e.getName() + "' no tiene un valor válido", peticion);
+    }
+
+    /** El cuerpo de la petición no es un JSON válido (o no está en UTF-8). */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorRespuesta> jsonInvalido(HttpMessageNotReadableException e, HttpServletRequest peticion) {
+        return responder(HttpStatus.BAD_REQUEST, "La petición no tiene un JSON válido", peticion);
     }
 
     /** Una dirección que no existe en la API. */
