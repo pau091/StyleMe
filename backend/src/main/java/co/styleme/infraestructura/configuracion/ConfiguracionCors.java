@@ -23,7 +23,7 @@ public class ConfiguracionCors implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registro) {
         registro.addMapping("/api/**")
                 .allowedOrigins(origenes)
-                .allowedMethods("GET", "POST")
+                .allowedMethods("GET", "POST", "PATCH", "DELETE")
                 .allowedHeaders("Content-Type")
                 .maxAge(3600);
     }

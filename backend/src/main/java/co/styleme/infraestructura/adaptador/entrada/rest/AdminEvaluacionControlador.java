@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Adaptador de entrada REST: ejecutar la evaluación de calidad de la IA.
- * ⚠️ Gasta unas 50 llamadas a Gemini (tarda 1–3 minutos). En la rama feature/autenticacion queda solo para ADMIN.
+ * ⚠️ Gasta unas 50 llamadas a Gemini (tarda 1–3 minutos). En la rama feature/seguridad-admin queda protegido con la clave de administración.
  */
 @RestController
 @RequestMapping("/api/admin/evaluacion")

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Adaptador de entrada REST para administrar el índice vectorial.
- * ⚠️ En la rama feature/autenticacion este endpoint quedará solo para el rol ADMIN.
+ * ⚠️ En la rama feature/seguridad-admin este endpoint quedará protegido con la clave de administración.
  * También lo usará n8n para reindexar cuando cambie un producto (rama feature/n8n-docker).
  */
 @RestController
