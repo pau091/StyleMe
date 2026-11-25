@@ -15,8 +15,8 @@
  *   "lia:pensando" → true / false
  *   "lia:hablando" → true / false
  *
- * Cómo responde: manda el mensaje al cerebro (/api/lia, Netlify + Gemini). El texto llega
- * poco a poco. Si el cerebro no responde, usa el plan B (plan-b.js) y lo avisa.
+ * Cómo responde: manda el mensaje al backend (POST /api/lia/chat: RAG con pgvector + Gemini).
+ * El texto llega poco a poco. Si el backend no responde, usa el plan B (plan-b.js) y lo avisa.
  *
  * Necesita, antes de este archivo: data/tiendas.js, data/productos.js, comun.js y lia/plan-b.js.
  */
@@ -24,7 +24,9 @@
   if (typeof PRODUCTOS === "undefined" || typeof TIENDAS === "undefined") return;
 
   /* ---------- ✏️ Ajustes ---------- */
-  const URL_CEREBRO = "/api/lia";
+  // ✏️ Dirección del backend. Se puede cambiar sin tocar este archivo definiendo window.STYLEME_API antes de cargarlo.
+  const URL_API = window.STYLEME_API || "http://localhost:8090";
+  const URL_CEREBRO = `${URL_API}/api/lia/chat`;
   const SALUDO = {
     texto: "¡Hola! Soy Lía, tu asesora en StyleMe. Te ayudo a encontrar ropa, maquillaje y cuidado para tu piel y tu cabello en tiendas de Bucaramanga. ¿Qué estás buscando hoy?",
     emocion: "felicidad",
@@ -45,6 +47,14 @@
   let historia = (() => { try { return JSON.parse(leerSesion(CLAVE_HISTORIA)) || []; } catch (e) { return []; } })();
   // [{ rol: "persona" | "lia", texto, emocion, productos, acciones, sugerencias, basico }]
   const guardarHistoria = () => guardarSesion(CLAVE_HISTORIA, JSON.stringify(historia.slice(-30)));
+  // Identificador ANÓNIMO de la conversación: el backend guarda un resumen (sin el texto) para el informe de datos
+  const CLAVE_SESION = "styleme-lia-sesion";
+  const nuevaSesion = () => {
+    const id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).slice(0, 36);
+    guardarSesion(CLAVE_SESION, id);
+    return id;
+  };
+  let sesionId = leerSesion(CLAVE_SESION) || nuevaSesion();
   let ocupada = false;
 
   /* ---------- Armar el personaje ---------- */
@@ -215,7 +225,7 @@
     const respuesta = await fetch(URL_CEREBRO, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mensaje, historia: historia.slice(-31, -1).map((m) => ({ rol: m.rol, texto: m.texto })) })
+      body: JSON.stringify({ mensaje, sesionId, historia: historia.slice(-31, -1).map((m) => ({ rol: m.rol, texto: m.texto })) })
     });
     const tipo = respuesta.headers.get("Content-Type") || "";
     if (!respuesta.ok || !tipo.includes("ndjson") || !respuesta.body) throw new Error("sin cerebro");
@@ -363,6 +373,7 @@
     ponerActividad("quieta");
     historia = [];
     guardarHistoria();
+    sesionId = nuevaSesion(); // una conversación nueva es otra fila en el informe
     historial.hidden = true;
     botonHistorial.setAttribute("aria-expanded", "false");
     pintarUltima();
