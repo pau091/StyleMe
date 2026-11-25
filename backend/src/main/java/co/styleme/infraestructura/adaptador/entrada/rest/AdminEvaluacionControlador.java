@@ -4,6 +4,7 @@ import co.styleme.aplicacion.puerto.entrada.ia.EvaluarIaCasoUso;
 import co.styleme.dominio.modelo.evaluacion.InformeEvaluacion;
 import co.styleme.infraestructura.adaptador.entrada.rest.dto.EvaluacionRespuesta;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Adaptador de entrada REST: ejecutar la evaluación de calidad de la IA.
- * ⚠️ Gasta unas 50 llamadas a Gemini (tarda 1–3 minutos). En la rama feature/autenticacion queda solo para ADMIN.
+ * ⚠️ Gasta unas 50 llamadas a Gemini (tarda 1–3 minutos). Protegido con la clave de administración.
  */
 @RestController
+@SecurityRequirement(name = "claveAdmin") // pide la clave de administración (FiltroClaveAdmin)
 @RequestMapping("/api/admin/evaluacion")
 @Tag(name = "Administración de la IA")
 public class AdminEvaluacionControlador {

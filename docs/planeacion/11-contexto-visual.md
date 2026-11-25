@@ -14,7 +14,7 @@
 - **Tres pilares:** descubrimiento · inteligencia artificial · comunidad (01-vision).
 - **Público:** todas las edades (D-017). El probador virtual, solo mayores de 18.
 - **Condiciones:** proyecto académico, una sola autora, programadora junior, **costo $0**, **HTML + CSS + JavaScript sin frameworks ni build** (D-013, D-020, D-021).
-- **Datos:** 10 tiendas reales (5 de ropa, 5 de maquillaje) y productos de ejemplo, en `data/tiendas.js` y `data/productos.js` (D-022, D-025).
+- **Datos:** 10 tiendas reales (5 de ropa, 5 de maquillaje) y productos de ejemplo, en la base de datos (`basedatos/03-datos-iniciales.sql`); la página los recibe del backend con `assets/js/api.js` (D-022, D-025).
 - **Principios que el diseño no puede romper:** la IA no diagnostica ni promete tallas; no se inventan precios; privacidad (la foto del probador no sale del celular); experiencia **intuitiva y accesible**; **no agregar cosas solo para que se vea más grande** (01-vision, principio 7).
 
 ### Páginas

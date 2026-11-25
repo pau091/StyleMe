@@ -1,0 +1,123 @@
+{
+  "id": "StyleMeReindexar01",
+  "name": "StyleMe · Reindexación nocturna de embeddings",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Cada noche 3:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cada-noche-3:00"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reindexar",
+        "options": {}
+      },
+      "name": "A mano (reindexar)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "id": "a-mano-(reindexar)",
+      "webhookId": "reindexar"
+    },
+    {
+      "parameters": {
+        "jsCode": "const recibida = $input.first().json.headers?.['x-admin-key'];\nif (!recibida || recibida !== $env.STYLEME_ADMIN_CLAVE) return [];\nreturn [{ json: { manual: true } }];\n"
+      },
+      "name": "Verificar clave (reindexar)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        200
+      ],
+      "id": "verificar-clave-(reindexar)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.STYLEME_API }}/api/admin/indexacion",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Admin-Key",
+              "value": "={{ $env.STYLEME_ADMIN_CLAVE }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "name": "Reindexar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "reindexar"
+    }
+  ],
+  "connections": {
+    "Cada noche 3:00": {
+      "main": [
+        [
+          {
+            "node": "Reindexar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A mano (reindexar)": {
+      "main": [
+        [
+          {
+            "node": "Verificar clave (reindexar)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar clave (reindexar)": {
+      "main": [
+        [
+          {
+            "node": "Reindexar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota"
+  },
+  "active": true,
+  "pinData": {},
+  "tags": []
+}

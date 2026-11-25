@@ -1,0 +1,266 @@
+{
+  "id": "StyleMeReporte0001",
+  "name": "StyleMe · Reporte semanal con IA",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      },
+      "name": "Lunes 8:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "lunes-8:00"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reporte-semanal",
+        "options": {}
+      },
+      "name": "A mano (reporte-semanal)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "id": "a-mano-(reporte-semanal)",
+      "webhookId": "reporte-semanal"
+    },
+    {
+      "parameters": {
+        "jsCode": "const recibida = $input.first().json.headers?.['x-admin-key'];\nif (!recibida || recibida !== $env.STYLEME_ADMIN_CLAVE) return [];\nreturn [{ json: { manual: true } }];\n"
+      },
+      "name": "Verificar clave (reporte-semanal)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        200
+      ],
+      "id": "verificar-clave-(reporte-semanal)"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.STYLEME_API }}/api/admin/indicadores",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Admin-Key",
+              "value": "={{ $env.STYLEME_ADMIN_CLAVE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Traer indicadores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "traer-indicadores"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Los 13 indicadores en texto corto (solo las primeras filas de cada uno): menos tokens para la IA\nconst lineas = $input.all().map(({ json: ind }) => {\n  const filas = (ind.filas || []).slice(0, 6).map((f) => Object.entries(f).map(([k, v]) => `${k}=${v}`).join(', '));\n  return `## ${ind.descripcion} (${ind.codigo})\\n${filas.join('\\n') || 'sin datos'}`;\n});\nreturn [{ json: { indicadores: lineas.join('\\n\\n'), fecha: $now.toFormat('yyyy-MM-dd') } }];\n"
+      },
+      "name": "Resumir indicadores",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "resumir-indicadores"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{ $env.GEMINI_MODELO || 'gemini-3.1-flash-lite' }}:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $env.GEMINI_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [{ parts: [{ text: \"Eres analista de datos de StyleMe (tiendas de moda y belleza de Bucaramanga). Con estos indicadores escribe, en español y en Markdown, un reporte semanal corto para la administradora: 1) tres hallazgos con su número, 2) tres recomendaciones concretas, 3) una alerta si algo se ve mal (por ejemplo, búsquedas sin resultado o reseñas negativas). No inventes datos que no estén aquí. Algunos datos son de prueba. No escribas título, saludo ni fecha (ya los pone el sistema): empieza directo con '## 1. Hallazgos'.\\nFecha de hoy: \" + $json.fecha + \"\\n\\n\" + $json.indicadores }] }], generationConfig: { temperature: 0.3 } }) }}"
+      },
+      "name": "Escribir con Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        0
+      ],
+      "id": "escribir-con-gemini",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "const texto = $input.first().json.candidates?.[0]?.content?.parts?.[0]?.text ?? 'La IA no respondió esta semana.';\nconst fecha = $('Resumir indicadores').first().json.fecha;\nconst contenido = `# Reporte semanal de StyleMe · ${fecha}\\n\\n_Escrito por IA (Gemini) a partir de los indicadores de /api/admin/indicadores._\\n\\n${texto}\\n`;\nreturn [{ json: { contenido, archivo: `/home/node/reportes/reporte-${fecha}.md` } }];\n"
+      },
+      "name": "Armar reporte",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "armar-reporte"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "contenido",
+        "options": {
+          "fileName": "={{ $json.archivo }}"
+        }
+      },
+      "name": "Convertir a archivo",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        0
+      ],
+      "id": "convertir-a-archivo"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $('Armar reporte').first().json.archivo }}",
+        "options": {}
+      },
+      "name": "Guardar reporte",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "guardar-reporte"
+    }
+  ],
+  "connections": {
+    "Lunes 8:00": {
+      "main": [
+        [
+          {
+            "node": "Traer indicadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A mano (reporte-semanal)": {
+      "main": [
+        [
+          {
+            "node": "Verificar clave (reporte-semanal)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar clave (reporte-semanal)": {
+      "main": [
+        [
+          {
+            "node": "Traer indicadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer indicadores": {
+      "main": [
+        [
+          {
+            "node": "Resumir indicadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumir indicadores": {
+      "main": [
+        [
+          {
+            "node": "Escribir con Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribir con Gemini": {
+      "main": [
+        [
+          {
+            "node": "Armar reporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar reporte": {
+      "main": [
+        [
+          {
+            "node": "Convertir a archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convertir a archivo": {
+      "main": [
+        [
+          {
+            "node": "Guardar reporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota"
+  },
+  "active": true,
+  "pinData": {},
+  "tags": []
+}

@@ -3,7 +3,7 @@
  * -----
  * Funciones que usan todas las páginas: encabezado, pie de página,
  * enlaces de WhatsApp y Google Maps, formato de precios y tarjetas.
- * Se carga DESPUÉS de data/tiendas.js y data/productos.js.
+ * Se carga DESPUÉS de api.js (que trae del backend las tiendas y los productos).
  */
 
 const CATEGORIAS = {
@@ -63,6 +63,11 @@ function enlaceWhatsapp(numero, mensaje) {
   return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 }
 
+// Atributo para que un clic en WhatsApp o "Cómo llegar" se cuente en los indicadores (api.js)
+function eventoTienda(tienda) {
+  return `data-evento-tienda="${escaparHTML(tienda.id)}"`;
+}
+
 function enlaceComoLlegar(tienda) {
   const destino = tieneUbicacion(tienda)
     ? `${tienda.lat},${tienda.lng}`
@@ -96,7 +101,7 @@ function popupTienda(tienda) {
   return `<strong>${escaparHTML(tienda.nombre)}</strong><br>
     ${escaparHTML(tienda.direccion)}<br>
     <a href="tienda.html?id=${encodeURIComponent(tienda.id)}">Ver tienda</a> ·
-    <a href="${enlaceComoLlegar(tienda)}" target="_blank" rel="noopener">Cómo llegar</a>`;
+    <a href="${enlaceComoLlegar(tienda)}" target="_blank" rel="noopener" ${eventoTienda(tienda)}>Cómo llegar</a>`;
 }
 
 /* ---------- Piezas visuales ---------- */
@@ -142,12 +147,15 @@ function tarjetaProducto(producto) {
       </div>
       <div class="tarjeta-cuerpo">
         <span class="etiqueta">${escaparHTML(CATEGORIAS[producto.categoria]?.nombre)}</span>
-        <h3>${escaparHTML(producto.nombre)}</h3>
+        <div class="tarjeta-titulo">
+          <h3>${escaparHTML(producto.nombre)}</h3>
+          ${window.StyleMe ? StyleMe.botonFavorito("PRODUCTO", producto.id) : ""}
+        </div>
         <p class="precio">${formatoPrecio(producto.precio)}</p>
         ${producto.descripcion ? `<p class="texto-suave descripcion-producto">${escaparHTML(producto.descripcion)}</p>` : ""}
         ${listaIngredientes(producto)}
         ${tienda ? `<a class="texto-suave" href="tienda.html?id=${encodeURIComponent(tienda.id)}">${escaparHTML(tienda.nombre)}</a>` : ""}
-        ${producto.fuente ? `<a class="texto-suave enlace-fuente" href="${escaparHTML(producto.fuente)}" target="_blank" rel="noopener">Ver en la tienda</a>` : ""}
+        ${producto.fuente ? `<a class="texto-suave enlace-fuente" href="${escaparHTML(producto.fuente)}" target="_blank" rel="noopener" data-evento-producto="${escaparHTML(producto.id)}">Ver en la tienda</a>` : ""}
         ${botonProbador}
       </div>
     </article>`;
@@ -231,6 +239,7 @@ const ENLACES_MENU = [
   { href: "salida.html", texto: "Salida de compras" },
   { href: "probador.html", texto: "Probador" },
   { href: "recomendador.html", texto: "Recomendador" },
+  { href: "favoritos.html", texto: "Favoritos" },
   { href: "acerca.html", texto: "Acerca de" }
 ];
 
@@ -314,6 +323,7 @@ function pintarPie() {
             <li><a href="tiendas.html">Tiendas</a></li>
             <li><a href="productos.html">Productos</a></li>
             <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="favoritos.html">Mis favoritos</a></li>
           </ul>
         </div>
         <div>
@@ -332,54 +342,9 @@ function pintarPie() {
       <p class="pie-legal">
         © 2026 StyleMe · Proyecto académico. StyleMe no tiene acuerdos comerciales con las tiendas mostradas.
         La información puede cambiar: confírmala directamente con cada tienda.
+        · <a href="admin.html">Administración</a>
       </p>
     </div>`;
-}
-
-/* ---------- Revisión de datos (solo en tu computador) ---------- */
-
-// Muestra en la consola (F12) lo que falta completar en data/tiendas.js y data/productos.js.
-// Solo se ejecuta con Live Server; en la página publicada no aparece.
-function revisarDatos() {
-  const enLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-  if (!enLocal) return;
-
-  const problemas = [];
-  const agregar = (archivo, id, problema) => problemas.push({ archivo, id, problema });
-  const idsTiendas = new Set();
-
-  TIENDAS.forEach((t) => {
-    if (idsTiendas.has(t.id)) agregar("tiendas.js", t.id, "❌ id repetido");
-    idsTiendas.add(t.id);
-    if (!tieneUbicacion(t)) agregar("tiendas.js", t.id, "Falta lat y lng (no sale en el mapa)");
-    if (!t.whatsapp && !t.telefono) agregar("tiendas.js", t.id, "Falta WhatsApp o teléfono");
-    if (!t.instagram && !t.web) agregar("tiendas.js", t.id, "Falta Instagram o página web");
-    if (!t.horario || t.horario === "Por confirmar") agregar("tiendas.js", t.id, "Falta horario");
-    if (!t.verificado) agregar("tiendas.js", t.id, "Sin verificar");
-  });
-
-  const idsProductos = new Set();
-  PRODUCTOS.forEach((p) => {
-    if (idsProductos.has(p.id)) agregar("productos.js", p.id, "❌ id repetido");
-    idsProductos.add(p.id);
-    if (!idsTiendas.has(p.tiendaId)) agregar("productos.js", p.id, `❌ La tienda "${p.tiendaId}" no existe`);
-    if (!CATEGORIAS[p.categoria]) agregar("productos.js", p.id, `❌ Categoría "${p.categoria}" no válida`);
-    if (p.pendiente) agregar("productos.js", p.id, "Es un ejemplo (pendiente: true)");
-    if (!p.foto) agregar("productos.js", p.id, "Falta foto");
-    if (p.precio === null) agregar("productos.js", p.id, "Falta precio");
-    if (p.categoria === "ropa" && !["superior", "inferior", "completa"].includes(p.tipoPrenda))
-      agregar("productos.js", p.id, "❌ Falta tipoPrenda (superior, inferior o completa)");
-    if ((p.categoria === "skincare" || p.categoria === "capilar") && !p.paso)
-      agregar("productos.js", p.id, "Falta paso (no entra en la rutina del recomendador)");
-  });
-
-  const graves = problemas.filter((p) => p.problema.startsWith("❌")).length;
-  console.groupCollapsed(
-    `%cStyleMe · revisión de datos: ${problemas.length} pendientes (${graves} errores)`,
-    "color:#a35d6d;font-weight:bold"
-  );
-  console.table(problemas);
-  console.groupEnd();
 }
 
 // Avisa en la consola si una foto no carga (ruta mal escrita o archivo inexistente)
@@ -399,7 +364,8 @@ window.addEventListener(
 pintarEncabezado();
 pintarPie();
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Se espera un momento para que cada página pinte sus imágenes
-  setTimeout(revisarDatos, 500);
+// "Ver en la tienda" de un producto cuenta como VER_PRODUCTO en los indicadores
+document.addEventListener("click", (evento) => {
+  const enlace = evento.target.closest?.("a[data-evento-producto]");
+  if (enlace) window.StyleMe?.registrarEvento("VER_PRODUCTO", { producto: enlace.dataset.eventoProducto });
 });

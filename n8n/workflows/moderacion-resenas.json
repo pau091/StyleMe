@@ -1,0 +1,211 @@
+{
+  "id": "StyleMeModeracion1",
+  "name": "StyleMe · Moderación de reseñas con IA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resena-nueva",
+        "options": {}
+      },
+      "name": "Reseña nueva",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "reseña-nueva",
+      "webhookId": "resena-nueva"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "name": "Cada 30 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ],
+      "id": "cada-30-minutos"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.STYLEME_API }}/api/admin/resenas/pendientes?limite=50",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Admin-Key",
+              "value": "={{ $env.STYLEME_ADMIN_CLAVE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Traer pendientes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        100
+      ],
+      "id": "traer-pendientes",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{ $env.GEMINI_MODELO || 'gemini-3.1-flash-lite' }}:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $env.GEMINI_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 4000
+            }
+          },
+          "timeout": 60000
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [{ parts: [{ text: \"Eres moderadora de reseñas de StyleMe, una página de tiendas de moda y belleza de Bucaramanga. Decide si esta reseña se PUBLICA o se RECHAZA.\\nRECHAZA solo si tiene: insultos o groserías, ataques a personas, datos personales (teléfonos, correos, direcciones de personas, nombres completos de empleados), publicidad o enlaces, o no habla de la tienda o el producto.\\nPUBLICA las críticas negativas si son respetuosas: son útiles para otras personas. Una reseña solo con corazones y sin comentario se PUBLICA.\\nResponde SOLO con JSON: {\\\"decision\\\": \\\"PUBLICADA\\\" o \\\"RECHAZADA\\\", \\\"motivo\\\": \\\"frase corta\\\"}\\n\\nReseña: \" + $json.corazones + \" de 5 corazones. Comentario: \" + ($json.comentario || '(sin comentario)') }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0 } }) }}"
+      },
+      "name": "Preguntar a Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        100
+      ],
+      "id": "preguntar-a-gemini",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Une cada reseña con la respuesta de Gemini (vienen en el mismo orden).\n// Si la IA responde algo raro, la reseña se deja PENDIENTE (no se publica ni se rechaza a ciegas).\nconst resenas = $('Traer pendientes').all();\nconst salida = [];\n$input.all().forEach((respuesta, i) => {\n  const resena = resenas[i]?.json;\n  if (!resena?.id) return;\n  try {\n    const texto = respuesta.json.candidates[0].content.parts[0].text;\n    const { decision, motivo } = JSON.parse(texto);\n    if (decision === 'PUBLICADA' || decision === 'RECHAZADA') {\n      salida.push({ json: { id: resena.id, decision, motivo: String(motivo ?? '').slice(0, 200) } });\n    }\n  } catch (e) {\n    // respuesta no válida: se intenta de nuevo en la próxima revisión\n  }\n});\nreturn salida;\n"
+      },
+      "name": "Leer decisión",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        100
+      ],
+      "id": "leer-decisión"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.STYLEME_API }}/api/admin/resenas/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Admin-Key",
+              "value": "={{ $env.STYLEME_ADMIN_CLAVE }}"
+            }
+          ]
+        },
+        "options": {},
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ estado: $json.decision }) }}"
+      },
+      "name": "Publicar o rechazar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        100
+      ],
+      "id": "publicar-o-rechazar",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Reseña nueva": {
+      "main": [
+        [
+          {
+            "node": "Traer pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cada 30 minutos": {
+      "main": [
+        [
+          {
+            "node": "Traer pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer pendientes": {
+      "main": [
+        [
+          {
+            "node": "Preguntar a Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preguntar a Gemini": {
+      "main": [
+        [
+          {
+            "node": "Leer decisión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer decisión": {
+      "main": [
+        [
+          {
+            "node": "Publicar o rechazar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota"
+  },
+  "active": true,
+  "pinData": {},
+  "tags": []
+}

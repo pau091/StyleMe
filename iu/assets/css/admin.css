@@ -1,0 +1,37 @@
+/* PANEL DE ADMINISTRACIÓN · estilos funcionales (el diseño final va en la rama style/iu-visual) */
+
+.admin-clave { display: grid; gap: 0.5rem; max-width: 24rem; margin: 1.5rem 0; }
+
+.admin-indice { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin: 0.75rem 0 1.5rem; font-size: 0.9rem; }
+
+.indicador {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.indicador h3 code { font-size: 0.75rem; color: var(--color-texto-suave); font-weight: 400; }
+
+.grafico { margin: 0.5rem 0 1rem; display: grid; gap: 0.35rem; }
+.grafico-fila {
+  display: grid;
+  grid-template-columns: minmax(6rem, 12rem) 1fr 4.5rem;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.grafico-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grafico-barra { background: var(--color-marca-suave); border-radius: 4px; height: 0.8rem; }
+.grafico-barra span { display: block; height: 100%; background: var(--color-marca); border-radius: 4px; }
+.grafico-valor { text-align: right; font-variant-numeric: tabular-nums; }
+
+.tabla-desplazable { overflow-x: auto; }
+.tabla-desplazable table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+.tabla-desplazable th,
+.tabla-desplazable td { border-bottom: 1px solid var(--color-borde); padding: 0.35rem 0.5rem; text-align: left; white-space: nowrap; }
+.tabla-desplazable td { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 600px) {
+  .grafico-fila { grid-template-columns: 6rem 1fr 3.5rem; }
+}

@@ -1,15 +1,28 @@
 # SERVICIOS DE STYLEME
 # --------------------
-# Por ahora solo la base de datos (PostgreSQL + pgvector).
-# En la rama feature/n8n-docker se agregan el backend, la iu y n8n.
+# Todo el sistema con un solo comando: base de datos, backend, página y n8n.
+#
+#   basedatos → PostgreSQL 17 + pgvector (embeddings e índice HNSW)
+#   backend   → API Spring Boot (catálogo, búsqueda semántica, Lía con RAG, reseñas, indicadores)
+#   iu        → la página, servida por nginx (también reenvía /api/ al backend)
+#   n8n       → automatizaciones con IA: moderación de reseñas, reindexación y reporte semanal
 #
 # Los valores ${...} se leen del archivo .env (copia de .env.example).
 #
 # Comandos:
-#   docker compose up -d       → enciende la base de datos en segundo plano
-#   docker compose ps          → muestra el estado (debe decir "healthy")
-#   docker compose down        → la apaga (los datos se conservan)
-#   docker compose down -v     → la apaga y BORRA los datos (para volver a correr los scripts)
+#   docker compose up -d --build   → construye las imágenes y enciende todo en segundo plano
+#   docker compose ps              → estado de cada servicio (deben decir "healthy" o "running")
+#   docker compose logs -f backend → ver lo que va pasando en el backend
+#   docker compose down            → apaga todo (los datos se conservan)
+#   docker compose down -v         → apaga y BORRA los datos (la base vuelve a correr los scripts)
+#
+# Solo la base de datos (para programar el backend con .\mvnw spring-boot:run):
+#   docker compose up -d basedatos
+#
+# Direcciones (con los puertos por defecto):
+#   Página ......... http://localhost:8085
+#   Swagger ........ http://localhost:8090/swagger-ui.html
+#   n8n ............ http://localhost:5678
 
 services:
   basedatos:
@@ -38,5 +51,85 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build: ./backend
+    container_name: styleme-backend
+    restart: unless-stopped
+    depends_on:
+      basedatos:
+        condition: service_healthy
+    environment:
+      # Dentro de Docker, la base se llama "basedatos" (el nombre del servicio), no "localhost"
+      POSTGRES_HOST: basedatos
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODELO: ${GEMINI_MODELO:-gemini-3.1-flash-lite}
+      GEMINI_MODELO_EMBEDDINGS: ${GEMINI_MODELO_EMBEDDINGS:-gemini-embedding-001}
+      STYLEME_ADMIN_CLAVE: ${STYLEME_ADMIN_CLAVE}
+      SERVER_PORT: 8090
+      # Página en Docker (8085) y en Live Server (5500)
+      STYLEME_CORS_ORIGENES: http://localhost:${IU_PORT:-8085},http://127.0.0.1:${IU_PORT:-8085},http://127.0.0.1:5500,http://localhost:5500
+      # Cada reseña nueva se avisa a n8n, que la modera con IA
+      N8N_WEBHOOK_RESENAS: http://n8n:5678/webhook/resena-nueva
+      # La reindexación nocturna la programa n8n (no el backend), para no hacerla dos veces
+      STYLEME_REINDEXACION_PROGRAMADA: "false"
+      TZ: America/Bogota
+    ports:
+      - "${BACKEND_PORT:-8090}:8090"
+
+  iu:
+    build: ./iu
+    container_name: styleme-iu
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${IU_PORT:-8085}:80"
+
+  n8n:
+    # ✏️ Versión fija para que el proyecto funcione igual en cualquier computador
+    image: n8nio/n8n:2.49.6
+    container_name: styleme-n8n
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      GENERIC_TIMEZONE: America/Bogota
+      TZ: America/Bogota
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      # En tu computador se entra por http (sin https)
+      N8N_SECURE_COOKIE: "false"
+      # Los workflows leen sus datos de estas variables con {{ $env.NOMBRE }}
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      STYLEME_API: http://backend:8090
+      STYLEME_ADMIN_CLAVE: ${STYLEME_ADMIN_CLAVE}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODELO: ${GEMINI_MODELO:-gemini-3.1-flash-lite}
+      # Única carpeta donde n8n puede escribir archivos: los reportes semanales
+      N8N_RESTRICT_FILE_ACCESS_TO: /home/node/reportes
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    volumes:
+      # Cuenta, credenciales e historial de n8n
+      - datos-n8n:/home/node/.n8n
+      # Los workflows del proyecto (se importan solos al encender, ver "command")
+      - ./n8n/workflows:/home/node/workflows:ro
+      # Aquí deja n8n el reporte semanal escrito por la IA
+      - ./n8n/reportes:/home/node/reportes
+    # Al encender: importa (o actualiza) los workflows de n8n/workflows, los publica (activa) y arranca n8n
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        n8n import:workflow --separate --input=/home/node/workflows &&
+        for id in StyleMeModeracion1 StyleMeReindexar01 StyleMeReporte0001; do n8n publish:workflow --id=$$id; done &&
+        exec n8n start
+
 volumes:
   datos-postgres:
+  datos-n8n:

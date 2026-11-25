@@ -55,6 +55,7 @@ public final class CatalogoRestMapeador {
                 new ProductoRespuesta.TiendaResumen(p.tienda().slug(), p.tienda().nombre()),
                 p.tipoPrenda() == null ? null : p.tipoPrenda().codigo(),
                 p.disponibleEnProbador(),
+                p.fotoProbador(),
                 p.esEjemplo(),
                 p.ingredientes(),
                 agruparEtiquetas(p.etiquetas()));

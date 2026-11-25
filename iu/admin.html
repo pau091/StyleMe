@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Administración · StyleMe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/estilos.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+
+  <main class="contenedor">
+    <h1>Administración</h1>
+
+    <!-- 1. Clave: sin ella el backend responde 401 en todas las rutas /api/admin/* -->
+    <form id="formulario-clave" class="admin-clave">
+      <label for="campo-clave">Clave de administración</label>
+      <input id="campo-clave" type="password" autocomplete="current-password" required>
+      <button class="boton" type="submit">Entrar</button>
+      <p class="texto-suave" id="estado-clave" role="status"></p>
+    </form>
+
+    <div id="panel" hidden>
+      <div class="grupo-botones">
+        <button class="boton boton-secundario" id="boton-reindexar" type="button">Reindexar embeddings</button>
+        <button class="boton boton-secundario" id="boton-salir" type="button">Salir</button>
+      </div>
+      <p class="texto-suave" id="estado-panel" role="status"></p>
+
+      <section>
+        <h2>Reseñas pendientes de moderación</h2>
+        <div id="pendientes"></div>
+      </section>
+
+      <section>
+        <h2>Indicadores</h2>
+        <p class="texto-suave">Calculados con las vistas SQL de <code>basedatos/05-vistas-indicadores.sql</code>.</p>
+        <nav class="admin-indice" id="indice-indicadores" aria-label="Indicadores"></nav>
+        <div id="indicadores"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer id="pie"></footer>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/comun.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /*
  * RECOMENDADOR DE SKINCARE Y CUIDADO CAPILAR
  * ------------------------------------------
- * Funciona con REGLAS, no inventa nada: solo sugiere productos que están en data/productos.js.
+ * Funciona con REGLAS, no inventa nada: solo sugiere productos del catálogo (llega del backend, api.js).
  *
  * Cada producto recibe puntos:
  *   +3 si es para tu tipo exacto de piel o cabello (+1 si es "para todas/todos")
@@ -118,7 +118,7 @@ function tarjetaRecomendacion(item) {
         <p class="texto-suave"><strong>Por qué:</strong> ${escaparHTML(item.razones.join(" · "))}</p>
         ${listaIngredientes(p)}
         ${item.avisos.map((a) => `<p class="texto-suave">${escaparHTML(a)}</p>`).join("")}
-        ${whatsapp ? `<a class="boton boton-whatsapp boton-pequeno" href="${whatsapp}" target="_blank" rel="noopener">Preguntar</a>` : ""}
+        ${whatsapp ? `<a class="boton boton-whatsapp boton-pequeno" href="${whatsapp}" target="_blank" rel="noopener" ${eventoTienda(tienda)}>Preguntar</a>` : ""}
       </div>
     </div>`;
 }
@@ -175,7 +175,7 @@ function mostrarResultado(formulario, categoria) {
   resultado.querySelector("h2")?.focus({ preventScroll: true });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+cuandoHayaDatos(() => {
   const pestanas = document.querySelectorAll('[role="tab"]');
   const panelPiel = document.getElementById("panel-piel");
   const panelCabello = document.getElementById("panel-cabello");
@@ -199,9 +199,11 @@ document.addEventListener("DOMContentLoaded", () => {
   panelPiel.addEventListener("submit", (e) => {
     e.preventDefault();
     mostrarResultado(panelPiel, "skincare");
+    StyleMe.registrarEvento("USAR_RECOMENDADOR", { categoria: "skincare" });
   });
   panelCabello.addEventListener("submit", (e) => {
     e.preventDefault();
     mostrarResultado(panelCabello, "capilar");
+    StyleMe.registrarEvento("USAR_RECOMENDADOR", { categoria: "capilar" });
   });
 });

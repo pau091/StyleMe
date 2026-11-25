@@ -1,5 +1,20 @@
 package co.styleme.infraestructura.configuracion;
 
+import co.styleme.aplicacion.casodeuso.analitica.ConsultarIndicadoresServicio;
+import co.styleme.aplicacion.casodeuso.analitica.RegistrarEventosServicio;
+import co.styleme.aplicacion.casodeuso.comunidad.GestionarFavoritosServicio;
+import co.styleme.aplicacion.casodeuso.comunidad.GestionarResenasServicio;
+import co.styleme.aplicacion.casodeuso.comunidad.ModerarResenasServicio;
+import co.styleme.aplicacion.puerto.entrada.analitica.ConsultarIndicadoresCasoUso;
+import co.styleme.aplicacion.puerto.entrada.analitica.RegistrarEventosCasoUso;
+import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarFavoritosCasoUso;
+import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarResenasCasoUso;
+import co.styleme.aplicacion.puerto.entrada.comunidad.ModerarResenasCasoUso;
+import co.styleme.aplicacion.puerto.salida.notificacion.NotificadorPuerto;
+import co.styleme.aplicacion.puerto.salida.persistencia.EventoRepositorioPuerto;
+import co.styleme.aplicacion.puerto.salida.persistencia.FavoritoRepositorioPuerto;
+import co.styleme.aplicacion.puerto.salida.persistencia.IndicadorRepositorioPuerto;
+import co.styleme.aplicacion.puerto.salida.persistencia.ResenaRepositorioPuerto;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarCategoriasServicio;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarProductosServicio;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarTiendasServicio;
@@ -127,5 +142,36 @@ public class ConfiguracionBeans {
             CalificadorEvaluacion calificador, Clock reloj,
             @Value("${styleme.ia.evaluacion-pausa-ms:4500}") long pausaEntrePreguntasMs) {
         return new EvaluarIaServicio(conjunto, embeddings, almacen, productos, lia, evaluaciones, calificador, reloj, pausaEntrePreguntasMs);
+    }
+
+    // ---------- Comunidad (reseñas y favoritos) ----------
+
+    @Bean
+    GestionarResenasCasoUso gestionarResenas(ResenaRepositorioPuerto resenas, TiendaRepositorioPuerto tiendas,
+            ProductoRepositorioPuerto productos, NotificadorPuerto notificador) {
+        return new GestionarResenasServicio(resenas, tiendas, productos, notificador);
+    }
+
+    @Bean
+    ModerarResenasCasoUso moderarResenas(ResenaRepositorioPuerto resenas) {
+        return new ModerarResenasServicio(resenas);
+    }
+
+    @Bean
+    GestionarFavoritosCasoUso gestionarFavoritos(FavoritoRepositorioPuerto favoritos, TiendaRepositorioPuerto tiendas,
+            ProductoRepositorioPuerto productos) {
+        return new GestionarFavoritosServicio(favoritos, tiendas, productos);
+    }
+
+    // ---------- Analítica (eventos e indicadores) ----------
+
+    @Bean
+    RegistrarEventosCasoUso registrarEventos(EventoRepositorioPuerto eventos) {
+        return new RegistrarEventosServicio(eventos);
+    }
+
+    @Bean
+    ConsultarIndicadoresCasoUso consultarIndicadores(IndicadorRepositorioPuerto indicadores) {
+        return new ConsultarIndicadoresServicio(indicadores);
     }
 }

@@ -16,12 +16,37 @@ Diseño completo: [docs/planeacion/16-arquitectura-hexagonal.md](../docs/planeac
 
 El backend queda en **http://localhost:8090** (se cambia con `SERVER_PORT` en el `.env`). Se detiene con `Ctrl+C`.
 
+## Con Docker
+
+`docker compose up -d --build` (en la raíz) construye la imagen con el `Dockerfile` de esta carpeta: primero compila con
+Maven y después corre el `.jar` solo con Java 21, como un usuario sin privilegios. Docker revisa
+**`/actuator/health/readiness`** cada 15 s (incluye la conexión a la base).
+
+Dentro de Docker el backend:
+- se conecta a la base por el nombre del servicio (`POSTGRES_HOST=basedatos`);
+- avisa a n8n de cada reseña nueva (`N8N_WEBHOOK_RESENAS`, adaptador `N8nNotificadorAdaptador`);
+- apaga su reindexación nocturna (`STYLEME_REINDEXACION_PROGRAMADA=false`): la programa n8n.
+
 ## Documentación de la API (Swagger)
 
 Con el backend encendido:
 
 - **Swagger UI (interactivo):** http://localhost:8090/swagger-ui.html → cada endpoint tiene un botón *"Try it out"* para probarlo.
 - **Especificación OpenAPI (JSON):** http://localhost:8090/v3/api-docs
+
+## Clave de administración
+
+Las rutas **`/api/admin/*`** (indexación, evaluación, moderación de reseñas e indicadores) exigen la cabecera
+**`X-Admin-Key`** con el valor de `STYLEME_ADMIN_CLAVE` del `.env`. El resto de la API es pública.
+
+| Situación | Respuesta |
+|---|---|
+| Sin cabecera o con una clave equivocada | **401** |
+| `STYLEME_ADMIN_CLAVE` vacía | **503** (la administración queda bloqueada) |
+| Clave correcta | La respuesta normal del endpoint |
+
+En **Swagger**: botón **Authorize** (arriba a la derecha) → pegar la clave → *Authorize*. Desde ese momento Swagger la
+manda sola en las rutas de administración. La revisa `FiltroClaveAdmin` (un filtro que corre antes de los controladores).
 
 ## Endpoints del catálogo
 
@@ -76,6 +101,22 @@ REGISTRAR  resumen en conversacion_lia (tema, modo, similitud, latencia, tokens)
 ```
 Si Gemini no responde, contesta el **plan B** (reglas + productos reales) y la página muestra "modo básico".
 Límite: 15 mensajes por minuto por persona. CORS: solo Live Server (`STYLEME_CORS_ORIGENES` para cambiarlo).
+
+## Reseñas, favoritos y analítica
+
+Sin registro: la página manda un `sesionId` anónimo del navegador (D-066).
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| GET | `/api/resenas?tienda=bohor` (o `?producto=p049`) | Promedio de corazones, cantidad y reseñas **publicadas** |
+| POST | `/api/resenas` | `{"sesionId","autor","tienda" o "producto","corazones":1-5,"comentario"}` → 201, queda **PENDIENTE** · 404 si no existe · 409 si esa sesión ya la reseñó · 429 si son demasiadas |
+| GET | `/api/favoritos?sesionId=...` | Favoritos de la sesión |
+| POST | `/api/favoritos` | `{"sesionId","tienda" o "producto"}` → 204 (si ya estaba, no se duplica) |
+| DELETE | `/api/favoritos?sesionId=...&tienda=bohor` | Quita un favorito → 204 |
+| POST | `/api/eventos` | Lote de hasta 50 eventos (`VER_TIENDA`, `CLIC_WHATSAPP`, `BUSQUEDA`...) → 202. Si uno es inválido no se guarda ninguno |
+| GET | `/api/admin/resenas/pendientes?limite=20` | Reseñas por moderar (las más antiguas primero) |
+| PATCH | `/api/admin/resenas/{id}` | `{"estado":"PUBLICADA"}` o `RECHAZADA` (solo desde PENDIENTE) |
+| GET | `/api/admin/indicadores` y `/api/admin/indicadores/{codigo}` | Los 13 indicadores del informe de datos (vistas `v_*` de `basedatos/05-vistas-indicadores.sql`) |
 
 ## Evaluación de la IA
 
@@ -133,8 +174,8 @@ GET /api/tiendas/bohor
 | Arquitectura (ArchUnit) | `test/.../arquitectura/` | Las 8 reglas hexagonales | No |
 | Dominio | `test/.../dominio/` | Reglas del negocio (precio > 0, tienda sin coordenadas no sale en el mapa...) | No |
 | Casos de uso | `test/.../aplicacion/` | Lógica de la aplicación con puertos falsos (Mockito) | No |
-| Persistencia | `test/.../persistencia/` | Los adaptadores JPA contra los datos reales | Sí |
-| API (punta a punta) | `test/.../rest/` | Peticiones HTTP reales: 200, 400, 404 y Swagger | Sí |
+| Persistencia | `test/.../persistencia/` | Los adaptadores JPA y SQL (reseñas, favoritos, eventos, indicadores) contra los datos reales; se deshacen al terminar | Sí |
+| API (punta a punta) | `test/.../rest/` | Peticiones HTTP reales: 200, 201, 202, 204, 400, 404, 409 y Swagger | Sí |
 | Adaptador Gemini | `test/.../gemini/` | La forma de las peticiones a Gemini (con un servidor simulado) | No |
 | pgvector | `test/.../vector/` | Guardar vectores, búsqueda por similitud, filtros híbridos y umbral | Sí |
 | IA real | `test/.../ia/` | Indexación, búsqueda y **RAG de Lía con Gemini real** (productos reales, presupuesto, salud, NDJSON). Solo corre si hay `GEMINI_API_KEY` | Sí + clave |

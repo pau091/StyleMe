@@ -1,6 +1,7 @@
 package co.styleme.infraestructura.adaptador.entrada.rest;
 
 import co.styleme.dominio.excepcion.DatoInvalidoException;
+import co.styleme.dominio.excepcion.RecursoDuplicadoException;
 import co.styleme.dominio.excepcion.RecursoNoEncontradoException;
 import co.styleme.dominio.excepcion.ServicioIaNoDisponibleException;
 import co.styleme.infraestructura.adaptador.entrada.rest.dto.ErrorRespuesta;
@@ -10,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
@@ -33,6 +36,25 @@ public class ManejadorErrores {
     @ExceptionHandler(DatoInvalidoException.class)
     public ResponseEntity<ErrorRespuesta> datoInvalido(DatoInvalidoException e, HttpServletRequest peticion) {
         return responder(HttpStatus.BAD_REQUEST, e.getMessage(), peticion);
+    }
+
+    /** Por ejemplo, la misma sesión intenta reseñar dos veces la misma tienda: 409 = "conflicto". */
+    @ExceptionHandler(RecursoDuplicadoException.class)
+    public ResponseEntity<ErrorRespuesta> duplicado(RecursoDuplicadoException e, HttpServletRequest peticion) {
+        return responder(HttpStatus.CONFLICT, e.getMessage(), peticion);
+    }
+
+    /** Errores con su código HTTP ya decidido en el controlador (por ejemplo 429 = demasiadas peticiones). */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorRespuesta> conEstado(ResponseStatusException e, HttpServletRequest peticion) {
+        HttpStatus estado = HttpStatus.valueOf(e.getStatusCode().value());
+        return responder(estado, e.getReason() == null ? estado.getReasonPhrase() : e.getReason(), peticion);
+    }
+
+    /** Falta un parámetro obligatorio, por ejemplo ?sesionId= en los favoritos. */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorRespuesta> faltaParametro(MissingServletRequestParameterException e, HttpServletRequest peticion) {
+        return responder(HttpStatus.BAD_REQUEST, "Falta el parámetro '" + e.getParameterName() + "'", peticion);
     }
 
     /** La IA no respondió (sin clave, sin cupo, sin internet): 503 = "servicio no disponible por ahora". */
