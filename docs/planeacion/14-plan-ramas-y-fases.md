@@ -283,7 +283,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 6 | Endpoints REST `/api/resenas`, `/api/favoritos`, `/api/eventos`, `/api/admin/resenas`, `/api/admin/indicadores` + pruebas HTTP | `feat(api): agregar endpoints de comunidad y analítica` |
 | 7 | Documentación (D-066, READMEs, plan, IAS) | `docs: documentar comunidad y analítica` |
 
-#### Rama 9 · `feature/seguridad-admin`
+#### Rama 9 · `feature/seguridad-admin` ✅ HECHA (PR #12, 2026-11-25)
 *Cambia de JWT completo a una clave de administración (D-066): quien visita no necesita cuenta.*
 
 | # | Qué se hace | Commit |
@@ -294,18 +294,17 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 4 | Documentación (README, repaso, IAS) | `docs: documentar la clave de administración` |
 
 #### Rama 10 · `feature/iu-api`
-*Criterio: integración funcional (7).*
+*Criterio: integración funcional (7). Decisión D-067.*
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Módulo que llama a la API | `feat(iu): agregar cliente de la api` |
-| 2 | Tiendas, perfil y productos desde la API | `feat(iu): cargar tiendas y productos desde la api` |
+| 1 | `api.js`: catálogo desde la API, sesión anónima, eventos, favoritos, reseñas, búsqueda y admin + la foto del probador en el JSON | `feat(iu): agregar cliente de la api` |
+| 2 | Todas las páginas leen del backend (`cuandoHayaDatos`) y registran eventos | `feat(iu): cargar tiendas y productos desde la api` |
 | 3 | El buscador de productos usa la **búsqueda semántica** | `feat(iu): usar búsqueda semántica en el catálogo` |
-| 4 | Identificador anónimo de sesión (D-066) | `feat(iu): agregar sesión anónima` |
-| 5 | Reseñas y favoritos | `feat(iu): agregar reseñas y favoritos` |
-| 6 | Registro de eventos | `feat(iu): registrar eventos de uso` |
-| 7 | Panel de admin con gráficos de indicadores | `feat(iu): agregar panel de indicadores` |
-| 8 | Borrar `iu/data/*.js` | `chore(iu): eliminar datos locales` |
+| 4 | Reseñas y favoritos (perfil de tienda, tarjetas, página Mis favoritos) | `feat(iu): agregar reseñas y favoritos` |
+| 5 | Panel de administración: moderación e indicadores con gráficos | `feat(iu): agregar panel de administración` |
+| 6 | CORS como filtro antes de la clave (el panel no podía leer el 401) | `fix(seguridad): enviar cors también cuando falta la clave` |
+| 7 | Borrar `iu/data/*.js` | `chore(iu): eliminar datos locales` |
 
 #### Rama 11 · `feature/n8n-docker`
 *Criterios: automatización e integración de servicios de IA (8), integración funcional.*
@@ -315,11 +314,9 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 1 | Dockerfiles del backend y de la iu (nginx) | `build(docker): agregar dockerfiles` |
 | 2 | `docker-compose.yml` completo: pgvector, backend, iu, n8n | `build(docker): completar docker compose` |
 | 3 | `.env.example` con todas las variables | `chore: completar variables de entorno` |
-| 4 | Adaptadores n8n: `N8nNotificadorAdaptador` (salida) y `ModeracionWebhookControlador` (entrada) | `feat(n8n): agregar adaptadores de n8n` |
-| 5 | n8n: **moderación de reseñas con Gemini** → cambia el estado a PUBLICADA/RECHAZADA | `feat(n8n): agregar moderación de reseñas con ia` |
-| 6 | n8n: **reindexación programada** de embeddings (solo recalcula lo que cambió; D-066) | `feat(n8n): agregar reindexación automática de embeddings` |
-| 7 | n8n: **reporte semanal** de indicadores con resumen escrito por IA | `feat(n8n): agregar reporte semanal con ia` |
-| 8 | Exportar los workflows a `n8n/*.json` | `chore(n8n): exportar workflows` |
+| 4 | `NotificadorPuerto` + `N8nNotificadorAdaptador`: el backend avisa a n8n de cada reseña nueva (n8n responde por los endpoints de admin, no hace falta un controlador aparte) | `feat(n8n): avisar a n8n de las reseñas nuevas` |
+| 5 | Workflows: **moderación con Gemini**, **reindexación programada** y **reporte semanal con IA** (+ generador) | `feat(n8n): agregar workflows con ia` |
+| 6 | Documentación (D-067, D-068, READMEs, repaso, IAS) | `docs: documentar integración, docker y n8n` |
 | 9 ✅ | Borrar `netlify.toml` (se adelantó a la rama 7, D-065) | `chore: eliminar configuración de netlify` |
 
 ✅ **Terminada cuando:** `docker compose up` levanta todo en un computador limpio.

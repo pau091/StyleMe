@@ -16,6 +16,17 @@ Diseño completo: [docs/planeacion/16-arquitectura-hexagonal.md](../docs/planeac
 
 El backend queda en **http://localhost:8090** (se cambia con `SERVER_PORT` en el `.env`). Se detiene con `Ctrl+C`.
 
+## Con Docker
+
+`docker compose up -d --build` (en la raíz) construye la imagen con el `Dockerfile` de esta carpeta: primero compila con
+Maven y después corre el `.jar` solo con Java 21, como un usuario sin privilegios. Docker revisa
+**`/actuator/health/readiness`** cada 15 s (incluye la conexión a la base).
+
+Dentro de Docker el backend:
+- se conecta a la base por el nombre del servicio (`POSTGRES_HOST=basedatos`);
+- avisa a n8n de cada reseña nueva (`N8N_WEBHOOK_RESENAS`, adaptador `N8nNotificadorAdaptador`);
+- apaga su reindexación nocturna (`STYLEME_REINDEXACION_PROGRAMADA=false`): la programa n8n.
+
 ## Documentación de la API (Swagger)
 
 Con el backend encendido:

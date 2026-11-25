@@ -97,11 +97,11 @@ Diseño de cada campo: [docs/planeacion/15-modelo-de-datos.md](docs/planeacion/1
 ```
 StyleMe/
 ├── iu/                     Interfaz de usuario: la página web
-│   ├── *.html              Inicio, tiendas, productos, mapa, salida, probador, recomendador, acerca
-│   ├── data/               Catálogo actual (se reemplaza por la base de datos en la Fase 4)
+│   ├── *.html              Inicio, tiendas, productos, mapa, salida, probador, recomendador, favoritos, acerca y admin
+│   ├── Dockerfile          Imagen con nginx (sirve la página y reenvía /api/ al backend)
 │   └── assets/
 │       ├── css/            Estilos, animaciones e intro
-│       ├── js/             Un archivo por página + comun.js; lia/ (personaje y plan B)
+│       ├── js/             api.js (conexión con el backend), comun.js, un archivo por página; lia/ (personaje y plan B)
 │       ├── lia/            Lía: retrato 2D con sus expresiones
 │       └── img/            Fotos de tiendas, categorías y decoración
 │
@@ -112,7 +112,7 @@ StyleMe/
 │       └── infraestructura/ Adaptadores: REST, PostgreSQL, pgvector, Gemini, n8n
 │
 ├── basedatos/              Scripts SQL: esquema, índices (HNSW), datos iniciales y vistas
-├── n8n/                    Workflows de automatización exportados en JSON
+├── n8n/                    Workflows de n8n (moderación con IA, reindexación, reporte semanal)
 │
 ├── docs/
 │   ├── planeacion/         Visión, decisiones, plan de ramas, modelo de datos y arquitectura
@@ -212,24 +212,39 @@ El archivo `.env` está en `.gitignore`: nunca se sube a GitHub.
 La clave de Gemini se saca gratis en [Google AI Studio](https://aistudio.google.com/apikey).
 ⚠️ Es secreta: **nunca** la pegues en un archivo `.js`, `.html` o `.java`.
 
-### 2. La página (interfaz de usuario)
-La página usa módulos de JavaScript, así que **no funciona con doble clic**. Se abre con un servidor local:
-
-1. En VS Code, toca **Go Live** (barra azul de abajo, a la derecha) o clic derecho sobre `iu/index.html` → **Open with Live Server**.
-2. Se abre en `http://127.0.0.1:5500/`. El archivo `.vscode/settings.json` le indica a Live Server que la página está en `iu/`.
-
-### 3. Base de datos y backend (Lía con IA)
+### 2. Opción A · Todo con Docker (como se entrega)
 ```
-docker compose up -d            # en la raíz: PostgreSQL + pgvector
+docker compose up -d --build    # base de datos, backend, página y n8n
+```
+| Servicio | Dirección |
+|---|---|
+| Página | http://localhost:8085 (panel: `/admin.html`) |
+| Swagger | http://localhost:8090/swagger-ui.html |
+| n8n (automatizaciones con IA) | http://localhost:5678 |
+
+La primera vez tarda unos minutos (construye las imágenes). Si la base es nueva, construye el índice de la IA
+desde el panel (botón *Reindexar embeddings*) o desde Swagger. Detalle de n8n: [n8n/README.md](n8n/README.md).
+
+### 2. Opción B · Para programar (backend en tu computador)
+```
+docker compose up -d basedatos  # en la raíz: solo PostgreSQL + pgvector
 cd backend
 .\mvnw spring-boot:run          # backend en http://localhost:8090
 ```
 La primera vez, construye el índice de la IA con `POST /api/admin/indexacion` desde Swagger
-(http://localhost:8090/swagger-ui.html). Con el backend encendido, **Lía responde con IA** (RAG con Gemini)
-en la página de Live Server. Si el backend está apagado, Lía responde en **modo básico** (reglas, sin IA).
+(http://localhost:8090/swagger-ui.html, botón **Authorize** con la clave `STYLEME_ADMIN_CLAVE`).
+
+### 3. La página (interfaz de usuario)
+La página **lee todo del backend** (tiendas, productos, búsqueda, reseñas, favoritos): enciéndelo primero.
+Usa módulos de JavaScript, así que **no funciona con doble clic**. Se abre con un servidor local:
+
+1. En VS Code, toca **Go Live** (barra azul de abajo, a la derecha) o clic derecho sobre `iu/index.html` → **Open with Live Server**.
+2. Se abre en `http://127.0.0.1:5500/`. El archivo `.vscode/settings.json` le indica a Live Server que la página está en `iu/`.
+3. Panel de administración (reseñas pendientes e indicadores): `http://127.0.0.1:5500/admin.html` (pide la clave).
+
+Si la IA (Gemini) no responde, Lía contesta en **modo básico** (reglas, sin IA) y el buscador busca por palabras.
 
 Detalle: [basedatos/README.md](basedatos/README.md) · [backend/README.md](backend/README.md).
-El **sistema completo** con `docker compose up` llega en la rama `feature/n8n-docker`.
 
 > **Privacidad:** Lía avisa que no se compartan datos personales (Ley 1581 de 2012). De cada conversación solo se guarda un resumen sin el texto de la persona.
 
