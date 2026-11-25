@@ -24,7 +24,7 @@ public class ConfiguracionCors implements WebMvcConfigurer {
         registro.addMapping("/api/**")
                 .allowedOrigins(origenes)
                 .allowedMethods("GET", "POST", "PATCH", "DELETE")
-                .allowedHeaders("Content-Type")
+                .allowedHeaders("Content-Type", "X-Admin-Key")
                 .maxAge(3600);
     }
 }
