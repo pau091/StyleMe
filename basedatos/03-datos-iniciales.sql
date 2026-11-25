@@ -5,7 +5,8 @@
 -- El catálogo real de StyleMe: 10 tiendas y 49 productos de Bucaramanga,
 -- con sus ingredientes y etiquetas (tipo de piel, objetivos, "libre de"...).
 --
--- Origen: iu/data/tiendas.js e iu/data/productos.js (tomados de las tiendas el 2026-11-20).
+-- Origen: los antiguos iu/data/tiendas.js e iu/data/productos.js (tomados de las tiendas el 2026-11-20).
+-- Desde la rama feature/iu-api esos archivos ya no existen: ESTE script es la fuente del catálogo.
 -- Conversión aplicada:
 --   · "" y "Por confirmar"  → NULL (en la base, "no se sabe" es NULL)
 --   · pendiente: true       → es_ejemplo = true (productos de ejemplo, no reales)

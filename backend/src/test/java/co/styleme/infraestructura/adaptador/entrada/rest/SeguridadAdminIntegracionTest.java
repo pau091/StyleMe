@@ -42,6 +42,26 @@ class SeguridadAdminIntegracionTest {
     }
 
     @Test
+    @DisplayName("El 401 lleva las cabeceras CORS: la página puede leer el mensaje (no lo ve como error de conexión)")
+    void rechazoConCors() throws Exception {
+        var peticion = HttpRequest.newBuilder(URI.create(url("/api/admin/indicadores")))
+                .header("Origin", "http://127.0.0.1:5500").header(FiltroClaveAdmin.CABECERA, "otra-clave").GET().build();
+        var respuesta = cliente.send(peticion, HttpResponse.BodyHandlers.ofString());
+        assertThat(respuesta.statusCode()).isEqualTo(401);
+        assertThat(respuesta.headers().firstValue("Access-Control-Allow-Origin")).hasValue("http://127.0.0.1:5500");
+    }
+
+    @Test
+    @DisplayName("Un origen que no está autorizado no recibe permiso CORS")
+    void origenNoAutorizado() throws Exception {
+        var peticion = HttpRequest.newBuilder(URI.create(url("/api/categorias")))
+                .header("Origin", "http://sitio-ajeno.com").GET().build();
+        var respuesta = cliente.send(peticion, HttpResponse.BodyHandlers.ofString());
+        assertThat(respuesta.statusCode()).isEqualTo(403);
+        assertThat(respuesta.headers().firstValue("Access-Control-Allow-Origin")).isEmpty();
+    }
+
+    @Test
     @DisplayName("Con la clave correcta: 200")
     void conClave() throws Exception {
         assertThat(get("/api/admin/indicadores/categorias", clave).statusCode()).isEqualTo(200);

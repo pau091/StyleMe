@@ -27,7 +27,7 @@
     <div class="filtros" data-revelar style="--orden:3">
       <div>
         <label for="filtro-texto">Buscar</label>
-        <input type="search" id="filtro-texto" placeholder="Producto o tienda">
+        <input type="search" id="filtro-texto" placeholder="Ej: algo para que no me brille la cara">
       </div>
       <div>
         <label for="filtro-categoria">Categoría</label>
@@ -52,13 +52,13 @@
     </div>
 
     <p class="texto-suave" id="contador" data-revelar style="--orden:4"></p>
+    <p class="texto-suave" id="modo-busqueda" aria-live="polite"></p>
     <div class="cuadricula" id="lista-productos" data-cascada></div>
   </main>
 
   <footer id="pie"></footer>
 
-  <script src="data/tiendas.js"></script>
-  <script src="data/productos.js"></script>
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/comun.js"></script>
   <script src="assets/js/productos.js"></script>
   <!-- Lía, la asesora virtual (personaje con globos de texto) -->

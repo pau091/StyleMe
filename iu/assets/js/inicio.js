@@ -105,14 +105,16 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="cinta-cruzada cinta-ciruela">${textoCinta(PALABRAS_CINTA_CIRUELA)}</div>
     <div class="cinta-cruzada cinta-rosa">${textoCinta(PALABRAS_CINTA_ROSA)}</div>`;
 
-  // Tiendas separadas por tipo
-  document.getElementById("tiendas-ropa").innerHTML = TIENDAS.filter((t) => t.tipo === "ropa")
-    .map(tarjetaTienda)
-    .join("");
+  // Tiendas separadas por tipo (llegan del backend: se pintan cuando estén listas)
+  cuandoHayaDatos(() => {
+    document.getElementById("tiendas-ropa").innerHTML = TIENDAS.filter((t) => t.tipo === "ropa")
+      .map(tarjetaTienda)
+      .join("");
 
-  document.getElementById("tiendas-maquillaje").innerHTML = TIENDAS.filter((t) => t.tipo === "maquillaje")
-    .map(tarjetaTienda)
-    .join("");
+    document.getElementById("tiendas-maquillaje").innerHTML = TIENDAS.filter((t) => t.tipo === "maquillaje")
+      .map(tarjetaTienda)
+      .join("");
+  });
 
   // Herramientas
   document.getElementById("herramientas").innerHTML = HERRAMIENTAS.map(
