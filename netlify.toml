@@ -1,14 +1,9 @@
 # CONFIGURACIÓN DE NETLIFY
 # ------------------------
 # La página es estática (no necesita "build"): se publica tal cual desde la carpeta iu/ (interfaz de usuario).
-# Las funciones del servidor (el cerebro de Lía) están en netlify/functions/.
-#
-# 🔑 La clave de Gemini NO va aquí. Se pone en Netlify:
-#    Site configuration → Environment variables → GEMINI_API_KEY
+# Lía ya no usa funciones de Netlify: su cerebro (RAG) vive en el backend Spring Boot.
+# Este archivo solo sirve si se quiere publicar la página estática en Netlify (opcional).
 
 [build]
   publish = "iu"
 
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
