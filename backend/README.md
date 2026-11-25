@@ -39,13 +39,35 @@ Los errores siempre tienen la misma forma:
 { "estado": 404, "error": "Not Found", "mensaje": "No existe una tienda con el identificador 'x'", "ruta": "/api/tiendas/x", "fecha": "..." }
 ```
 
+## Inteligencia artificial: embeddings y búsqueda semántica
+
+| Método | Dirección | Qué hace |
+|---|---|---|
+| POST | `/api/admin/indexacion` | Genera los embeddings (Gemini) de tiendas, productos y guías y los guarda en pgvector. Solo recalcula lo nuevo o modificado (compara el hash SHA-256 del texto) |
+| GET | `/api/busqueda?q=algo para que no me brille la cara&categoria=skincare&precioMaximo=60000` | Búsqueda **semántica** (por significado) e **híbrida** (filtros + similitud). Parámetros opcionales: `tipo` (tienda, producto, guia), `limite` (1–20), `similitudMinima` (0–1) |
+
+**Primera vez:** con el backend encendido, ejecutar una vez `POST /api/admin/indexacion` (desde Swagger) para construir el índice.
+Después se reindexa solo cada noche a las 3:00 a. m. (`ReindexacionProgramador`).
+
+**Cómo funciona:**
+```
+INDEXAR:  tienda / producto / sección de guía → FragmentadorConocimiento (chunking)
+          → ¿cambió el hash? → Gemini (RETRIEVAL_DOCUMENT, 768 dim.) → pgvector (índice HNSW)
+
+BUSCAR:   consulta → Gemini (RETRIEVAL_QUERY) → pgvector: filtros + ORDER BY embedding <=> consulta
+          → top-k con similitud ≥ umbral
+```
+Las guías de conocimiento están en `src/main/resources/conocimiento/guias/*.md`.
+Si Gemini no está disponible (sin clave o sin cupo), la API responde **503** y el resto del backend sigue funcionando.
+
 ## Capas
 
 ```
 src/main/java/co/styleme/
 ├── dominio/                🟢 Modelo y reglas del negocio (Java puro)
 │   ├── modelo/catalogo/        Tienda, Producto, Categoria, Zona, Etiqueta, Coordenadas, Contacto...
-│   ├── servicio/
+│   ├── modelo/ia/              Embedding, FragmentoConocimiento, Guia, FiltroBusqueda, ResultadoBusqueda...
+│   ├── servicio/               FragmentadorConocimiento (chunking)
 │   └── excepcion/              TiendaNoEncontradaException, DatoInvalidoException...
 ├── aplicacion/             🟡 Puertos y casos de uso (Java puro)
 │   ├── puerto/entrada/         interfaces ...CasoUso   (lo que StyleMe permite hacer)
@@ -53,7 +75,11 @@ src/main/java/co/styleme/
 │   └── casodeuso/              implementaciones ...Servicio
 └── infraestructura/        🔵 Adaptadores (aquí sí hay Spring)
     ├── adaptador/entrada/rest/     Controladores, DTO, ManejadorErrores
+    ├── adaptador/entrada/programador/  Reindexación nocturna
     ├── adaptador/salida/persistencia/  Entidades JPA, repositorios Spring Data, adaptadores
+    ├── adaptador/salida/gemini/    Embeddings con la API de Gemini
+    ├── adaptador/salida/vector/    pgvector: guardar y buscar vectores (índice HNSW)
+    ├── adaptador/salida/conocimiento/  Lectura de las guías Markdown
     └── configuracion/              ConfiguracionBeans (enchufa los casos de uso), Swagger
 ```
 
@@ -84,6 +110,9 @@ GET /api/tiendas/bohor
 | Casos de uso | `test/.../aplicacion/` | Lógica de la aplicación con puertos falsos (Mockito) | No |
 | Persistencia | `test/.../persistencia/` | Los adaptadores JPA contra los datos reales | Sí |
 | API (punta a punta) | `test/.../rest/` | Peticiones HTTP reales: 200, 400, 404 y Swagger | Sí |
+| Adaptador Gemini | `test/.../gemini/` | La forma de las peticiones a Gemini (con un servidor simulado) | No |
+| pgvector | `test/.../vector/` | Guardar vectores, búsqueda por similitud, filtros híbridos y umbral | Sí |
+| IA real | `test/.../ia/` | Indexación y búsqueda con **Gemini real**; embeddings vs. palabras. Solo corre si hay `GEMINI_API_KEY` | Sí + clave |
 
 ## Configuración (`src/main/resources/application.yml`)
 

@@ -2,6 +2,7 @@ package co.styleme.infraestructura.adaptador.entrada.rest;
 
 import co.styleme.dominio.excepcion.DatoInvalidoException;
 import co.styleme.dominio.excepcion.RecursoNoEncontradoException;
+import co.styleme.dominio.excepcion.ServicioIaNoDisponibleException;
 import co.styleme.infraestructura.adaptador.entrada.rest.dto.ErrorRespuesta;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -31,6 +32,13 @@ public class ManejadorErrores {
     @ExceptionHandler(DatoInvalidoException.class)
     public ResponseEntity<ErrorRespuesta> datoInvalido(DatoInvalidoException e, HttpServletRequest peticion) {
         return responder(HttpStatus.BAD_REQUEST, e.getMessage(), peticion);
+    }
+
+    /** La IA no respondió (sin clave, sin cupo, sin internet): 503 = "servicio no disponible por ahora". */
+    @ExceptionHandler(ServicioIaNoDisponibleException.class)
+    public ResponseEntity<ErrorRespuesta> iaNoDisponible(ServicioIaNoDisponibleException e, HttpServletRequest peticion) {
+        LOG.warn("IA no disponible en {}: {}", peticion.getRequestURI(), e.getMessage());
+        return responder(HttpStatus.SERVICE_UNAVAILABLE, "El servicio de inteligencia artificial no está disponible en este momento", peticion);
     }
 
     /** Por ejemplo, ?precioMaximo=mucho (no es un número). */
