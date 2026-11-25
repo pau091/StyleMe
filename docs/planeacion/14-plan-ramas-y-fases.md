@@ -271,20 +271,26 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Reseñas y favoritos: dominio (corazones 1–5, una de dos) + casos de uso | `feat(dominio): agregar reglas de reseñas y favoritos` |
-| 2 | Reseñas y favoritos: adaptadores JPA y REST | `feat(api): agregar endpoints de reseñas y favoritos` |
-| 3 | Eventos e indicadores: dominio → casos de uso → adaptadores | `feat(analitica): agregar eventos e indicadores` |
-| 4 | `basedatos/04-datos-prueba.sql`: usuarios, reseñas, favoritos y eventos de prueba (marcados) | `feat(db): agregar datos de prueba para el análisis` |
-| 5 | `basedatos/05-vistas-indicadores.sql`: vistas de los indicadores | `feat(db): agregar vistas de indicadores` |
-
-#### Rama 9 · `feature/autenticacion`
+*Reseñas y favoritos anónimos por sesión (D-066).*
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Dominio Usuario, Rol, Correo + puertos `CifradorContrasenaPuerto`, `GeneradorTokenPuerto` + casos de uso de registro e inicio de sesión | `feat(usuario): agregar registro e inicio de sesión` |
-| 2 | Adaptadores `BCryptCifradorAdaptador` y `JwtGeneradorTokenAdaptador` | `feat(seguridad): agregar adaptadores bcrypt y jwt` |
-| 3 | `ConfiguracionSeguridad` + filtro JWT + permisos por rol | `feat(seguridad): proteger endpoints por rol` |
-| 4 | Pruebas de endpoints protegidos | `test(seguridad): agregar pruebas de seguridad` |
+| 1 | `basedatos/05-vistas-indicadores.sql`: 13 vistas de indicadores | `feat(db): agregar vistas de indicadores` |
+| 2 | `basedatos/04-datos-prueba.sql`: usuarios, reseñas, favoritos, eventos y conversaciones de prueba (marcados) | `feat(db): agregar datos de prueba para el análisis` |
+| 3 | Dominio: reseña (corazones 1–5, moderación), favorito, objetivo "una de dos", evento, indicador | `feat(dominio): agregar reglas de reseñas, favoritos y eventos` |
+| 4 | Puertos y casos de uso de reseñas, moderación, favoritos, eventos e indicadores | `feat(aplicacion): agregar casos de uso de comunidad y analítica` |
+| 5 | Adaptadores de persistencia (SQL con JdbcTemplate) + pruebas contra la base | `feat(persistencia): agregar adaptadores de comunidad y analítica` |
+| 6 | Endpoints REST `/api/resenas`, `/api/favoritos`, `/api/eventos`, `/api/admin/resenas`, `/api/admin/indicadores` + pruebas HTTP | `feat(api): agregar endpoints de comunidad y analítica` |
+| 7 | Documentación (D-066, READMEs, plan, IAS) | `docs: documentar comunidad y analítica` |
+
+#### Rama 9 · `feature/seguridad-admin`
+*Cambia de JWT completo a una clave de administración (D-066): quien visita no necesita cuenta.*
+
+| # | Qué se hace | Commit |
+|---|---|---|
+| 1 | Filtro que exige la cabecera `X-Admin-Key` (valor en el `.env`) en `/api/admin/*` | `feat(seguridad): proteger endpoints de administración` |
+| 2 | Swagger con el botón "Authorize" para la clave | `docs(api): documentar la clave de administración` |
+| 3 | Pruebas: sin clave 401, con clave 200 | `test(seguridad): agregar pruebas de la clave de administración` |
 
 #### Rama 10 · `feature/iu-api`
 *Criterio: integración funcional (7).*
@@ -294,7 +300,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 1 | Módulo que llama a la API | `feat(iu): agregar cliente de la api` |
 | 2 | Tiendas, perfil y productos desde la API | `feat(iu): cargar tiendas y productos desde la api` |
 | 3 | El buscador de productos usa la **búsqueda semántica** | `feat(iu): usar búsqueda semántica en el catálogo` |
-| 4 | Inicio de sesión y registro | `feat(iu): agregar inicio de sesión` |
+| 4 | Identificador anónimo de sesión (D-066) | `feat(iu): agregar sesión anónima` |
 | 5 | Reseñas y favoritos | `feat(iu): agregar reseñas y favoritos` |
 | 6 | Registro de eventos | `feat(iu): registrar eventos de uso` |
 | 7 | Panel de admin con gráficos de indicadores | `feat(iu): agregar panel de indicadores` |
@@ -310,7 +316,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 3 | `.env.example` con todas las variables | `chore: completar variables de entorno` |
 | 4 | Adaptadores n8n: `N8nNotificadorAdaptador` (salida) y `ModeracionWebhookControlador` (entrada) | `feat(n8n): agregar adaptadores de n8n` |
 | 5 | n8n: **moderación de reseñas con Gemini** → cambia el estado a PUBLICADA/RECHAZADA | `feat(n8n): agregar moderación de reseñas con ia` |
-| 6 | n8n: producto creado o editado → **reindexar su embedding** | `feat(n8n): agregar reindexación automática de embeddings` |
+| 6 | n8n: **reindexación programada** de embeddings (solo recalcula lo que cambió; D-066) | `feat(n8n): agregar reindexación automática de embeddings` |
 | 7 | n8n: **reporte semanal** de indicadores con resumen escrito por IA | `feat(n8n): agregar reporte semanal con ia` |
 | 8 | Exportar los workflows a `n8n/*.json` | `chore(n8n): exportar workflows` |
 | 9 ✅ | Borrar `netlify.toml` (se adelantó a la rama 7, D-065) | `chore: eliminar configuración de netlify` |
@@ -379,7 +385,7 @@ Lo ideal: al menos 2 o 3 en todo el proyecto.
 | 1 · Base de datos vectorial | `feature/base-de-datos` | v0.2 |
 | 2 · Backend base | `feature/backend-base` | v0.3 |
 | 3 · Inteligencia artificial | `feature/embeddings-busqueda`, `feature/rag-lia`, `test/evaluacion-ia` | v0.4 |
-| 4 · Comunidad, seguridad e integración | `feature/comunidad-analitica`, `feature/autenticacion`, `feature/iu-api`, `feature/n8n-docker` | v0.5 |
+| 4 · Comunidad, seguridad e integración | `feature/comunidad-analitica`, `feature/seguridad-admin`, `feature/iu-api`, `feature/n8n-docker` | v0.5 |
 | 5 · Catálogo completo y visual | `feature/catalogo-completo`, `style/iu-visual` | v0.6 |
 | 6 · Entrega | `docs/entrega-final` | v1.0 |
 

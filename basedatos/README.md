@@ -17,6 +17,15 @@ Se ejecutan **en orden alfabético** y **automáticamente** la primera vez que D
 
 > Los embeddings **no** van en estos scripts: los calcula el backend con Gemini y los guarda en `fragmento_conocimiento`.
 
+## Aplicar `04` y `05` a una base que ya existe (sin borrar nada)
+
+Si la base se creó antes de la rama `feature/comunidad-analitica`, estos dos scripts no corrieron solos. Desde la raíz del proyecto, en PowerShell:
+```
+docker exec styleme-basedatos psql -U styleme -d styleme -f /docker-entrypoint-initdb.d/04-datos-prueba.sql
+docker exec styleme-basedatos psql -U styleme -d styleme -f /docker-entrypoint-initdb.d/05-vistas-indicadores.sql
+```
+Los datos de prueba están marcados (`@prueba.styleme`, sesiones `prueba-N`, `detalle = {"prueba": true}`) y el final de `04-datos-prueba.sql` explica cómo borrarlos.
+
 ## Volver a crear la base desde cero
 
 Los scripts solo corren cuando la base está vacía. Para repetirlos:
