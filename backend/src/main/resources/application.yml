@@ -27,6 +27,11 @@ spring:
       ddl-auto: validate
     # No mantener la conexión abierta durante toda la petición web (buena práctica)
     open-in-view: false
+    properties:
+      hibernate:
+        # Carga las relaciones LAZY en lotes de hasta 50 (evita el problema "N+1":
+        # una consulta por cada producto para traer su tienda, categoría, ingredientes...)
+        default_batch_fetch_size: 50
 
 server:
   # 8090 porque en este computador el 8080 (Tomcat) y el 8081 (pgAdmin) los usan otros proyectos.
