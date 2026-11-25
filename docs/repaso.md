@@ -207,7 +207,7 @@ contraseña porque quien visita StyleMe no necesita registrarse: solo la adminis
 
 ---
 
-## 9. Pruebas (168 en verde)
+## 9. Pruebas (174 en verde)
 
 | Tipo | Qué comprueba |
 |---|---|
@@ -222,7 +222,39 @@ Se ejecutan con `.\mvnw test` en `backend/` (con Docker encendido).
 
 ---
 
-## 10. Preguntas probables en la sustentación
+## 10. Integración: página, Docker y n8n
+
+**La página lee todo del backend.** `iu/assets/js/api.js` trae tiendas y productos (`GET /api/tiendas`, `/api/productos`)
+y los guarda 5 minutos en la pestaña. Cada página se pinta con `cuandoHayaDatos(() => …)`. Ya no existen `iu/data/*.js`.
+
+| Qué hace la página | Endpoint |
+|---|---|
+| Buscador de productos (por significado) | `GET /api/busqueda` · muestra resultados solo si el mejor supera 0,64 (D-067) |
+| Favoritos (♥) y página Mis favoritos | `GET/POST/DELETE /api/favoritos` |
+| Reseñas en el perfil de cada tienda | `GET/POST /api/resenas` |
+| Eventos (ver tienda, WhatsApp, búsquedas…) en lotes | `POST /api/eventos` |
+| Panel `admin.html`: moderación e indicadores | `/api/admin/*` con la clave |
+
+**Docker (`docker compose up -d --build`)** levanta 4 servicios:
+
+| Servicio | Qué es | Puerto |
+|---|---|---|
+| `basedatos` | PostgreSQL + pgvector | 5432 |
+| `backend` | Spring Boot (imagen de 2 etapas: compila con Maven y corre solo con Java) | 8090 |
+| `iu` | nginx: sirve la página y reenvía `/api/` al backend (misma dirección → sin CORS) | 8085 |
+| `n8n` | automatizaciones con IA | 5678 |
+
+**n8n · 3 workflows con Gemini** ([n8n/README.md](../n8n/README.md)):
+1. **Moderación de reseñas:** el backend avisa por webhook (`NotificadorPuerto` → `N8nNotificadorAdaptador`), n8n trae
+   las pendientes, Gemini decide PUBLICADA o RECHAZADA, n8n responde con `PATCH /api/admin/resenas/{id}`. También corre
+   cada 30 min. Prueba real: una crítica respetuosa se publicó; una con insultos y un teléfono se rechazó.
+2. **Reindexación nocturna:** 3:00 a. m. → `POST /api/admin/indexacion` (solo recalcula lo que cambió).
+3. **Reporte semanal:** lunes 8:00 → lee los indicadores → Gemini escribe hallazgos y recomendaciones → archivo `.md`
+   (ejemplo real en [docs/evidencias/reporte-semanal-ia-ejemplo.md](evidencias/reporte-semanal-ia-ejemplo.md)).
+
+---
+
+## 11. Preguntas probables en la sustentación
 
 | Pregunta | Respuesta corta |
 |---|---|
@@ -233,4 +265,7 @@ Se ejecutan con `.\mvnw test` en `backend/` (con Docker encendido).
 | ¿Por qué arquitectura hexagonal? | Porque el negocio no depende de la tecnología: cambiar Gemini o la base es cambiar un adaptador |
 | ¿Cómo demuestran que la IA funciona? | 30 preguntas con respuesta conocida: 100 % de acierto con embeddings frente a 0 % por palabras, 0 alucinaciones |
 | ¿Qué pasa si Gemini se cae? | Reintenta; si sigue fallando, responde el plan B con reglas y productos reales |
+| ¿Para qué sirve n8n si el backend ya hace todo? | Para automatizar tareas que pasan solas (moderar, reindexar, reportar) sin escribir más código en el backend; se ven y se cambian en la pantalla de n8n |
+| ¿Qué pasa si n8n está apagado cuando llega una reseña? | La reseña queda guardada como PENDIENTE; la revisión de cada 30 minutos la modera después |
+| ¿Por qué nginx? | Sirve la página y reenvía `/api/` al backend: página y API quedan en la misma dirección y el navegador no necesita CORS |
 | ¿Cómo ahorran tokens? | Embeddings guardados (hash), historial corto y solo 8 fragmentos de contexto por pregunta |

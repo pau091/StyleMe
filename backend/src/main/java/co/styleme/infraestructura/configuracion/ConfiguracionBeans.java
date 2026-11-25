@@ -10,6 +10,7 @@ import co.styleme.aplicacion.puerto.entrada.analitica.RegistrarEventosCasoUso;
 import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarFavoritosCasoUso;
 import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarResenasCasoUso;
 import co.styleme.aplicacion.puerto.entrada.comunidad.ModerarResenasCasoUso;
+import co.styleme.aplicacion.puerto.salida.notificacion.NotificadorPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.EventoRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.FavoritoRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.IndicadorRepositorioPuerto;
@@ -147,8 +148,8 @@ public class ConfiguracionBeans {
 
     @Bean
     GestionarResenasCasoUso gestionarResenas(ResenaRepositorioPuerto resenas, TiendaRepositorioPuerto tiendas,
-            ProductoRepositorioPuerto productos) {
-        return new GestionarResenasServicio(resenas, tiendas, productos);
+            ProductoRepositorioPuerto productos, NotificadorPuerto notificador) {
+        return new GestionarResenasServicio(resenas, tiendas, productos, notificador);
     }
 
     @Bean

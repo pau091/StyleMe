@@ -44,6 +44,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+		<!-- Actuator: /actuator/health dice si el backend y su base de datos están bien (lo usa Docker) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 
 		<!-- Swagger / OpenAPI: documentación interactiva de la API en /swagger-ui.html -->
 		<dependency>
