@@ -5,27 +5,33 @@ import co.styleme.aplicacion.casodeuso.catalogo.ConsultarProductosServicio;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarTiendasServicio;
 import co.styleme.aplicacion.casodeuso.ia.BuscarSemanticoServicio;
 import co.styleme.aplicacion.casodeuso.ia.ChatearConLiaServicio;
+import co.styleme.aplicacion.casodeuso.ia.EvaluarIaServicio;
 import co.styleme.aplicacion.casodeuso.ia.IndexarConocimientoServicio;
 import co.styleme.aplicacion.puerto.entrada.catalogo.ConsultarCategoriasCasoUso;
 import co.styleme.aplicacion.puerto.entrada.catalogo.ConsultarProductosCasoUso;
 import co.styleme.aplicacion.puerto.entrada.catalogo.ConsultarTiendasCasoUso;
 import co.styleme.aplicacion.puerto.entrada.ia.BuscarSemanticoCasoUso;
 import co.styleme.aplicacion.puerto.entrada.ia.ChatearConLiaCasoUso;
+import co.styleme.aplicacion.puerto.entrada.ia.EvaluarIaCasoUso;
 import co.styleme.aplicacion.puerto.entrada.ia.IndexarConocimientoCasoUso;
 import co.styleme.aplicacion.puerto.salida.ia.AlmacenVectorialPuerto;
+import co.styleme.aplicacion.puerto.salida.ia.ConjuntoEvaluacionPuerto;
 import co.styleme.aplicacion.puerto.salida.ia.EmbeddingPuerto;
 import co.styleme.aplicacion.puerto.salida.ia.GuiaRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.ia.ModeloLenguajePuerto;
 import co.styleme.aplicacion.puerto.salida.ia.PlantillaInstruccionesPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.ConversacionRepositorioPuerto;
+import co.styleme.aplicacion.puerto.salida.persistencia.EvaluacionRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.CategoriaRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.ProductoRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.TiendaRepositorioPuerto;
+import co.styleme.dominio.servicio.CalificadorEvaluacion;
 import co.styleme.dominio.servicio.FragmentadorConocimiento;
 import co.styleme.dominio.servicio.LectorPresupuesto;
 import co.styleme.dominio.servicio.PlanBLia;
 import co.styleme.dominio.servicio.ValidadorRecomendaciones;
 import java.time.Clock;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -106,5 +112,20 @@ public class ConfiguracionBeans {
             PlanBLia planB, Clock reloj) {
         return new ChatearConLiaServicio(embeddings, almacen, modelo, plantilla, tiendas, productos, conversaciones,
                 validador, lectorPresupuesto, planB, reloj);
+    }
+
+    // ---------- Evaluación de la IA ----------
+
+    @Bean
+    CalificadorEvaluacion calificadorEvaluacion() {
+        return new CalificadorEvaluacion();
+    }
+
+    @Bean
+    EvaluarIaCasoUso evaluarIa(ConjuntoEvaluacionPuerto conjunto, EmbeddingPuerto embeddings, AlmacenVectorialPuerto almacen,
+            ProductoRepositorioPuerto productos, ChatearConLiaCasoUso lia, EvaluacionRepositorioPuerto evaluaciones,
+            CalificadorEvaluacion calificador, Clock reloj,
+            @Value("${styleme.ia.evaluacion-pausa-ms:4500}") long pausaEntrePreguntasMs) {
+        return new EvaluarIaServicio(conjunto, embeddings, almacen, productos, lia, evaluaciones, calificador, reloj, pausaEntrePreguntasMs);
     }
 }

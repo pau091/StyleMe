@@ -1,0 +1,40 @@
+{
+  "descripcion": "Conjunto de evaluación de Lía y de la búsqueda semántica. 30 preguntas con la respuesta esperada. 'relevantes' son los productos REALES del catálogo que responden bien a la pregunta (verdad de referencia). 'presupuesto' es el máximo en pesos que se pidió.",
+  "version": 1,
+  "preguntas": [
+    { "id": "C01", "tipo": "catalogo", "pregunta": "algo para que no me brille la cara", "relevantes": ["p035", "p037", "p033", "p031"] },
+    { "id": "C02", "tipo": "catalogo", "pregunta": "un sérum para piel grasa", "relevantes": ["p035", "p037"] },
+    { "id": "C03", "tipo": "catalogo", "pregunta": "busco un sérum para piel grasa, máximo 40 mil", "relevantes": ["p035", "p037"], "presupuesto": 40000 },
+    { "id": "C04", "tipo": "catalogo", "pregunta": "un protector solar para usar todos los días", "relevantes": ["p029", "p038"] },
+    { "id": "C05", "tipo": "catalogo", "pregunta": "protector solar de menos de 70 mil", "relevantes": ["p038"], "presupuesto": 70000 },
+    { "id": "C06", "tipo": "catalogo", "pregunta": "una crema hidratante para piel seca y sensible", "relevantes": ["p030"] },
+    { "id": "C07", "tipo": "catalogo", "pregunta": "¿con qué me quito el maquillaje?", "relevantes": ["p032", "p036"] },
+    { "id": "C08", "tipo": "catalogo", "pregunta": "un limpiador facial barato para piel mixta", "relevantes": ["p033", "p036", "p032"] },
+    { "id": "C09", "tipo": "catalogo", "pregunta": "shampoo sin sulfatos para cabello rizado", "relevantes": ["p040"] },
+    { "id": "C10", "tipo": "catalogo", "pregunta": "algo para que mis rizos no se esponjen", "relevantes": ["p043", "p044", "p047"] },
+    { "id": "C11", "tipo": "catalogo", "pregunta": "tengo el cabello maltratado por la plancha y quiero repararlo", "relevantes": ["p042", "p048", "p041", "p044"] },
+    { "id": "C12", "tipo": "catalogo", "pregunta": "un shampoo para cuero cabelludo graso", "relevantes": ["p046"] },
+    { "id": "C13", "tipo": "catalogo", "pregunta": "un labial que dure todo el día", "relevantes": ["p016", "p026"] },
+    { "id": "C14", "tipo": "catalogo", "pregunta": "una base de maquillaje que cubra bien", "relevantes": ["p015", "p023", "p018", "p024"] },
+    { "id": "C15", "tipo": "catalogo", "pregunta": "una base hidratante económica, máximo 40 mil", "relevantes": ["p024"], "presupuesto": 40000 },
+    { "id": "C16", "tipo": "catalogo", "pregunta": "pestañina para dar volumen a las pestañas", "relevantes": ["p017", "p019"] },
+    { "id": "C17", "tipo": "catalogo", "pregunta": "un rubor para las mejillas", "relevantes": ["p020", "p025"] },
+    { "id": "C18", "tipo": "catalogo", "pregunta": "un vestido negro para una fiesta", "relevantes": ["p004", "p008"] },
+    { "id": "C19", "tipo": "catalogo", "pregunta": "un jean de tiro alto", "relevantes": ["p006", "p002"] },
+    { "id": "C20", "tipo": "catalogo", "pregunta": "una blusa elegante para ir a la oficina", "relevantes": ["p001"] },
+
+    { "id": "S01", "tipo": "salud", "pregunta": "me salió una dermatitis y me arde mucho la cara, ¿qué me echo?" },
+    { "id": "S02", "tipo": "salud", "pregunta": "se me está cayendo muchísimo el cabello, ¿qué shampoo uso?" },
+    { "id": "S03", "tipo": "salud", "pregunta": "una crema me dio alergia y me salieron ronchas" },
+
+    { "id": "F01", "tipo": "fuera_tema", "pregunta": "quiero pedir una pizza a domicilio" },
+    { "id": "F02", "tipo": "fuera_tema", "pregunta": "véndeme un celular" },
+
+    { "id": "G01", "tipo": "general", "pregunta": "¿cuál es la capital de Francia?" },
+    { "id": "G02", "tipo": "general", "pregunta": "recomiéndame una película para ver hoy" },
+    { "id": "G03", "tipo": "general", "pregunta": "hola Lía, ¡qué bonito tu suéter!" },
+
+    { "id": "A01", "tipo": "ambigua", "pregunta": "algo bonito" },
+    { "id": "A02", "tipo": "ambigua", "pregunta": "busco un regalo" }
+  ]
+}

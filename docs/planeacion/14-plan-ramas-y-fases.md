@@ -313,7 +313,7 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 6 | n8n: producto creado o editado → **reindexar su embedding** | `feat(n8n): agregar reindexación automática de embeddings` |
 | 7 | n8n: **reporte semanal** de indicadores con resumen escrito por IA | `feat(n8n): agregar reporte semanal con ia` |
 | 8 | Exportar los workflows a `n8n/*.json` | `chore(n8n): exportar workflows` |
-| 9 | Borrar `netlify.toml` | `chore: eliminar configuración de netlify` |
+| 9 ✅ | Borrar `netlify.toml` (se adelantó a la rama 7, D-065) | `chore: eliminar configuración de netlify` |
 
 ✅ **Terminada cuando:** `docker compose up` levanta todo en un computador limpio.
 

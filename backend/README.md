@@ -77,6 +77,12 @@ REGISTRAR  resumen en conversacion_lia (tema, modo, similitud, latencia, tokens)
 Si Gemini no responde, contesta el **plan B** (reglas + productos reales) y la página muestra "modo básico".
 Límite: 15 mensajes por minuto por persona. CORS: solo Live Server (`STYLEME_CORS_ORIGENES` para cambiarlo).
 
+## Evaluación de la IA
+
+`POST /api/admin/evaluacion` ejecuta las 30 preguntas de `src/main/resources/evaluacion/preguntas.json` y devuelve:
+acierto@3 (semántico vs. palabras), precisión@k, recall@5, % sin alucinación, % presupuesto, salud y temas ajenos.
+Cada ejecución queda en la tabla `evaluacion_ia`. Resultados: [docs/pruebas/informe-calidad-ia.md](../docs/pruebas/informe-calidad-ia.md).
+
 ## Capas
 
 ```

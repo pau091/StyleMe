@@ -39,6 +39,8 @@ public class GeminiChatAdaptador implements ModeloLenguajePuerto {
     private static final JsonMapper JSON = JsonMapper.builder().build();
     private static final double TEMPERATURA = 0.6;
     private static final int MAX_TOKENS_SALIDA = 1200;
+    /** Si Gemini está saturado (429 o 5xx) y todavía no escribió nada, se reintenta tras esta espera. */
+    private static final long[] ESPERAS_REINTENTO_MS = {2_000, 5_000};
 
     private final PropiedadesGemini propiedades;
     private final RestClient cliente;
@@ -53,6 +55,25 @@ public class GeminiChatAdaptador implements ModeloLenguajePuerto {
         if (!propiedades.tieneClave()) {
             throw new ServicioIaNoDisponibleException("Falta configurar GEMINI_API_KEY en el archivo .env");
         }
+        boolean[] escribio = {false};
+        Consumer<String> contar = texto -> {
+            escribio[0] = true;
+            alRecibirTexto.accept(texto);
+        };
+        for (int intento = 0; ; intento++) {
+            try {
+                return intentar(prompt, contar);
+            } catch (GeminiSaturadoException e) {
+                // Solo se reintenta si todavía no se mostró nada (si no, el texto quedaría repetido)
+                if (escribio[0] || intento >= ESPERAS_REINTENTO_MS.length) {
+                    throw new ServicioIaNoDisponibleException(e.getMessage(), e);
+                }
+                esperar(ESPERAS_REINTENTO_MS[intento]);
+            }
+        }
+    }
+
+    private RespuestaModelo intentar(Prompt prompt, Consumer<String> alRecibirTexto) {
         try {
             return cliente.post()
                     .uri("/models/{modelo}:streamGenerateContent?alt=sse", propiedades.modeloChat())
@@ -60,13 +81,33 @@ public class GeminiChatAdaptador implements ModeloLenguajePuerto {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(cuerpo(prompt))
                     .exchange((peticion, respuesta) -> {
+                        int estado = respuesta.getStatusCode().value();
+                        if (estado == 429 || estado >= 500) {
+                            throw new GeminiSaturadoException("Gemini respondió " + estado);
+                        }
                         if (respuesta.getStatusCode().isError()) {
-                            throw new ServicioIaNoDisponibleException("Gemini respondió " + respuesta.getStatusCode().value());
+                            throw new ServicioIaNoDisponibleException("Gemini respondió " + estado);
                         }
                         return leerEventos(respuesta.getBody(), alRecibirTexto);
                     });
         } catch (RestClientException | UncheckedIOException e) {
             throw new ServicioIaNoDisponibleException("No se pudo obtener la respuesta de Gemini: " + e.getMessage(), e);
+        }
+    }
+
+    private static void esperar(long milisegundos) {
+        try {
+            Thread.sleep(milisegundos);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ServicioIaNoDisponibleException("Se interrumpió la espera para reintentar");
+        }
+    }
+
+    /** Gemini está saturado o sin cupo por un momento (429 o 5xx): vale la pena reintentar. */
+    private static final class GeminiSaturadoException extends RuntimeException {
+        GeminiSaturadoException(String mensaje) {
+            super(mensaje);
         }
     }
 

@@ -74,11 +74,24 @@ class GeminiChatAdaptadorTest {
     }
 
     @Test
-    @DisplayName("Si Gemini responde con error, lanza ServicioIaNoDisponibleException (y entra el plan B)")
+    @DisplayName("Un error que no se arregla reintentando (400) lanza ServicioIaNoDisponibleException de una vez")
     void error() {
-        servidor.expect(requestTo(URL)).andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
+        servidor.expect(requestTo(URL)).andRespond(withStatus(HttpStatus.BAD_REQUEST));
         assertThatThrownBy(() -> adaptador.generar(new Prompt("r", List.of(), "hola"), t -> { }))
                 .isInstanceOf(ServicioIaNoDisponibleException.class);
+        servidor.verify();
+    }
+
+    @Test
+    @DisplayName("Si Gemini está saturado (429), reintenta y responde (el plan B no hace falta)")
+    void reintentaSiEstaSaturado() {
+        servidor.expect(requestTo(URL)).andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
+        servidor.expect(requestTo(URL)).andRespond(withSuccess(evento("\"Hola de nuevo.\""), MediaType.TEXT_EVENT_STREAM));
+
+        RespuestaModelo r = adaptador.generar(new Prompt("r", List.of(), "hola"), t -> { });
+
+        assertThat(r.textoVisible()).isEqualTo("Hola de nuevo.");
+        servidor.verify();
     }
 
     @Test

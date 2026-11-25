@@ -305,7 +305,7 @@ Una fila por pregunta en cada ejecución de las pruebas (rama `test/evaluacion-i
 1. **El tema sale gratis.** Gemini ya devuelve `intencion`, `sentimiento` y `productos` en el JSON de cada respuesta.
    El backend solo los **cuenta** durante la conversación y, al terminar, guarda el resumen en `conversacion_lia`.
    No se hace ninguna llamada extra a la IA.
-2. **Embeddings guardados.** Hoy la función de Netlify calcula los embeddings de los 49 productos cada vez que "despierta".
+2. **Embeddings guardados.** La antigua función de Netlify (ya borrada) calculaba los embeddings de los 49 productos cada vez que "despertaba".
    Con `fragmento_conocimiento` se calculan **una sola vez**; `hash_texto` avisa si el texto cambió y solo entonces se recalcula.
    Una pregunta a Lía gasta 1 embedding (el de la pregunta) + 1 respuesta de Gemini.
 3. **Historial corto.** A Gemini se le envían solo los últimos mensajes de la conversación, no toda la historia (la función actual ya lo hace con `MAX_TURNOS`).
