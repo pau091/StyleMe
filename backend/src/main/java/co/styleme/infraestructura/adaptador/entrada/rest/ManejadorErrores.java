@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -45,6 +46,12 @@ public class ManejadorErrores {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorRespuesta> tipoInvalido(MethodArgumentTypeMismatchException e, HttpServletRequest peticion) {
         return responder(HttpStatus.BAD_REQUEST, "El parámetro '" + e.getName() + "' no tiene un valor válido", peticion);
+    }
+
+    /** El cuerpo de la petición no es un JSON válido (o no está en UTF-8). */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorRespuesta> jsonInvalido(HttpMessageNotReadableException e, HttpServletRequest peticion) {
+        return responder(HttpStatus.BAD_REQUEST, "La petición no tiene un JSON válido", peticion);
     }
 
     /** Una dirección que no existe en la API. */
