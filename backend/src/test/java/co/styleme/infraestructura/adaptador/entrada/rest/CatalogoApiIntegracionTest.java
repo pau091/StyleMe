@@ -78,6 +78,14 @@ class CatalogoApiIntegracionTest {
     }
 
     @Test
+    @DisplayName("La búsqueda semántica valida la consulta antes de llamar a la IA (400)")
+    void busquedaInvalida() throws Exception {
+        assertThat(get("/api/busqueda").statusCode()).isEqualTo(400);
+        assertThat(get("/api/busqueda?q=hola&limite=50").statusCode()).isEqualTo(400);
+        assertThat(get("/api/busqueda?q=hola&tipo=planeta").statusCode()).isEqualTo(400);
+    }
+
+    @Test
     @DisplayName("Los productos de una tienda inexistente responden 404")
     void productosDeTiendaInexistente() throws Exception {
         assertThat(get("/api/tiendas/no-existe/productos").statusCode()).isEqualTo(404);
