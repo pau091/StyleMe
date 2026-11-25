@@ -1,0 +1,2 @@
+# Versión de Java del proyecto para SDKMAN (ejecutar "sdk env" dentro de backend/)
+java=21.0.12-tem

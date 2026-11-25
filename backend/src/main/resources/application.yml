@@ -1,0 +1,39 @@
+# CONFIGURACIÓN DEL BACKEND DE STYLEME
+# ------------------------------------
+# Nada secreto se escribe aquí: los valores ${...} salen de variables de entorno.
+# En tu computador se leen del archivo .env de la raíz del proyecto (el mismo de Docker).
+# Formato ${VARIABLE:valor-por-defecto}: si la variable no existe, se usa el valor de la derecha.
+
+spring:
+  application:
+    name: styleme-backend
+
+  config:
+    # Lee el .env de la raíz (si se ejecuta desde backend/) o de la carpeta actual.
+    # "optional": si no existe (por ejemplo, dentro de Docker), no falla.
+    import:
+      - optional:file:../.env[.properties]
+      - optional:file:.env[.properties]
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:styleme}
+    username: ${POSTGRES_USER:styleme}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    hibernate:
+      # validate: Hibernate COMPRUEBA que las entidades coincidan con las tablas,
+      # pero nunca crea, cambia ni borra tablas. Las tablas las manda basedatos/01-esquema.sql.
+      ddl-auto: validate
+    # No mantener la conexión abierta durante toda la petición web (buena práctica)
+    open-in-view: false
+    properties:
+      hibernate:
+        # Carga las relaciones LAZY en lotes de hasta 50 (evita el problema "N+1":
+        # una consulta por cada producto para traer su tienda, categoría, ingredientes...)
+        default_batch_fetch_size: 50
+
+server:
+  # 8090 porque en este computador el 8080 (Tomcat) y el 8081 (pgAdmin) los usan otros proyectos.
+  # Para cambiarlo sin tocar el código: SERVER_PORT=otro-puerto en el .env
+  port: ${SERVER_PORT:8090}
