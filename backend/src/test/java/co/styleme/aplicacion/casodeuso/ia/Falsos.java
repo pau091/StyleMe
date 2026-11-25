@@ -97,7 +97,9 @@ final class Falsos {
             return fragmentos.entrySet().stream()
                     .filter(e -> filtro.tipo() == null || e.getValue().tipo() == filtro.tipo())
                     .map(e -> new ResultadoBusqueda(e.getValue().tipo(), e.getValue().titulo(), e.getValue().texto(),
-                            null, null, vectores.get(e.getKey()).similitud(consulta)))
+                            e.getValue().productoId() == null ? null : "p" + e.getValue().productoId(),
+                            e.getValue().tiendaId() == null ? null : "tienda-" + e.getValue().tiendaId(),
+                            vectores.get(e.getKey()).similitud(consulta)))
                     .filter(r -> r.similitud() >= filtro.similitudMinima())
                     .sorted(Comparator.comparingDouble(ResultadoBusqueda::similitud).reversed())
                     .limit(filtro.limite())
