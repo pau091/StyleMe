@@ -1,9 +1,0 @@
-# CONFIGURACIÓN DE NETLIFY
-# ------------------------
-# La página es estática (no necesita "build"): se publica tal cual desde la carpeta iu/ (interfaz de usuario).
-# Lía ya no usa funciones de Netlify: su cerebro (RAG) vive en el backend Spring Boot.
-# Este archivo solo sirve si se quiere publicar la página estática en Netlify (opcional).
-
-[build]
-  publish = "iu"
-

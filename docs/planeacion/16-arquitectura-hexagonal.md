@@ -215,7 +215,7 @@ Si `ModeloLenguajePuerto` falla, el caso de uso responde con el **plan B** (regl
 | `lia.mjs` → validación de productos y emoción | `ValidadorRecomendaciones` (dominio) | 6 |
 | `lia.mjs` → llamada a Gemini con streaming | `GeminiChatAdaptador` | 6 |
 | `iu/assets/js/lia/plan-b.js` | Se queda (respaldo si el backend no responde) | — |
-| `netlify/` ✅ borrada · `netlify.toml` (opcional, solo para publicar la página) | Se borran | 6 y 11 |
+| `netlify/` y `netlify.toml` | ✅ Borrados (Netlify no es requisito, D-065) | 6 y 7 |
 
 ---
 
