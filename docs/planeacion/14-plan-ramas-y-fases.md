@@ -334,10 +334,10 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 | # | Qué se hace | Commit |
 |---|---|---|
-| 1 | Completar las tiendas: descripción, dirección, horario, coordenadas, WhatsApp, Instagram, web | `feat(db): completar información de contacto de las tiendas` |
-| 2 | Completar los productos: descripción, precio, ingredientes, etiquetas y fotos | `feat(db): completar información de los productos` |
-| 3 | Marcar como verificados los datos confirmados con cada tienda | `feat(db): marcar datos verificados del catálogo` |
-| 4 | Reindexar los embeddings con el catálogo nuevo y volver a correr la evaluación de IA | `test(ia): reevaluar la ia con el catálogo completo` |
+| 1 ✅ | Tiendas: dirección, coordenadas, teléfono y horario desde su ficha pública de Google Maps (D-069). Las 10 quedan en el mapa | `feat(db): completar información de contacto de las tiendas` |
+| 2 ✅ | Reindexar los embeddings (6 fragmentos cambiaron) y volver a correr la evaluación de IA | `test(ia): reevaluar la ia con el catálogo completo` |
+| 3 | Documentación (D-069, plan, IAS) | `docs: documentar el catálogo completo` |
+| ⏳ | Pendiente de la autora: reemplazar los 8 productos de ejemplo, Instagram/web que faltan, Samylu (sin teléfono ni horario), confirmar Henar's y Queen, y marcar "verificado" lo que confirme cada tienda | `feat(db): ...` |
 
 #### Rama 13 · `style/iu-visual`
 *Rama dedicada **solo** a la parte visual de la página (D-063). Se planea en detalle cuando empiece.*
