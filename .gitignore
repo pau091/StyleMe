@@ -14,3 +14,6 @@ HELP.md
 # Editores
 .idea/
 *.iml
+
+# Reportes que escribe n8n cada semana (se generan solos; un ejemplo está en docs/evidencias/)
+n8n/reportes/*.md
