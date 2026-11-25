@@ -32,6 +32,9 @@ class ComunidadApiIntegracionTest {
     @Value("${local.server.port}")
     private int puerto;
 
+    @Value("${styleme.admin.clave}")
+    private String claveAdmin;
+
     @Autowired
     private JdbcTemplate jdbc;
 
@@ -135,9 +138,11 @@ class ComunidadApiIntegracionTest {
     private HttpResponse<String> enviar(String metodo, String ruta, String json) throws IOException, InterruptedException {
         var peticion = HttpRequest.newBuilder(URI.create("http://localhost:" + puerto + ruta))
                 .header("Content-Type", "application/json")
-                .method(metodo, json == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(json))
-                .build();
-        return cliente.send(peticion, HttpResponse.BodyHandlers.ofString());
+                .method(metodo, json == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(json));
+        if (ruta.startsWith("/api/admin")) {
+            peticion.header(FiltroClaveAdmin.CABECERA, claveAdmin);
+        }
+        return cliente.send(peticion.build(), HttpResponse.BodyHandlers.ofString());
     }
 
     private static String extraer(String regex, String texto) {
