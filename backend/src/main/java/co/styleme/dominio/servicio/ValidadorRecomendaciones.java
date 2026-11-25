@@ -38,7 +38,7 @@ public class ValidadorRecomendaciones {
     private static final Set<String> PASILLOS = Set.of("ropa", "maquillaje", "skincare", "capilar");
     private static final Pattern SALUD = Pattern.compile(
             "ardor|arde|alergi|sangr|herida|dermatitis|infecci|hong|ca[ií]da (fuerte|del cabello|de pelo)"
-                    + "|se me cae el (pelo|cabello)|ronch|quemadura|psoriasis|ros[aá]cea|acn[eé] (severo|fuerte|qu[ií]stico)",
+                    + "|se me cae el (pelo|cabello)|se me (est[aá] )?cayendo|ronch|quemadura|psoriasis|ros[aá]cea|acn[eé] (severo|fuerte|qu[ií]stico)",
             Pattern.CASE_INSENSITIVE);
 
     /**
