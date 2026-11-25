@@ -36,11 +36,15 @@ class ArquitecturaHexagonalTest {
      */
     @ArchTest
     static final ArchRule R1_R7_dependencias_hacia_el_centro = onionArchitecture()
-            .domainModels("co.styleme.dominio.modelo..")
-            .domainServices("co.styleme.dominio.servicio..", "co.styleme.dominio.excepcion..")
+            // Las excepciones son parte del modelo: los modelos las lanzan al validar sus reglas
+            .domainModels("co.styleme.dominio.modelo..", "co.styleme.dominio.excepcion..")
+            .domainServices("co.styleme.dominio.servicio..")
             .applicationServices(APLICACION)
             .adapter("entrada", "co.styleme.infraestructura.adaptador.entrada..")
             .adapter("salida", "co.styleme.infraestructura.adaptador.salida..")
+            // ConfiguracionBeans "enchufa" los casos de uso con los puertos (composition root):
+            // pertenece a la infraestructura y, como los adaptadores, puede ver la aplicación
+            .adapter("configuracion", "co.styleme.infraestructura.configuracion..")
             .withOptionalLayers(true);
 
     /** R2 · El dominio es Java puro: sin Spring, JPA, Jackson ni librerías de IA. */
