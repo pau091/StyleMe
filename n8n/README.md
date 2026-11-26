@@ -40,6 +40,6 @@ Sin la clave correcta el workflow se detiene en el nodo *Verificar clave*.
 Abrir **http://localhost:5678** (la primera vez n8n pide crear una cuenta local) → cada workflow → pestaña **Executions**.
 
 ## Cambiar un workflow
-Los `.json` se generan con `python n8n/generar_workflows.py` (así los tres llaman igual al backend y a Gemini).
-Después de cambiar el script: `python n8n/generar_workflows.py` y `docker compose restart n8n`.
+Los `.json` se generan con `python3 n8n/generar_workflows.py` (en Windows: `python n8n/generar_workflows.py`) (así los tres llaman igual al backend y a Gemini).
+Después de cambiar el script: `python3 n8n/generar_workflows.py` (Windows: `python …`) y `docker compose restart n8n`.
 Si prefieres editarlo en la pantalla de n8n, expórtalo (menú ··· → *Download*) y reemplaza su `.json`.

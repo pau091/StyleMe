@@ -19,6 +19,9 @@ public interface ResenaRepositorioPuerto {
 
     ResumenCalificacion resumen(Objetivo objetivo);
 
+    /** Las últimas reseñas publicadas CON comentario, de cualquier tienda o producto (portada). */
+    List<Resena> recientes(int limite);
+
     /** Las pendientes de moderar, de la más antigua a la más nueva. */
     List<Resena> pendientes(int limite);
 

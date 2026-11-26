@@ -14,7 +14,7 @@
  * Este archivo es un "módulo" (type="module") porque importa MediaPipe.
  * Por eso la página debe abrirse con un servidor (Docker o Live Server), no con doble clic.
  */
-import { prepararPrenda, HOMBRO_IZQ, HOMBRO_DER, CADERA_IZQ, CADERA_DER } from "./probador-prendas.js";
+import { prepararPrenda, transformacionAlCuerpo, HOMBRO_IZQ, HOMBRO_DER, CADERA_IZQ, CADERA_DER } from "./probador-prendas.js?v=20261126";
 
 const VERSION_MEDIAPIPE = "0.10.14";
 const URL_MEDIAPIPE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION_MEDIAPIPE}`;
@@ -192,49 +192,13 @@ function puntosDe(landmarks) {
   return { hombroIzq: p(HOMBRO_IZQ), hombroDer: p(HOMBRO_DER), caderaIzq: p(CADERA_IZQ), caderaDer: p(CADERA_DER) };
 }
 
-const medio = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
-const distancia = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-
-const grados = (v) => (Math.atan2(v.y, v.x) * 180) / Math.PI;
-
-// Lleva la prenda al cuerpo de la persona:
-//  - punto de apoyo: hombros (prendas de arriba y vestidos) o caderas (prendas de abajo)
-//  - giro: el eje del cuerpo (de los hombros a las caderas), así sigue a la persona si se inclina
-//  - tamaño: por el ancho (hombros o caderas), pero nunca menos que 3/4 del largo del torso.
-//    El largo del torso casi no cambia cuando la persona se pone de lado; el ancho sí.
-//  - con anclas reales (foto con modelo), el largo de la prenda sigue exactamente el largo del torso
+// Dónde va la prenda: sin persona, al centro; con persona, se acomoda a su cuerpo (probador-prendas.js)
 function transformacionPrenda() {
-  const A = prenda.anclas;
-  const P = puntosPersona;
-  if (!P) {
-    // Sin persona encontrada: la prenda al centro, a la mitad del ancho
+  if (!puntosPersona) {
     const factor = (lienzo.width * 0.5) / prenda.lienzo.width;
     return { matriz: new DOMMatrix().translate(lienzo.width * 0.25, lienzo.height * 0.2).scale(factor), pivote: { x: lienzo.width / 2, y: lienzo.height / 2 } };
   }
-  const abajo = prendaSeleccionada()?.tipoPrenda === "inferior";
-  const hombrosA = medio(A.hombroIzq, A.hombroDer), caderasA = medio(A.caderaIzq, A.caderaDer);
-  const hombrosP = medio(P.hombroIzq, P.hombroDer), caderasP = medio(P.caderaIzq, P.caderaDer);
-  const anchoA = abajo ? distancia(A.caderaIzq, A.caderaDer) : distancia(A.hombroIzq, A.hombroDer);
-  const anchoP = abajo ? distancia(P.caderaIzq, P.caderaDer) : distancia(P.hombroIzq, P.hombroDer);
-  const kAncho = anchoP / (anchoA || 1);
-  const kTorso = distancia(hombrosP, caderasP) / (distancia(hombrosA, caderasA) || 1);
-  let kx = Math.max(kAncho, kTorso * 0.75);
-  let ky = kx;
-  if (!abajo && !prenda.estimadas) {
-    ky = kTorso;
-    kx = Math.min(kTorso * 1.2, kx);
-  }
-  const ejeA = grados({ x: caderasA.x - hombrosA.x, y: caderasA.y - hombrosA.y }) - 90;
-  const ejeP = grados({ x: caderasP.x - hombrosP.x, y: caderasP.y - hombrosP.y }) - 90;
-  const origen = abajo ? caderasA : hombrosA;
-  const destino = abajo ? caderasP : hombrosP;
-  const matriz = new DOMMatrix()
-    .translate(destino.x, destino.y)
-    .rotate(ejeP)
-    .scale(kx, ky)
-    .rotate(-ejeA)
-    .translate(-origen.x, -origen.y);
-  return { matriz, pivote: destino };
+  return transformacionAlCuerpo(prenda, puntosPersona, prendaSeleccionada()?.tipoPrenda);
 }
 
 /* ---------- Dibujo ---------- */

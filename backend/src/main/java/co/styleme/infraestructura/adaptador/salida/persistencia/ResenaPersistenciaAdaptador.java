@@ -81,6 +81,13 @@ public class ResenaPersistenciaAdaptador implements ResenaRepositorioPuerto {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Resena> recientes(int limite) {
+        return jdbc.query(SELECCION + " WHERE r.estado = 'PUBLICADA' AND r.comentario IS NOT NULL ORDER BY r.fecha DESC LIMIT ?",
+                this::aResena, limite);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Resena> pendientes(int limite) {
         return jdbc.query(SELECCION + " WHERE r.estado = 'PENDIENTE' ORDER BY r.fecha LIMIT ?", this::aResena, limite);
     }

@@ -355,6 +355,9 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 
 | Tema | Idea |
 |---|---|
+| Portada nueva (D-072) | Buscador con IA, Lía con preguntas de ejemplo, abiertas ahora y cerca de ti, lo más buscado, reseñas recientes, demo del probador y herramientas en cuadrícula bento + endpoints públicos `/api/tendencias` y `/api/resenas/recientes` |
+| Catálogo con fotos (D-073) | ✅ Script `06`: fotos de 21 productos, productos de muestra para Samylu, Queen, Henar's y Gogó, p022 borrado, contactos encontrados. ⏳ Confirmar con las tiendas lo de confianza baja (`docs/datos/contactos-fuentes.csv`: horario y teléfono de Samylu, barrio de Henar's y de Mattelsa, WhatsApp de So Beauty) |
+| Multiplataforma (D-074) | ✅ `.gitattributes`, `mvnw` ejecutable, README para Windows, Mac y Linux, `dvh` y campos de 17 px para celulares |
 | Cambios visuales de la iu | Los que la autora defina al llegar a esta fase |
 | **Probador con IA** 💡 | La persona toma o sube una foto de **cuerpo completo**; la IA la adapta como si estuviera **dentro de la tienda** probándose la ropa, con aspecto **humanoide**, y con **4 poses predeterminadas básicas** para apreciar cómo quedan los outfits (P-017). Requiere decidir el modelo de IA de imágenes, la privacidad de las fotos y el aviso para mayores de 18 |
 

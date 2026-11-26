@@ -1,11 +1,13 @@
 package co.styleme.infraestructura.configuracion;
 
 import co.styleme.aplicacion.casodeuso.analitica.ConsultarIndicadoresServicio;
+import co.styleme.aplicacion.casodeuso.analitica.ConsultarTendenciasServicio;
 import co.styleme.aplicacion.casodeuso.analitica.RegistrarEventosServicio;
 import co.styleme.aplicacion.casodeuso.comunidad.GestionarFavoritosServicio;
 import co.styleme.aplicacion.casodeuso.comunidad.GestionarResenasServicio;
 import co.styleme.aplicacion.casodeuso.comunidad.ModerarResenasServicio;
 import co.styleme.aplicacion.puerto.entrada.analitica.ConsultarIndicadoresCasoUso;
+import co.styleme.aplicacion.puerto.entrada.analitica.ConsultarTendenciasCasoUso;
 import co.styleme.aplicacion.puerto.entrada.analitica.RegistrarEventosCasoUso;
 import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarFavoritosCasoUso;
 import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarResenasCasoUso;
@@ -44,6 +46,7 @@ import co.styleme.aplicacion.puerto.salida.persistencia.ConversacionRepositorioP
 import co.styleme.aplicacion.puerto.salida.persistencia.EvaluacionRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.CategoriaRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.ProductoRepositorioPuerto;
+import co.styleme.aplicacion.puerto.salida.persistencia.TendenciaRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.TiendaRepositorioPuerto;
 import co.styleme.dominio.servicio.CalificadorEvaluacion;
 import co.styleme.dominio.servicio.FragmentadorConocimiento;
@@ -191,5 +194,10 @@ public class ConfiguracionBeans {
     @Bean
     ConsultarIndicadoresCasoUso consultarIndicadores(IndicadorRepositorioPuerto indicadores) {
         return new ConsultarIndicadoresServicio(indicadores);
+    }
+
+    @Bean
+    ConsultarTendenciasCasoUso consultarTendencias(TendenciaRepositorioPuerto tendencias) {
+        return new ConsultarTendenciasServicio(tendencias);
     }
 }

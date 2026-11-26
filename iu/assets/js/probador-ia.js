@@ -51,9 +51,6 @@
     const pedida = parametroURL("producto");
     if (pedida && prendas.some((p) => p.id === pedida)) selector.value = pedida;
 
-    document.getElementById("aviso-ia").innerHTML =
-      `<strong>Tu foto se envía a ${escaparHTML(datos.proveedor)}</strong> solo para crear estas imágenes. StyleMe no la guarda.
-       El resultado es <strong>aproximado</strong>: no reemplaza probarse la prenda ni indica la talla.`;
     document.getElementById("texto-consentimiento-ia").textContent =
       `2. Soy mayor de 18 años, la foto es mía (o tengo permiso) y acepto que se envíe a ${datos.proveedor} para crear las imágenes.`;
     seccion.hidden = false;

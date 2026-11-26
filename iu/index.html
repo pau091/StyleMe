@@ -4,44 +4,144 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StyleMe · Moda y belleza en Bucaramanga</title>
-  <meta name="description" content="Encuentra tiendas locales de ropa y maquillaje en Bucaramanga, planea tu salida de compras y pruébate la ropa virtualmente.">
+  <meta name="description" content="Encuentra tiendas locales de ropa y maquillaje en Bucaramanga con búsqueda por inteligencia artificial, mira cuáles están abiertas y pruébate la ropa virtualmente.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Jost:wght@400;500;600&display=swap">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/css/estilos.css">
-  <link rel="stylesheet" href="assets/css/movimiento.css">
-  <link rel="stylesheet" href="assets/css/intro.css">
-  <link rel="stylesheet" href="assets/css/lia.css">
-  <link rel="stylesheet" href="assets/lia/lia-2d.css">
+  <link rel="stylesheet" href="assets/css/estilos.css?v=20261126">
+  <link rel="stylesheet" href="assets/css/movimiento.css?v=20261126">
+  <link rel="stylesheet" href="assets/css/intro.css?v=20261126">
+  <link rel="stylesheet" href="assets/css/lia.css?v=20261126">
+  <link rel="stylesheet" href="assets/lia/lia-2d.css?v=20261126">
   <!-- Deben ir aquí, en el head: preparan la intro 3D, las puertas entre páginas y las animaciones antes de que se vea la página -->
-  <script src="assets/js/arranque.js"></script>
-  <script src="assets/js/intro.js"></script>
+  <script src="assets/js/arranque.js?v=20261126"></script>
+  <script src="assets/js/intro.js?v=20261126"></script>
 </head>
 <body>
   <header id="encabezado"></header>
 
   <main class="contenedor">
-    <!-- Portada -->
+    <!-- 1. Portada con el buscador con IA (assets/js/inicio-buscador.js) -->
     <section class="portada" data-pausar-fuera>
       <div>
-        <p class="portada-etiqueta" data-revelar>Moda y belleza local</p>
+        <p class="portada-etiqueta" data-revelar>Moda y belleza local · Bucaramanga</p>
         <!-- ✏️ El <br> parte el título en dos líneas; <em> pone "compras!" en itálica -->
         <h1 class="titulo-lineas">VAMOS DE<br><em>compras!</em></h1>
-        <p data-revelar style="--orden:3">Descubre tiendas de Bucaramanga, mira dónde quedan y escríbeles directamente.</p>
+        <p data-revelar style="--orden:3">Dile a StyleMe qué buscas con tus palabras: la IA entiende lo que quieres decir y te lleva a la tienda que lo tiene.</p>
 
-        <form class="buscador" data-revelar style="--orden:4" action="productos.html" method="get" role="search">
-          <input type="search" id="busqueda" name="q" aria-label="Buscar productos o tiendas" placeholder="Busca blusas, labiales, tiendas...">
-          <button class="boton" type="submit">Buscar</button>
+        <form class="buscador-ia" id="buscador-ia" data-revelar style="--orden:4" action="productos.html" method="get" role="search">
+          <label class="buscador-ia-etiqueta" for="busqueda">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+            Pregúntale a StyleMe
+          </label>
+          <div class="buscador">
+            <input type="search" id="busqueda" name="q" autocomplete="off" maxlength="100"
+                   aria-controls="sugerencias-busqueda" aria-expanded="false"
+                   placeholder="Blusas, labiales, tiendas...">
+            <button class="boton" type="submit">Buscar</button>
+          </div>
+          <div class="sugerencias-busqueda" id="sugerencias-busqueda" hidden></div>
+          <p class="solo-lectores" id="estado-busqueda" role="status" aria-live="polite"></p>
         </form>
 
-        <div class="grupo-botones" data-revelar style="--orden:5">
+        <div class="ejemplos-busqueda" id="ejemplos-busqueda" data-revelar style="--orden:5">
+          <span>Prueba:</span>
+        </div>
+
+        <div class="grupo-botones" data-revelar style="--orden:6">
           <a class="boton" href="salida.html" data-magnetico>Planear salida de compras</a>
           <a class="boton boton-secundario" href="tiendas.html">Ver tiendas</a>
         </div>
       </div>
       <!-- Fotos de la portada: se cambian en la lista FOTOS_PORTADA de assets/js/inicio.js -->
       <div class="collage" id="collage" aria-hidden="true"></div>
+    </section>
+
+    <!-- 2, 6 y 7. Herramientas con IA en cuadrícula "bento": Lía, probador y recomendador (inicio.js e inicio-probador.js) -->
+    <section aria-labelledby="titulo-herramientas">
+      <div class="titulo-seccion" data-revelar>
+        <h2 id="titulo-herramientas">Herramientas con IA</h2>
+        <p>Todas usan el catálogo real de las tiendas de Bucaramanga.</p>
+      </div>
+      <div class="bento" data-cascada>
+        <article class="bento-celda bento-lia" aria-labelledby="titulo-bento-lia">
+          <img class="bento-lia-retrato" src="assets/lia/principal.webp" alt="" loading="lazy" decoding="async">
+          <div class="bento-texto">
+            <span class="etiqueta">Asesora virtual</span>
+            <h3 id="titulo-bento-lia">Pregúntale a Lía</h3>
+            <p>Te responde con productos que de verdad están en las tiendas, y te dice dónde comprarlos.</p>
+            <div class="preguntas-lia" id="preguntas-lia"></div>
+            <p class="nota-ia">Primero busca en el catálogo y después responde: no inventa productos.</p>
+          </div>
+        </article>
+
+        <article class="bento-celda bento-probador" aria-labelledby="titulo-bento-probador">
+          <div class="bento-texto">
+            <span class="etiqueta">Probador virtual</span>
+            <h3 id="titulo-bento-probador">Mírala puesta antes de ir</h3>
+            <p>Toca una prenda y desliza para comparar. Con tu foto o tu cámara, en el probador.</p>
+          </div>
+          <div class="demo-probador" id="demo-probador">
+            <div class="demo-escena" id="demo-escena">
+              <!-- Maniquí (dibujo SVG); la prenda se dibuja encima en el lienzo -->
+              <svg class="demo-maniqui" viewBox="0 0 240 520" aria-hidden="true">
+                <defs>
+                  <linearGradient id="piel-maniqui" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#f3e4d8"/>
+                    <stop offset="1" stop-color="#dcc3b2"/>
+                  </linearGradient>
+                </defs>
+                <g fill="url(#piel-maniqui)" stroke="#c9ab97" stroke-width="1.5">
+                  <path d="M58 108q-16 8-16 40l-6 112q0 12 8 12t9-12l11-96z"/>
+                  <path d="M182 108q16 8 16 40l6 112q0 12-8 12t-9-12l-11-96z"/>
+                  <path d="M88 272l-4 128 6 92h14l4-92 12-122z"/>
+                  <path d="M152 272l4 128-6 92h-14l-4-92-12-122z"/>
+                  <path d="M60 104q60-16 120 0l4 10q4 56-22 100q14 30 12 60l-24 8-30-6-30 6-24-8q-2-30 12-60q-26-44-22-100z"/>
+                  <path d="M111 70h18l2 26h-22z"/>
+                  <ellipse cx="120" cy="46" rx="22" ry="28"/>
+                </g>
+              </svg>
+              <canvas class="demo-prenda" id="demo-prenda" width="480" height="1040" aria-hidden="true"></canvas>
+              <span class="demo-linea" aria-hidden="true"></span>
+              <span class="demo-rotulo demo-rotulo-antes" aria-hidden="true">Antes</span>
+              <span class="demo-rotulo demo-rotulo-despues" aria-hidden="true">Con la prenda</span>
+            </div>
+            <label class="solo-lectores" for="demo-comparar">Comparar el maniquí sin y con la prenda</label>
+            <input class="demo-comparar" id="demo-comparar" type="range" min="0" max="100" value="50">
+            <div class="demo-prendas" id="demo-prendas" role="group" aria-label="Elige una prenda"></div>
+            <a class="boton boton-pequeno" id="demo-enlace" href="probador.html">Pruébatela tú</a>
+          </div>
+        </article>
+
+        <a class="bento-celda bento-recomendador" href="recomendador.html">
+          <span class="icono-grande" aria-hidden="true"></span>
+          <span class="bento-texto">
+            <span class="etiqueta">Skincare y cabello</span>
+            <strong class="bento-titulo">¿Qué producto es para mí?</strong>
+            <span>Responde 4 preguntas y recibe una rutina con productos de las tiendas.</span>
+          </span>
+          <span class="bento-flecha" aria-hidden="true">→</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- 3. Abiertas ahora y cerca de ti (assets/js/inicio-cerca.js) -->
+    <section class="cerca" id="seccion-cerca" aria-labelledby="titulo-cerca">
+      <div class="cabecera-seccion" data-revelar>
+        <h2 id="titulo-cerca">Abiertas ahora</h2>
+        <a class="ver-todo" href="mapa.html">Ver el mapa completo</a>
+      </div>
+      <div class="cerca-contenido" data-revelar>
+        <div class="mini-mapa" id="mini-mapa" role="region" aria-label="Mapa de las tiendas de StyleMe"></div>
+        <div class="cerca-lista">
+          <p class="cerca-resumen" id="resumen-abiertas"></p>
+          <button class="boton boton-secundario" type="button" id="usar-ubicacion">Ver las más cercanas a mí</button>
+          <p class="texto-suave cerca-nota" id="estado-ubicacion">Tu ubicación solo se usa en tu navegador para medir distancias: no se envía ni se guarda.</p>
+          <ol class="lista-cerca" id="lista-cerca"></ol>
+        </div>
+      </div>
     </section>
 
     <!-- Categorías -->
@@ -55,17 +155,27 @@
     <!-- Cintas cruzadas que corren (las palabras se cambian en assets/js/inicio.js) -->
     <div class="cintas" id="cintas" aria-hidden="true" data-pausar-fuera></div>
 
-    <!-- Banner de salida de compras -->
-    <section class="promo" data-revelar>
-      <div class="promo-texto">
-        <p class="promo-etiqueta">¿No sabes qué hacer hoy?</p>
-        <h2>Arma tu salida de compras</h2>
-        <p>Elige qué quieres ver y te sugerimos un recorrido por tiendas cercanas entre sí.</p>
-        <div class="grupo-botones">
-          <a class="boton boton-claro" href="salida.html" data-magnetico>Empezar</a>
+    <!-- 4. Lo más buscado (datos reales y anónimos: assets/js/inicio-comunidad.js) -->
+    <section class="tendencias" id="seccion-tendencias" aria-labelledby="titulo-tendencias" hidden>
+      <div class="cabecera-seccion" data-revelar>
+        <h2 id="titulo-tendencias">Lo más buscado esta semana</h2>
+        <a class="ver-todo" href="productos.html">Ver el catálogo</a>
+      </div>
+      <div class="tendencias-contenido">
+        <div data-revelar>
+          <h3 class="subtitulo">Lo que más buscan</h3>
+          <ol class="busquedas-populares" id="busquedas-populares"></ol>
+        </div>
+        <div data-revelar style="--orden:1">
+          <h3 class="subtitulo">Tiendas más visitadas</h3>
+          <ol class="tiendas-populares" id="tiendas-populares"></ol>
+        </div>
+        <div class="tendencias-productos" data-revelar style="--orden:2">
+          <h3 class="subtitulo">Los productos más vistos</h3>
+          <div class="carrusel" id="productos-populares" tabindex="0" aria-label="Productos más vistos"></div>
         </div>
       </div>
-      <div class="promo-imagenes" id="promo-imagenes" aria-hidden="true"></div>
+      <p class="nota-datos" id="nota-tendencias"></p>
     </section>
 
     <!-- Tiendas de ropa -->
@@ -86,23 +196,28 @@
       <div class="cuadricula" id="tiendas-maquillaje" data-cascada></div>
     </section>
 
-    <!-- Herramientas -->
-    <section>
+    <!-- 5. Reseñas recientes, moderadas con IA (assets/js/inicio-comunidad.js) -->
+    <section class="resenas-portada" id="seccion-resenas" aria-labelledby="titulo-resenas" hidden>
       <div class="titulo-seccion" data-revelar>
-        <h2>Herramientas para ti</h2>
+        <h2 id="titulo-resenas">Lo que dice la gente</h2>
+        <p>Cada reseña nueva la revisa una IA antes de publicarse: solo salen las respetuosas y sin datos personales.</p>
       </div>
-      <div class="herramientas" id="herramientas" data-cascada></div>
+      <div class="carrusel carrusel-resenas" id="lista-resenas" tabindex="0" aria-label="Reseñas recientes" data-revelar></div>
     </section>
   </main>
 
   <footer id="pie"></footer>
 
-  <script src="assets/js/api.js"></script>
-  <script src="assets/js/comun.js"></script>
-  <script src="assets/js/inicio.js"></script>
+  <script src="assets/js/api.js?v=20261126"></script>
+  <script src="assets/js/comun.js?v=20261126"></script>
+  <script src="assets/js/inicio.js?v=20261126"></script>
+  <script src="assets/js/inicio-buscador.js?v=20261126"></script>
+  <script src="assets/js/inicio-cerca.js?v=20261126"></script>
+  <script src="assets/js/inicio-comunidad.js?v=20261126"></script>
+  <script type="module" src="assets/js/inicio-probador.js?v=20261126"></script>
   <!-- Lía, la asesora virtual (personaje con globos de texto) -->
-  <script src="assets/js/lia/plan-b.js"></script>
-  <script src="assets/js/lia/lia.js"></script>
-  <script src="assets/js/movimiento.js"></script>
+  <script src="assets/js/lia/plan-b.js?v=20261126"></script>
+  <script src="assets/js/lia/lia.js?v=20261126"></script>
+  <script src="assets/js/movimiento.js?v=20261126"></script>
 </body>
 </html>

@@ -56,6 +56,69 @@ function tieneUbicacion(tienda) {
   return typeof tienda.lat === "number" && typeof tienda.lng === "number";
 }
 
+/* ---------- Horario: ¿está abierta ahora? ---------- */
+// Lee horarios como "Lun–Sáb 10:00–19:00 · Dom 11:00–16:00" o "Lun–Sáb 9:30–11:30 y 14:30–18:30 · Dom cerrado".
+// Usa la hora de Colombia (UTC−5, sin horario de verano) aunque el computador esté en otra zona.
+
+const DIAS_HORARIO = { dom: 0, lun: 1, mar: 2, "mié": 3, mie: 3, jue: 4, vie: 5, "sáb": 6, sab: 6 };
+const NOMBRES_DIA = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+// Turnos de cada día de la semana: [[inicio, fin], ...] en minutos desde las 00:00. null = sin información.
+function turnosDeLaSemana(horario) {
+  if (!horario || /confirmar/i.test(horario)) return null;
+  const semana = Array(7).fill(null);
+  for (const tramo of horario.split("·")) {
+    const partes = tramo.trim().match(/^([a-záéíóú]{3})(?:\s*[–-]\s*([a-záéíóú]{3}))?\s+(.+)$/i);
+    if (!partes) continue;
+    const desde = DIAS_HORARIO[partes[1].toLowerCase()];
+    const hasta = DIAS_HORARIO[(partes[2] ?? partes[1]).toLowerCase()];
+    if (desde === undefined || hasta === undefined) continue;
+    const turnos = [...partes[3].matchAll(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/g)]
+      .map((m) => [Number(m[1]) * 60 + Number(m[2]), Number(m[3]) * 60 + Number(m[4])]);
+    for (let dia = desde; ; dia = (dia + 1) % 7) {
+      semana[dia] = /cerrad/i.test(partes[3]) ? [] : turnos;
+      if (dia === hasta) break;
+    }
+  }
+  return semana.some((d) => d !== null) ? semana : null;
+}
+
+function formatoHora(minutos) {
+  const h = Math.floor(minutos / 60);
+  const m = String(minutos % 60).padStart(2, "0");
+  return `${h % 12 || 12}:${m} ${h < 12 ? "a. m." : "p. m."}`;
+}
+
+// { abierta, texto } o null si la tienda no tiene horario. Ej.: { abierta: true, texto: "Abierta · cierra 7:00 p. m." }
+function estadoHorario(horario, fecha = new Date()) {
+  const semana = turnosDeLaSemana(horario);
+  if (!semana) return null;
+  const colombia = new Date(fecha.getTime() - 5 * 3_600_000);
+  const hoy = colombia.getUTCDay();
+  const ahora = colombia.getUTCHours() * 60 + colombia.getUTCMinutes();
+
+  const turnoActual = (semana[hoy] ?? []).find(([inicio, fin]) => ahora >= inicio && ahora < fin);
+  if (turnoActual) return { abierta: true, texto: `Abierta · cierra ${formatoHora(turnoActual[1])}` };
+
+  // Cerrada: ¿cuándo abre?
+  const masTardeHoy = (semana[hoy] ?? []).find(([inicio]) => inicio > ahora);
+  if (masTardeHoy) return { abierta: false, texto: `Cerrada · abre ${formatoHora(masTardeHoy[0])}` };
+  for (let i = 1; i <= 7; i++) {
+    const turno = semana[(hoy + i) % 7]?.[0];
+    if (turno) {
+      const cuando = i === 1 ? "mañana" : `el ${NOMBRES_DIA[(hoy + i) % 7]}`;
+      return { abierta: false, texto: `Cerrada · abre ${cuando} ${formatoHora(turno[0])}` };
+    }
+  }
+  return { abierta: false, texto: "Cerrada" };
+}
+
+function insigniaHorario(tienda) {
+  const estado = estadoHorario(tienda.horario);
+  if (!estado) return "";
+  return `<span class="estado-horario ${estado.abierta ? "abierta" : "cerrada"}">${escaparHTML(estado.texto)}</span>`;
+}
+
 /* ---------- Enlaces externos ---------- */
 
 function enlaceWhatsapp(numero, mensaje) {
@@ -127,6 +190,7 @@ function tarjetaTienda(tienda) {
       <div class="tarjeta-cuerpo">
         <span class="etiqueta">${escaparHTML(TIPOS_TIENDA[tienda.tipo])}</span>
         <h3>${escaparHTML(tienda.nombre)}</h3>
+        ${insigniaHorario(tienda)}
         <p class="texto-suave">${escaparHTML(tienda.direccion)}</p>
         <p class="texto-suave">${cantidad} producto${cantidad === 1 ? "" : "s"}</p>
       </div>

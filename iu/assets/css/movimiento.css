@@ -497,14 +497,14 @@ select:focus { border-color: var(--color-marca); }
 }
 .categoria:focus-visible .categoria-circulo::after { opacity: 1; transform: none; }
 
-/* Tarjetas de herramientas (probador y recomendador): suben como las tarjetas */
-.herramienta {
+/* Tarjetas-enlace de "Herramientas con IA" (recomendador y salida): suben como las tarjetas */
+.bento-celda[href] {
   position: relative;
   transition:
     translate var(--duracion-corta) var(--curva-seda),
     border-color var(--duracion-corta) var(--curva-seda);
 }
-.herramienta::after {
+.bento-celda[href]::after {
   content: "";
   position: absolute;
   inset: -1px;
@@ -514,28 +514,12 @@ select:focus { border-color: var(--color-marca); }
   pointer-events: none;
   transition: opacity var(--duracion-corta) var(--curva-seda);
 }
-.herramienta .icono-grande { transition: transform var(--duracion-corta) var(--curva-seda); }
+.bento-celda .icono-grande, .bento-flecha { transition: transform var(--duracion-corta) var(--curva-seda); }
 @media (hover: hover) {
-  .herramienta:hover { translate: 0 -4px; }
-  .herramienta:hover::after { opacity: 1; }
-  .herramienta:hover .icono-grande { transform: scale(1.08); }
-}
-
-/* Banner "Arma tu salida de compras": la foto se desplaza un poquito con el scroll.
-   Lo hace el navegador solo (scroll-driven animation), sin JavaScript.
-   En navegadores que no lo soportan, la foto simplemente se queda quieta. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .promo-imagenes img {
-      animation: deriva-banner linear both;
-      animation-timeline: view();
-      animation-range: entry 0% exit 100%;
-    }
-  }
-}
-@keyframes deriva-banner {
-  from { transform: scale(1.12) translateY(-4%); }
-  to   { transform: scale(1.12) translateY(4%); }
+  .bento-celda[href]:hover { translate: 0 -4px; }
+  .bento-celda[href]:hover::after { opacity: 1; }
+  .bento-celda[href]:hover .icono-grande { transform: scale(1.08); }
+  .bento-celda[href]:hover .bento-flecha { transform: translateX(6px); }
 }
 
 /* =========================================================
@@ -974,9 +958,10 @@ html.con-puertas::view-transition-new(root) { animation: none; opacity: 0; }
 
   /* Inicio y tiendas: sin movimientos de hover ni entradas animadas */
   .categoria:hover .categoria-circulo,
-  .herramienta:hover { translate: none; }
+  .bento-celda[href]:hover { translate: none; }
   .categoria:hover .categoria-recorte img,
-  .herramienta:hover .icono-grande,
+  .bento-celda[href]:hover .icono-grande,
+  .bento-celda[href]:hover .bento-flecha,
   .con-movimiento .titulo-seccion[data-revelar]::after,
   .con-movimiento [data-revelar] .sello { transform: none; }
   .con-movimiento .vacio,

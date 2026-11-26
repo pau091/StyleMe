@@ -78,8 +78,8 @@ class PersistenciaCatalogoIntegracionTest {
     }
 
     @Test
-    @DisplayName("Total de productos activos del catálogo inicial")
+    @DisplayName("Total de productos activos del catálogo (49 del 03, menos p022 que borra el 06)")
     void totalProductos() {
-        assertThat(productos.buscar(FiltroProductos.todos())).hasSize(49);
+        assertThat(productos.buscar(FiltroProductos.todos())).hasSize(48);
     }
 }
