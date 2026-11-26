@@ -49,7 +49,9 @@ class PersistenciaCatalogoIntegracionTest {
         Tienda bohor = tiendas.buscarPorSlug("bohor").orElseThrow();
         assertThat(bohor.contacto().enlaceWhatsapp()).isEqualTo("https://wa.me/573012951439");
         assertThat(bohor.apareceEnMapa()).isTrue();
-        assertThat(tiendas.buscarPorSlug("pandora-makeup").orElseThrow().apareceEnMapa()).isFalse();
+        // Desde la rama feature/catalogo-completo las 10 tiendas tienen coordenadas (D-069)
+        assertThat(tiendas.buscarPorSlug("pandora-makeup").orElseThrow().apareceEnMapa()).isTrue();
+        assertThat(tiendas.buscarActivas(null, null)).hasSize(10).allMatch(Tienda::apareceEnMapa);
     }
 
     @Test
