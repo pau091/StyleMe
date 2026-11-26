@@ -16,6 +16,11 @@ import co.styleme.aplicacion.puerto.salida.persistencia.FavoritoRepositorioPuert
 import co.styleme.aplicacion.puerto.salida.persistencia.IndicadorRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.ResenaRepositorioPuerto;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarCategoriasServicio;
+import co.styleme.aplicacion.casodeuso.probador.ProbarPrendaServicio;
+import co.styleme.aplicacion.puerto.entrada.probador.ProbarPrendaCasoUso;
+import co.styleme.aplicacion.puerto.salida.ia.DescargadorImagenPuerto;
+import co.styleme.aplicacion.puerto.salida.ia.GeneradorImagenPuerto;
+import co.styleme.dominio.servicio.InstruccionesProbador;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarProductosServicio;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarTiendasServicio;
 import co.styleme.aplicacion.casodeuso.ia.BuscarSemanticoServicio;
@@ -161,6 +166,19 @@ public class ConfiguracionBeans {
     GestionarFavoritosCasoUso gestionarFavoritos(FavoritoRepositorioPuerto favoritos, TiendaRepositorioPuerto tiendas,
             ProductoRepositorioPuerto productos) {
         return new GestionarFavoritosServicio(favoritos, tiendas, productos);
+    }
+
+    // ---------- Probador con IA (P-017) ----------
+
+    @Bean
+    InstruccionesProbador instruccionesProbador() {
+        return new InstruccionesProbador();
+    }
+
+    @Bean
+    ProbarPrendaCasoUso probarPrenda(ProductoRepositorioPuerto productos, GeneradorImagenPuerto generador,
+            DescargadorImagenPuerto descargador, InstruccionesProbador instrucciones) {
+        return new ProbarPrendaServicio(productos, generador, descargador, instrucciones);
     }
 
     // ---------- Analítica (eventos e indicadores) ----------
