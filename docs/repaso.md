@@ -207,7 +207,7 @@ contraseña porque quien visita StyleMe no necesita registrarse: solo la adminis
 
 ---
 
-## 9. Pruebas (190)
+## 9. Pruebas (196)
 
 | Tipo | Qué comprueba |
 |---|---|
@@ -257,6 +257,15 @@ que la muestre dentro de la tienda con la prenda, en 4 poses. Mismo patrón hexa
 `ProbarPrendaServicio` no sabe si detrás está OpenAI o Gemini (`GeneradorImagenPuerto`); se cambia en el `.env`.
 Si no hay saldo o falla, la página pasa sola al probador rápido (MediaPipe, en el navegador).
 
+**Portada nueva (D-072).** Muestra la IA y los datos desde el primer momento:
+- **Buscador con IA:** mientras escribes, llama a `/api/busqueda` (embeddings) y marca cada resultado "por significado"
+  o "por nombre". Espera a que dejes de escribir y recuerda lo ya buscado para no gastar la cuota de la IA.
+- **Abiertas ahora:** el horario de texto ("Lun–Sáb 10:00–19:00 · Dom cerrado") se convierte en turnos y se compara con
+  la hora de Colombia. "Cerca de mí" mide la distancia en el navegador (fórmula de haversine); la ubicación no se envía.
+- **Lo más buscado:** `GET /api/tendencias` cuenta **personas** (sesiones distintas), no clics, y solo publica una
+  búsqueda si la hicieron 3 personas o más (así nunca sale algo que escribió una sola persona).
+- **Reseñas recientes:** `GET /api/resenas/recientes`; todas pasaron por la moderación con IA de n8n.
+
 **Probador rápido, el plan B gratis (D-071).** Todo corre en el navegador, sin servidor:
 1. **Recorte automático de la prenda** desde la foto de la tienda. Con modelo → la IA de pose encuentra a la modelo
    y la de segmentación separa la ropa de la piel, el pelo y el fondo. Sin modelo (prenda sobre fondo claro) → se
@@ -283,6 +292,9 @@ Si no hay saldo o falla, la página pasa sola al probador rápido (MediaPipe, en
 | ¿Qué pasa si n8n está apagado cuando llega una reseña? | La reseña queda guardada como PENDIENTE; la revisión de cada 30 minutos la modera después |
 | ¿Por qué nginx? | Sirve la página y reenvía `/api/` al backend: página y API quedan en la misma dirección y el navegador no necesita CORS |
 | ¿La foto del probador se guarda? | No. En el probador rápido ni siquiera sale del celular. En el probador con IA viaja al proveedor solo con consentimiento, sin sus datos ocultos (GPS), y el backend la descarta |
+| ¿Funciona en Mac y Linux? | Sí: todo corre en Docker, y las imágenes tienen versión para Intel/AMD y ARM (Mac con chip Apple). El README explica los comandos de cada sistema y `.gitattributes` evita que los finales de línea de Windows rompan los scripts |
+| ¿Los productos de Samylu, Queen, Henar's y Gogó son reales? | Son de muestra: esas tiendas no tienen catálogo en línea, así que se pusieron productos ilustrativos con precios de referencia. Los demás productos y sus precios son los que publica cada tienda |
+| ¿Por qué "lo más buscado" no muestra todo lo que la gente escribe? | Por privacidad: solo aparecen búsquedas con resultados que hicieron 3 personas distintas o más, y se cuentan personas, nunca quién. Así no se publica algo personal que escribió una sola persona |
 | ¿Funciona el probador desde el computador? | Sí: se puede subir una foto o usar la cámara web. Con la cámara la prenda te sigue en vivo y puedes tomar 4 fotos con cuenta regresiva |
 | ¿Cómo se recorta la prenda si la tienda la fotografió con una modelo? | Con dos modelos de MediaPipe en el navegador: uno encuentra el cuerpo de la modelo y otro separa la ropa de la piel, el pelo y el fondo. Se queda solo la parte de arriba o de abajo según el tipo de prenda |
 | ¿Por qué el probador con IA no funciona sin pagar? | Ningún proveedor tiene plan gratuito para generar imágenes; el sistema está listo y se activa poniendo una clave con saldo en el `.env` |

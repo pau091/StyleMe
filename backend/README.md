@@ -110,6 +110,8 @@ Sin registro: la página manda un `sesionId` anónimo del navegador (D-066).
 |---|---|---|
 | GET | `/api/resenas?tienda=bohor` (o `?producto=p049`) | Promedio de corazones, cantidad y reseñas **publicadas** |
 | POST | `/api/resenas` | `{"sesionId","autor","tienda" o "producto","corazones":1-5,"comentario"}` → 201, queda **PENDIENTE** · 404 si no existe · 409 si esa sesión ya la reseñó · 429 si son demasiadas |
+| GET | `/api/resenas/recientes?limite=6` | Últimas reseñas **publicadas** con comentario, de cualquier tienda o producto (portada). Máximo 12 |
+| GET | `/api/tendencias?dias=7` | Portada: búsquedas más hechas (solo si las hicieron **3 personas o más** y tuvieron resultados), tiendas y productos más vistos. Cuenta personas (sesiones distintas), nunca quién · 400 si `dias` no está entre 1 y 90 |
 | GET | `/api/favoritos?sesionId=...` | Favoritos de la sesión |
 | POST | `/api/favoritos` | `{"sesionId","tienda" o "producto"}` → 204 (si ya estaba, no se duplica) |
 | DELETE | `/api/favoritos?sesionId=...&tienda=bohor` | Quita un favorito → 204 |
