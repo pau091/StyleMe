@@ -14,4 +14,7 @@ public interface GestionarResenasCasoUso {
     List<Resena> publicadas(Objetivo objetivo);
 
     ResumenCalificacion resumen(Objetivo objetivo);
+
+    /** Las últimas reseñas publicadas con comentario (para la portada). Máximo 12. */
+    List<Resena> recientes(int limite);
 }

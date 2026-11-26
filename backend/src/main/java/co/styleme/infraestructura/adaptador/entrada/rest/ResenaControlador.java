@@ -13,7 +13,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
+import java.util.List;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +52,16 @@ public class ResenaControlador {
         ResumenCalificacion resumen = resenas.resumen(objetivo);
         return new ResenasRespuesta(resumen.promedio(), resumen.cantidad(),
                 resenas.publicadas(objetivo).stream().map(ResenaRespuesta::de).toList());
+    }
+
+    /** GET /api/resenas/recientes?limite=6 */
+    @GetMapping("/recientes")
+    @Operation(summary = "Últimas reseñas publicadas con comentario",
+            description = "De cualquier tienda o producto, para la portada. Todas pasaron por moderación. Máximo 12.")
+    public ResponseEntity<List<ResenaRespuesta>> recientes(@Parameter(example = "6") @RequestParam(defaultValue = "6") int limite) {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(Duration.ofMinutes(2)).cachePublic())
+                .body(resenas.recientes(limite).stream().map(ResenaRespuesta::de).toList());
     }
 
     /** POST /api/resenas */

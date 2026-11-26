@@ -52,6 +52,7 @@ class ComunidadPersistenciaIntegracionTest {
         resenas.cambiarEstado(guardada.id(), Resena.Estado.PUBLICADA);
 
         assertThat(resenas.publicadas(objetivo, 50)).extracting(Resena::autor).contains("Ana");
+        assertThat(resenas.recientes(12)).as("la más nueva sale en la portada").extracting(Resena::id).contains(guardada.id());
         assertThat(resenas.resumen(objetivo).cantidad()).isEqualTo(antes + 1);
     }
 

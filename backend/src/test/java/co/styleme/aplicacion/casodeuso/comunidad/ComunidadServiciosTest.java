@@ -70,6 +70,16 @@ class ComunidadServiciosTest {
     }
 
     @Test
+    @DisplayName("Reseñas recientes de la portada: el límite queda entre 1 y 12")
+    void recientes() {
+        when(resenas.recientes(org.mockito.ArgumentMatchers.anyInt())).thenReturn(List.of());
+        gestionar.recientes(100);
+        gestionar.recientes(0);
+        verify(resenas).recientes(12);
+        verify(resenas).recientes(1);
+    }
+
+    @Test
     @DisplayName("Reseñar una tienda que no existe es un 404, y no se guarda nada")
     void tiendaInexistente() {
         Resena nueva = Resena.nueva("s1", null, Objetivo.tienda("no-existe"), 4, null);

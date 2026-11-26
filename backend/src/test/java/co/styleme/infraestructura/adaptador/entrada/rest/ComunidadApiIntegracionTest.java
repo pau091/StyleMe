@@ -135,6 +135,22 @@ class ComunidadApiIntegracionTest {
         assertThat(enviar("GET", "/api/admin/indicadores/inventado", null).statusCode()).isEqualTo(400);
     }
 
+    @Test
+    @DisplayName("Portada: reseñas recientes (máximo 12) y tendencias; un periodo fuera de 1 a 90 días es 400")
+    void portada() throws Exception {
+        var recientes = enviar("GET", "/api/resenas/recientes?limite=100", null);
+        assertThat(recientes.statusCode()).isEqualTo(200);
+        assertThat(recientes.body()).startsWith("[").doesNotContain("sesion", "PENDIENTE", "RECHAZADA");
+        assertThat(recientes.body().split("\"corazones\"").length - 1).isLessThanOrEqualTo(12);
+        assertThat(recientes.headers().firstValue("Cache-Control")).hasValueSatisfying(v -> assertThat(v).contains("max-age"));
+
+        var tendencias = enviar("GET", "/api/tendencias?dias=30", null);
+        assertThat(tendencias.statusCode()).isEqualTo(200);
+        assertThat(tendencias.body()).contains("\"dias\":30", "\"busquedas\":[", "\"tiendas\":[", "\"productos\":[");
+        assertThat(enviar("GET", "/api/tendencias?dias=0", null).statusCode()).isEqualTo(400);
+        assertThat(enviar("GET", "/api/tendencias?dias=91", null).statusCode()).isEqualTo(400);
+    }
+
     private HttpResponse<String> enviar(String metodo, String ruta, String json) throws IOException, InterruptedException {
         var peticion = HttpRequest.newBuilder(URI.create("http://localhost:" + puerto + ruta))
                 .header("Content-Type", "application/json")
