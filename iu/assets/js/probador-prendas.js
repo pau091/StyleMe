@@ -44,6 +44,70 @@ export function prepararPrenda(producto, ia) {
   return preparadas.get(producto.id);
 }
 
+/**
+ * Versión liviana para la demo de la portada: solo prendas fotografiadas SOLAS sobre fondo claro.
+ * No usa los modelos de IA (no descarga nada pesado): borra el fondo y estima hombros y caderas.
+ */
+export function prepararPrendaPlana(producto) {
+  const clave = "plana:" + producto.id;
+  if (!preparadas.has(clave)) {
+    const promesa = cargarImagen(producto.foto).then((imagen) => {
+      const lienzo = aLienzo(imagen);
+      borrarFondoClaro(lienzo);
+      return { lienzo, anclas: anclasEstimadas(lienzo, producto.tipoPrenda), estimadas: true, origen: "plana" };
+    }).catch((error) => {
+      preparadas.delete(clave);
+      throw error;
+    });
+    preparadas.set(clave, promesa);
+  }
+  return preparadas.get(clave);
+}
+
+/* ---------- Dónde va la prenda sobre un cuerpo ---------- */
+
+const medio = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+const distancia = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const grados = (v) => (Math.atan2(v.y, v.x) * 180) / Math.PI;
+
+/**
+ * Lleva la prenda al cuerpo (persona o maniquí). Devuelve { matriz, pivote }.
+ *  - punto de apoyo: hombros (prendas de arriba y vestidos) o caderas (prendas de abajo)
+ *  - giro: el eje del cuerpo (de los hombros a las caderas), así sigue a la persona si se inclina
+ *  - tamaño: por el ancho (hombros o caderas), pero nunca menos que 3/4 del largo del torso.
+ *    El largo del torso casi no cambia cuando la persona se pone de lado; el ancho sí.
+ *  - con anclas reales (foto con modelo), el largo de la prenda sigue exactamente el largo del torso
+ * cuerpo: { hombroIzq, hombroDer, caderaIzq, caderaDer } en píxeles del lienzo donde se dibuja.
+ */
+export function transformacionAlCuerpo(prenda, cuerpo, tipoPrenda) {
+  const A = prenda.anclas;
+  const P = cuerpo;
+  const abajo = tipoPrenda === "inferior";
+  const hombrosA = medio(A.hombroIzq, A.hombroDer), caderasA = medio(A.caderaIzq, A.caderaDer);
+  const hombrosP = medio(P.hombroIzq, P.hombroDer), caderasP = medio(P.caderaIzq, P.caderaDer);
+  const anchoA = abajo ? distancia(A.caderaIzq, A.caderaDer) : distancia(A.hombroIzq, A.hombroDer);
+  const anchoP = abajo ? distancia(P.caderaIzq, P.caderaDer) : distancia(P.hombroIzq, P.hombroDer);
+  const kAncho = anchoP / (anchoA || 1);
+  const kTorso = distancia(hombrosP, caderasP) / (distancia(hombrosA, caderasA) || 1);
+  let kx = Math.max(kAncho, kTorso * 0.75);
+  let ky = kx;
+  if (!abajo && !prenda.estimadas) {
+    ky = kTorso;
+    kx = Math.min(kTorso * 1.2, kx);
+  }
+  const ejeA = grados({ x: caderasA.x - hombrosA.x, y: caderasA.y - hombrosA.y }) - 90;
+  const ejeP = grados({ x: caderasP.x - hombrosP.x, y: caderasP.y - hombrosP.y }) - 90;
+  const origen = abajo ? caderasA : hombrosA;
+  const destino = abajo ? caderasP : hombrosP;
+  const matriz = new DOMMatrix()
+    .translate(destino.x, destino.y)
+    .rotate(ejeP)
+    .scale(kx, ky)
+    .rotate(-ejeA)
+    .translate(-origen.x, -origen.y);
+  return { matriz, pivote: destino };
+}
+
 async function preparar(producto, ia) {
   if (producto.fotoProbador) {
     const lienzo = aLienzo(await cargarImagen(producto.fotoProbador));

@@ -147,7 +147,7 @@
     // Mientras una foto descarga, su marco muestra un brillo suave que lo cruza.
     // Cuando la foto llega (o falla), el brillo se quita.
     const MARCOS_FOTO =
-      ".tarjeta-imagen, .categoria-recorte, .collage-foto, .perfil-foto, .recomendacion-imagen, .promo-imagenes";
+      ".tarjeta-imagen, .categoria-recorte, .collage-foto, .perfil-foto, .recomendacion-imagen, .mini-producto-foto";
 
     function prepararCarga(marco) {
       const foto = marco.querySelector("img");

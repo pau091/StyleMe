@@ -292,9 +292,14 @@ nav { width: 100%; }
 
 label { font-weight: 600; display: block; margin-bottom: 4px; }
 
+/* Letra de 17 px: en iPhone, un campo con letra menor de 16 px hace zoom al tocarlo */
 input[type="search"],
 input[type="text"],
 input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+textarea,
 select {
   width: 100%;
   min-height: 48px;
@@ -404,67 +409,6 @@ select {
 }
 .categoria-recorte img { width: 100%; height: 100%; object-fit: cover; }
 /* El hover de las categorías (sube, gira el ícono y aparece un anillo) está en movimiento.css */
-
-/* ---------- Banner promocional ---------- */
-
-/* ✏️ Tamaño del banner: mismo ancho que la portada; en computador, mínimo 380 px de alto
-   (si el texto necesita más espacio, el banner crece solo) */
-.promo {
-  display: grid;
-  margin: 0 0 48px;
-  border-radius: var(--radio-grande);
-  overflow: hidden;
-  background: var(--color-superficie);
-}
-.promo-texto {
-  background: var(--color-marca);
-  color: #fff;
-  padding: 32px 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.promo-texto h2 { color: #fff; font-size: 2rem; }
-.promo-texto p { color: #fbeff1; }
-.promo-etiqueta {
-  font-size: 0.78rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin: 0 0 8px;
-}
-/* La foto se adapta al alto del texto, así el texto nunca se corta */
-.promo-imagenes { position: relative; height: 200px; }   /* alto de la foto en celular */
-.promo-imagenes img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-
-/* Tarjetas de herramientas (Lía, probador y recomendador) */
-.herramientas { display: grid; gap: 16px; }
-.herramienta {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  padding: 20px;
-  text-decoration: none;
-  color: var(--color-texto);
-  box-shadow: var(--sombra);
-}
-.herramienta:hover { border-color: var(--color-marca); }
-.herramienta .icono-grande {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--color-marca-suave);
-  color: var(--color-marca-oscuro);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.herramienta .icono-grande .icono { width: 32px; height: 32px; }
-.herramienta h3 { margin-bottom: 2px; }
-.herramienta p { margin: 0; color: var(--color-texto-suave); font-size: 0.9rem; }
 
 /* ---------- Tarjetas y cuadrículas ---------- */
 
@@ -805,10 +749,6 @@ select {
   .collage { height: 340px; }
   .categorias { grid-template-columns: repeat(4, 1fr); }
   .categoria-circulo { width: 150px; height: 150px; }
-  .promo { grid-template-columns: 2fr 3fr; min-height: 380px; }
-  .promo-texto { padding: 44px 36px; }
-  .promo-imagenes { height: auto; }
-  .herramientas { grid-template-columns: 1fr 1fr; }
   .cuadricula { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   .filtros { grid-template-columns: 2fr 1fr 1fr 1fr; align-items: end; }
   .perfil-cabecera { grid-template-columns: 1fr 1fr; align-items: start; }
@@ -834,7 +774,6 @@ select {
     opacity: 1;
   }
   .menu a { padding: 8px 9px; font-size: 0.78rem; }
-  .herramientas { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* =====================================================================
@@ -932,3 +871,531 @@ select {
 .prenda-elegida { display: flex; gap: 1rem; align-items: flex-start; margin-top: 1rem; }
 .prenda-elegida > img,
 .prenda-elegida > .marcador-imagen { width: 6rem; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; flex: none; }
+
+/* =========================================================
+   PORTADA NUEVA (rama style/iu-visual)
+   Buscador con IA · herramientas en cuadrícula "bento" · abiertas ahora · lo más buscado · reseñas
+   ========================================================= */
+
+/* ---------- 1. Buscador con IA ---------- */
+.buscador-ia { margin-top: 18px; }
+.buscador-ia-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-marca-oscuro);
+  margin-bottom: 8px;
+}
+.buscador-ia-etiqueta .icono { width: 16px; height: 16px; }
+.buscador-ia .buscador { margin-top: 0; }
+.buscador-ia input[type="search"] {
+  min-height: 54px;
+  border-color: transparent;
+  box-shadow: var(--sombra);
+}
+.buscador-ia input[type="search"]:focus-visible {
+  outline: 2px solid var(--color-marca);
+  outline-offset: 2px;
+}
+.buscador-ia .buscador .boton { min-height: 54px; }
+
+.sugerencias-busqueda {
+  margin-top: 8px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-elevada);
+  overflow: hidden;
+}
+.sugerencias-lista { list-style: none; margin: 0; padding: 6px; }
+.sugerencia {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--color-texto);
+  text-decoration: none;
+}
+.sugerencia:hover,
+.sugerencia:focus-visible { background: var(--color-marca-suave); outline: none; }
+.sugerencia-foto {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-beige);
+}
+.sugerencia-foto img { width: 100%; height: 100%; object-fit: cover; }
+.sugerencia-foto .marcador-imagen { font-size: 0.55rem; }
+.sugerencia-texto { display: grid; min-width: 0; }
+.sugerencia-texto strong,
+.sugerencia-texto span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sugerencia-texto span { font-size: 0.85rem; color: var(--color-texto-suave); }
+.sugerencia-tipo {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--color-fondo);
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+.sugerencia-tipo.por-significado { background: var(--color-marca); color: #fff; }
+.sugerencias-todas {
+  display: block;
+  padding: 10px 16px;
+  border-top: 1px solid var(--color-borde);
+  font-weight: 600;
+  text-decoration: none;
+}
+.sugerencias-estado {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  color: var(--color-texto-suave);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.punto-pensando {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-marca);
+  animation: latido 1s ease-in-out infinite alternate;
+}
+@keyframes latido { from { opacity: 0.3; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+
+.ejemplos-busqueda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}
+.ejemplo-busqueda {
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 6px 12px;
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-marca) 35%, transparent);
+  background: color-mix(in srgb, var(--color-superficie) 70%, transparent);
+  color: var(--color-marca-oscuro);
+  cursor: pointer;
+}
+.ejemplo-busqueda:hover { background: var(--color-superficie); border-color: var(--color-marca); }
+
+/* ---------- 2, 6 y 7. Herramientas con IA en cuadrícula "bento" ---------- */
+.bento { display: grid; gap: 16px; }
+.bento-celda {
+  position: relative;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-grande);
+  padding: 22px;
+  box-shadow: var(--sombra);
+  color: var(--color-texto);
+  text-decoration: none;
+  overflow: hidden;
+}
+.bento-celda h3, .bento-titulo {
+  display: block;
+  font-family: var(--fuente-titulos);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 4px 0 6px;
+}
+.bento-celda p, .bento-texto > span:not(.etiqueta) { color: var(--color-texto-suave); margin: 0 0 12px; }
+.bento-texto { display: block; position: relative; }
+.bento-texto > span:not(.etiqueta) { display: block; }
+.bento-flecha {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  font-size: 1.4rem;
+  color: var(--color-marca);
+}
+
+/* Lía */
+.bento-lia {
+  display: grid;
+  gap: 16px;
+  align-content: center;
+  background: linear-gradient(150deg, var(--color-marca-suave), var(--color-beige));
+  border-color: transparent;
+}
+.bento-lia-retrato {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 15%;
+  background: var(--color-superficie);
+  box-shadow: var(--sombra);
+}
+.preguntas-lia { display: grid; gap: 8px; margin-bottom: 12px; }
+.pregunta-lia {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 0.92rem;
+  text-align: left;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  cursor: pointer;
+}
+.pregunta-lia .icono { width: 20px; height: 20px; flex: none; color: var(--color-marca); }
+.pregunta-lia:hover, .pregunta-lia:focus-visible { border-color: var(--color-marca); outline: none; }
+.nota-ia { font-size: 0.8rem; margin: 0; }
+
+/* Probador: maniquí con antes / después */
+.bento-probador { display: grid; gap: 12px; }
+.demo-probador { display: grid; justify-items: center; gap: 10px; }
+.demo-escena {
+  --corte: 50%;
+  position: relative;
+  width: min(100%, 200px);
+  aspect-ratio: 240 / 520;
+  background: radial-gradient(circle at 50% 35%, var(--color-superficie), var(--color-beige));
+  border-radius: var(--radio);
+}
+.demo-maniqui, .demo-prenda { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* La prenda solo se ve a la derecha de la línea */
+.demo-prenda { clip-path: inset(0 0 0 var(--corte)); }
+.demo-escena.cargando .demo-prenda { opacity: 0.35; }
+.demo-linea {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--corte);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-marca);
+  pointer-events: none;
+}
+.demo-linea::after {
+  content: "⇆";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-marca);
+  color: #fff;
+  font-size: 0.85rem;
+}
+.demo-rotulo {
+  position: absolute;
+  top: 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-texto-suave);
+}
+.demo-rotulo-antes { left: 8px; }
+.demo-rotulo-despues { right: 8px; }
+.demo-comparar { width: min(100%, 220px); accent-color: var(--color-marca); }
+.demo-prendas { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.demo-boton {
+  width: 52px;
+  height: 52px;
+  padding: 2px;
+  border-radius: 12px;
+  border: 2px solid var(--color-borde);
+  background: var(--color-superficie);
+  cursor: pointer;
+}
+.demo-boton img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+.demo-boton[aria-pressed="true"] { border-color: var(--color-marca); box-shadow: 0 0 0 3px var(--color-marca-suave); }
+#demo-enlace { margin-top: 0; }
+
+/* Recomendador */
+.bento-recomendador { display: flex; gap: 16px; align-items: center; padding-right: 56px; }
+.bento-recomendador .icono-grande {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-marca-suave);
+  color: var(--color-marca-oscuro);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.bento-recomendador .icono-grande .icono { width: 28px; height: 28px; }
+
+/* ---------- Horario en las tarjetas y listas ---------- */
+.estado-horario {
+  display: inline-flex;
+  align-items: flex-start;
+  line-height: 1.4;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-texto-suave);
+}
+.estado-horario::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b9aaae;
+  flex: none;
+  margin-top: 0.36em; /* alineado con la primera línea si el texto se parte */
+}
+.estado-horario.abierta { color: var(--color-exito); }
+.estado-horario.abierta::before { background: var(--color-exito); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-exito) 20%, transparent); }
+
+/* ---------- 3. Abiertas ahora y cerca de ti ---------- */
+.cerca-contenido { display: grid; gap: 20px; }
+.mini-mapa {
+  height: 300px;
+  border-radius: var(--radio-grande);
+  overflow: hidden;
+  background: var(--color-beige);
+  box-shadow: var(--sombra);
+  z-index: 0; /* que los controles del mapa no tapen el menú */
+}
+.mini-mapa-error { padding: 24px; }
+.pin-mini {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #9b8a8f;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(47, 36, 39, 0.35);
+}
+.pin-mini.abierta { background: var(--color-exito); }
+.cerca-resumen { margin: 0 0 10px; font-size: 1.05rem; }
+.cerca-nota { font-size: 0.8rem; margin: 8px 0 14px; }
+.lista-cerca { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.fila-cerca {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px 8px 8px;
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto);
+  text-decoration: none;
+}
+.fila-cerca:hover { border-color: var(--color-marca); }
+.fila-cerca-foto { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: var(--color-beige); }
+.fila-cerca-foto img { width: 100%; height: 100%; object-fit: cover; }
+.fila-cerca-foto .marcador-imagen { font-size: 0.5rem; }
+.fila-cerca-texto { display: grid; min-width: 0; }
+.fila-cerca-distancia { font-size: 0.8rem; font-weight: 600; color: var(--color-marca-oscuro); white-space: nowrap; }
+
+/* ---------- 4. Lo más buscado ---------- */
+.subtitulo {
+  font-family: var(--fuente);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+  margin: 0 0 10px;
+}
+.tendencias-contenido { display: grid; gap: 8px 32px; }
+/* Sin esto, el carrusel ensancha su columna y la página se sale de la pantalla */
+.tendencias-contenido > *, .cerca-contenido > *, .bento > * { min-width: 0; }
+.busquedas-populares, .tiendas-populares { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 6px; }
+.busqueda-popular, .tienda-popular {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radio);
+  color: var(--color-texto);
+  text-decoration: none;
+}
+.busqueda-popular { grid-template-columns: 30px 1fr auto; background: var(--color-superficie); border: 1px solid var(--color-borde); }
+.busqueda-popular:hover, .tienda-popular:hover { border-color: var(--color-marca); background: var(--color-marca-suave); }
+.busqueda-texto { font-weight: 600; }
+.busqueda-texto::first-letter { text-transform: uppercase; }
+.puesto {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-marca-suave);
+  color: var(--color-marca-oscuro);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.busquedas-populares li:first-child .puesto { background: var(--color-marca); color: #fff; }
+/* Nombre y visitas arriba, barra debajo (cabe bien en columnas angostas y en celular) */
+.tienda-popular {
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "nombre visitas" "barra barra";
+  row-gap: 6px;
+  border: 1px solid transparent;
+}
+.tienda-popular-nombre { grid-area: nombre; }
+.tienda-popular .barra-visitas { grid-area: barra; }
+.tienda-popular .texto-suave { grid-area: visitas; font-size: 0.85rem; }
+.tienda-popular-nombre { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.barra-visitas { height: 8px; border-radius: 999px; background: var(--color-marca-suave); overflow: hidden; }
+.barra-visitas > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-marca);
+  transform: scaleX(var(--valor, 0));
+  transform-origin: left;
+}
+.nota-datos { font-size: 0.8rem; color: var(--color-texto-suave); margin: 8px 0 0; }
+
+/* ---------- Carrusel (productos más vistos y reseñas) ---------- */
+.carrusel-envoltura { position: relative; }
+.carrusel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 190px;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 4px;
+  padding: 4px 4px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-marca-suave) transparent;
+}
+.carrusel > * { scroll-snap-align: start; }
+.carrusel:focus-visible { outline: 2px solid var(--color-marca); outline-offset: 4px; border-radius: var(--radio); }
+.carrusel-flecha {
+  display: none;
+  position: absolute;
+  top: 40%;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--color-borde);
+  background: var(--color-superficie);
+  color: var(--color-marca-oscuro);
+  font-size: 1.5rem;
+  line-height: 1;
+  box-shadow: var(--sombra);
+  cursor: pointer;
+  z-index: 1;
+}
+.carrusel-flecha.anterior { left: -14px; }
+.carrusel-flecha.siguiente { right: -14px; }
+.carrusel-flecha:disabled { opacity: 0; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { .carrusel-flecha { display: grid; place-items: center; } }
+
+.mini-producto {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  color: var(--color-texto);
+  text-decoration: none;
+}
+.mini-producto-foto {
+  display: block;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radio);
+  overflow: hidden;
+  background: var(--color-beige);
+  margin-bottom: 8px;
+}
+.mini-producto-foto img { width: 100%; height: 100%; object-fit: cover; }
+.mini-producto strong { font-weight: 600; line-height: 1.3; }
+.mini-producto .texto-suave { font-size: 0.85rem; }
+.mini-producto .precio { margin: 0; }
+.mini-producto-vistas { font-size: 0.75rem; color: var(--color-marca-oscuro); }
+
+/* ---------- 5. Reseñas recientes ---------- */
+.carrusel-resenas { grid-auto-columns: min(300px, 82vw); }
+.tarjeta-resena {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra);
+}
+.corazones { margin: 0; color: var(--color-marca); letter-spacing: 0.12em; font-size: 1.05rem; }
+.tarjeta-resena blockquote {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+.resena-autor { margin: 0; font-size: 0.85rem; color: var(--color-texto-suave); }
+.resena-sobre { font-size: 0.85rem; font-weight: 600; }
+.sello-moderada {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+  color: var(--color-exito-oscuro);
+}
+.sello-moderada .icono { width: 13px; height: 13px; }
+
+/* ---------- Pantallas medianas y grandes ---------- */
+@media (min-width: 720px) {
+  .bento { grid-template-columns: 1fr 1fr; }
+  .bento-recomendador { grid-column: 1 / -1; }
+  .bento-lia { grid-template-columns: auto 1fr; align-items: start; }
+  .cerca-contenido { grid-template-columns: 3fr 2fr; align-items: start; }
+  .mini-mapa { height: 420px; }
+  /* Búsquedas y tiendas lado a lado; los productos debajo, a todo el ancho */
+  .tendencias-contenido { grid-template-columns: 1fr 1fr; }
+  .tendencias-productos { grid-column: 1 / -1; }
+}
+@media (min-width: 1080px) {
+  .bento { grid-template-columns: repeat(4, 1fr); }
+  .bento-lia { grid-column: span 2; grid-row: span 2; padding: 32px; align-content: center; align-items: center; }
+  .bento-lia-retrato { width: 150px; height: 150px; }
+  .bento-probador { grid-column: span 2; grid-row: span 2; grid-template-columns: 1fr 1fr; align-items: center; padding: 32px; }
+  .bento-recomendador { grid-column: 1 / -1; }
+  .carrusel { grid-auto-columns: 210px; }
+  /* Portada: las 5 tiendas de cada tipo en una sola fila (sin huecos) */
+  #tiendas-ropa, #tiendas-maquillaje { grid-template-columns: repeat(5, 1fr); }
+  .carrusel-resenas { grid-auto-columns: 320px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .punto-pensando { animation: none; }
+}
