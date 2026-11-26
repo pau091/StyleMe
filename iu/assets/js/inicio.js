@@ -1,4 +1,11 @@
-/* PÁGINA DE INICIO: collage, categorías, banner, tiendas y herramientas */
+/*
+ * PÁGINA DE INICIO: collage, categorías, cintas, herramientas con IA (cuadrícula bento) y tiendas.
+ * Las otras partes de la portada están en archivos aparte:
+ *   inicio-buscador.js  → buscador con IA (resultados mientras escribes)
+ *   inicio-cerca.js     → "Abiertas ahora", mini mapa y tiendas cercanas
+ *   inicio-comunidad.js → lo más buscado (datos anónimos) y reseñas recientes
+ *   inicio-probador.js  → demo del probador con el maniquí
+ */
 
 /*
  * ✏️ FOTOS DE LAS CATEGORÍAS (círculos de "Explora por categoría")
@@ -24,25 +31,14 @@ const FOTOS_CATEGORIA = {
 const PALABRAS_CINTA_ROSA = ["Ropa y moda", "Maquillaje", "Skincare", "Cuidado capilar"];
 const PALABRAS_CINTA_CIRUELA = ["Hecho en Bucaramanga", "Tiendas locales", "Vamos de compras"];
 
-const HERRAMIENTAS = [
-  {
-    href: "#lia", // abre a Lía, el personaje (assets/js/lia/lia.js)
-    icono: "chat",
-    titulo: "Habla con Lía",
-    texto: "Tu asesora virtual con IA: cuéntale qué buscas y te guía a las tiendas."
-  },
-  {
-    href: "probador.html",
-    icono: "gancho",
-    titulo: "Probador virtual",
-    texto: "Sube tu foto y mira cómo te quedaría una prenda."
-  },
-  {
-    href: "recomendador.html",
-    icono: "destello",
-    titulo: "¿Qué producto es para mí?",
-    texto: "Recibe una rutina sugerida para tu piel o tu cabello."
-  }
+/*
+ * ✏️ PREGUNTAS DE EJEMPLO PARA LÍA (tarjeta grande de "Herramientas con IA")
+ * Al tocar una, Lía se abre y la responde con el catálogo real (RAG).
+ */
+const PREGUNTAS_LIA = [
+  "¿Qué me pongo para un matrimonio de día?",
+  "Busco una base para piel grasa",
+  "¿Dónde consigo un jean en Cabecera?"
 ];
 
 /*
@@ -59,8 +55,6 @@ const FOTOS_PORTADA = [
   "assets/img/decoracion/modelo-cuidado-capilar.jpg"
 ];
 
-// ✏️ FOTO DEL BANNER "Arma tu salida de compras" (a la derecha del texto)
-const FOTO_BANNER = "assets/img/decoracion/bolsas-de-compras.jpg";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Collage de la portada. Cada foto se descubre como una persiana (data-revelar="telon"),
@@ -72,9 +66,20 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>`
   ).join("");
 
-  // Banner de salida de compras (está más abajo: se carga cuando la persona se acerca)
-  document.getElementById("promo-imagenes").innerHTML =
-    `<img src="${escaparHTML(FOTO_BANNER)}" alt="" loading="lazy" decoding="async">`;
+  document.querySelector(".bento-recomendador .icono-grande").innerHTML = icono("destello");
+
+  // Preguntas de ejemplo para Lía: abren a Lía y le preguntan
+  const preguntas = document.getElementById("preguntas-lia");
+  preguntas.innerHTML = PREGUNTAS_LIA.map(
+    (p) => `<button type="button" class="pregunta-lia">${icono("chat")}<span>${escaparHTML(p)}</span></button>`
+  ).join("");
+  preguntas.addEventListener("click", (evento) => {
+    const boton = evento.target.closest(".pregunta-lia");
+    if (!boton) return;
+    if (!window.Lia) return (window.location.hash = "lia");
+    window.Lia.abrir();
+    window.Lia.enviar(boton.textContent.trim());
+  });
 
   // Categorías en círculos con foto: cada una lleva al catálogo ya filtrado
   document.getElementById("lista-categorias").innerHTML = Object.entries(CATEGORIAS)
@@ -115,13 +120,39 @@ document.addEventListener("DOMContentLoaded", () => {
       .map(tarjetaTienda)
       .join("");
   });
-
-  // Herramientas
-  document.getElementById("herramientas").innerHTML = HERRAMIENTAS.map(
-    (h) => `
-      <a class="herramienta" href="${h.href}">
-        <span class="icono-grande">${icono(h.icono)}</span>
-        <div><h3>${h.titulo}</h3><p>${h.texto}</p></div>
-      </a>`
-  ).join("");
 });
+
+/*
+ * CARRUSEL (productos más vistos y reseñas): una fila que se desliza con el dedo, la rueda o el teclado.
+ * En computador se agregan dos flechas. No usa librerías: es CSS (scroll-snap) + este poquito de JS.
+ */
+function activarCarrusel(carrusel) {
+  if (carrusel.dataset.carruselListo) return;
+  carrusel.dataset.carruselListo = "1";
+  const envoltura = document.createElement("div");
+  envoltura.className = "carrusel-envoltura";
+  carrusel.before(envoltura);
+  envoltura.append(carrusel);
+  const flecha = (direccion, texto) => {
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = `carrusel-flecha ${direccion}`;
+    boton.setAttribute("aria-label", texto);
+    boton.textContent = direccion === "anterior" ? "‹" : "›";
+    boton.addEventListener("click", () => {
+      const paso = carrusel.clientWidth * 0.8 * (direccion === "anterior" ? -1 : 1);
+      carrusel.scrollBy({ left: paso, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    });
+    return boton;
+  };
+  const anterior = flecha("anterior", "Ver los anteriores");
+  const siguiente = flecha("siguiente", "Ver los siguientes");
+  envoltura.append(anterior, siguiente);
+  const actualizar = () => {
+    anterior.disabled = carrusel.scrollLeft < 8;
+    siguiente.disabled = carrusel.scrollLeft + carrusel.clientWidth > carrusel.scrollWidth - 8;
+  };
+  carrusel.addEventListener("scroll", actualizar, { passive: true });
+  window.addEventListener("resize", actualizar);
+  actualizar();
+}

@@ -120,7 +120,25 @@ En **negrita**, los productos correctos recuperados.
 
 ---
 
-## 6. Cómo repetir la evaluación
+## 6. Reevaluación con el catálogo completo (2026-11-25)
+
+En la rama `feature/catalogo-completo` se completaron dirección, coordenadas, teléfono y horario de 6 tiendas (D-069).
+Se reindexó (6 fragmentos cambiaron, 66 sin cambios) y se repitió la evaluación (ejecución `6be63f18`):
+
+| Métrica | Antes | Con el catálogo completo |
+|---|---|---|
+| Preguntas aprobadas | 100 % | **100 %** |
+| Acierto@3 semántico / por palabras | 100 % / 0 % | **100 % / 0 %** |
+| Precisión@k · Recall@5 | 92,5 % · 97,5 % | **92,5 % · 97,5 %** |
+| Sin alucinación · respeta presupuesto · salud | 100 % | **100 %** |
+| Respuestas del plan B | 0 | **0** |
+| Latencia media | 2,4 s | **1,6 s** |
+
+Los productos no cambiaron, así que la recuperación da lo mismo; lo que se comprobó es que los textos nuevos de las
+tiendas no empeoraron nada. Además, Lía ya responde con los datos nuevos (por ejemplo, la dirección y el horario del
+sábado de Mirada de Ángel).
+
+## 7. Cómo repetir la evaluación
 
 **Opción 1 · Swagger:** con el backend encendido, `POST /api/admin/evaluacion` (sección "Administración de la IA"). Tarda unos
 3 minutos y devuelve todas las métricas.

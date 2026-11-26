@@ -7,6 +7,10 @@
 --
 -- Origen: los antiguos iu/data/tiendas.js e iu/data/productos.js (tomados de las tiendas el 2026-11-20).
 -- Desde la rama feature/iu-api esos archivos ya no existen: ESTE script es la fuente del catálogo.
+-- 2026-11-25 (rama feature/catalogo-completo): dirección, coordenadas, teléfono y horario de 6 tiendas
+--   tomados de su ficha pública de Google Maps (detalle y nivel de confianza en docs/datos/tiendas-fuentes.csv).
+--   Los celulares sin WhatsApp confirmado van en "telefono". Ninguna tienda queda "verificada":
+--   verificado = true solo cuando la tienda misma confirma sus datos.
 -- Conversión aplicada:
 --   · "" y "Por confirmar"  → NULL (en la base, "no se sabe" es NULL)
 --   · pendiente: true       → es_ejemplo = true (productos de ejemplo, no reales)
@@ -37,7 +41,8 @@ INSERT INTO categoria (slug, nombre) VALUES
 INSERT INTO zona (nombre) VALUES
     ('Cabecera'),
     ('Sur'),
-    ('La Aurora');
+    ('La Aurora'),
+    ('Antonia Santos');
 
 -- ---------------------------------------------------------------------
 -- 3 · TIENDAS (10)
@@ -70,9 +75,9 @@ INSERT INTO tienda (slug, nombre, descripcion, categoria_principal_id, zona_id, 
                     horario, whatsapp, telefono, instagram, web, foto, verificado)
 VALUES ('henars-eleganzza', 'Henar''s y Eleganzza', 'Ropa de alta costura para dama en tallas grandes, de la diseñadora Sandra Soto.',
         (SELECT id FROM categoria WHERE slug = 'ropa'),
-        (SELECT id FROM zona WHERE nombre = 'Sur'),
-        'Avenida Calle 105 #21-93', 7.0855, -73.1162,
-        NULL, NULL, NULL, NULL, NULL, 'assets/img/tiendas/henars-eleganzza.webp', false);
+        NULL,
+        'Carrera 22 #45-13', 7.116554, -73.119093,
+        'Lun–Sáb 9:00–19:00 · Dom cerrado', NULL, '3176756806', NULL, NULL, 'assets/img/tiendas/henars-eleganzza.webp', false);
 
 INSERT INTO tienda (slug, nombre, descripcion, categoria_principal_id, zona_id, direccion, lat, lng,
                     horario, whatsapp, telefono, instagram, web, foto, verificado)
@@ -87,40 +92,40 @@ INSERT INTO tienda (slug, nombre, descripcion, categoria_principal_id, zona_id, 
 VALUES ('pandora-makeup', 'Pandora Makeup', 'Tienda de maquillaje en Cabecera.',
         (SELECT id FROM categoria WHERE slug = 'maquillaje'),
         (SELECT id FROM zona WHERE nombre = 'Cabecera'),
-        'Carrera 33 #46-59, Cabecera', NULL, NULL,
-        NULL, '573213273357', NULL, NULL, 'pandoramaquillaje.com', 'assets/img/tiendas/pandora-makeup.png', false);
+        'Carrera 33 #46-59, Cabecera del Llano', 7.117588, -73.111067,
+        'Lun–Sáb 10:00–18:50 · Dom 10:00–15:50', '573213273357', NULL, NULL, 'pandoramaquillaje.com', 'assets/img/tiendas/pandora-makeup.png', false);
 
 INSERT INTO tienda (slug, nombre, descripcion, categoria_principal_id, zona_id, direccion, lat, lng,
                     horario, whatsapp, telefono, instagram, web, foto, verificado)
 VALUES ('guacamaya-colors', 'Guacamaya Colors', 'Maquillaje y skincare nacional e importado.',
         (SELECT id FROM categoria WHERE slug = 'maquillaje'),
         (SELECT id FROM zona WHERE nombre = 'Cabecera'),
-        'Carrera 36 #51-120, Cabecera del Llano', NULL, NULL,
-        NULL, NULL, NULL, NULL, 'guacamayacolors.com', 'assets/img/tiendas/guacamaya-colors.png', false);
+        'Carrera 36 #51-120, Cabecera del Llano', 7.113889, -73.108132,
+        'Lun–Sáb 10:00–19:00 · Dom cerrado', NULL, '3008370913', NULL, 'guacamayacolors.com', 'assets/img/tiendas/guacamaya-colors.png', false);
 
 INSERT INTO tienda (slug, nombre, descripcion, categoria_principal_id, zona_id, direccion, lat, lng,
                     horario, whatsapp, telefono, instagram, web, foto, verificado)
 VALUES ('gogo-makeup', 'Gogó Makeup', 'Tienda de maquillaje en Cabecera.',
         (SELECT id FROM categoria WHERE slug = 'maquillaje'),
         (SELECT id FROM zona WHERE nombre = 'Cabecera'),
-        'Carrera 35 #52-103, Cabecera', NULL, NULL,
-        'Lun–Sáb 9:00–20:00 · Dom 10:00–18:00', NULL, NULL, NULL, NULL, 'assets/img/tiendas/gogo-makeup.jpg', false);
+        'Carrera 35 #52-103, Cabecera del Llano', 7.112519, -73.109001,
+        'Lun–Sáb 9:00–19:00 · Dom 10:00–18:00', NULL, '3172785281', NULL, NULL, 'assets/img/tiendas/gogo-makeup.jpg', false);
 
 INSERT INTO tienda (slug, nombre, descripcion, categoria_principal_id, zona_id, direccion, lat, lng,
                     horario, whatsapp, telefono, instagram, web, foto, verificado)
 VALUES ('so-beauty', 'So Beauty Maquillaje', 'Maquillaje al detal y por mayor, con más de 600 referencias.',
         (SELECT id FROM categoria WHERE slug = 'maquillaje'),
         (SELECT id FROM zona WHERE nombre = 'Cabecera'),
-        'Carrera 36 #52-28, local 1, Cabecera', NULL, NULL,
-        NULL, NULL, NULL, 'sobeautymaquillajebga', NULL, 'assets/img/tiendas/so-beauty.jpg', false);
+        'Carrera 36 #52-28, local 1, Cabecera del Llano', 7.113199, -73.108244,
+        'Lun–Sáb 10:00–19:00 · Dom cerrado', NULL, '3174691111', 'sobeautymaquillajebga', NULL, 'assets/img/tiendas/so-beauty.jpg', false);
 
 INSERT INTO tienda (slug, nombre, descripcion, categoria_principal_id, zona_id, direccion, lat, lng,
                     horario, whatsapp, telefono, instagram, web, foto, verificado)
 VALUES ('mirada-de-angel', 'Mirada de Ángel', 'Cosméticos, maquillaje y cuidado capilar.',
         (SELECT id FROM categoria WHERE slug = 'maquillaje'),
-        NULL,
-        'Carrera 23 #35-14, local 1, Edificio Zentri', NULL, NULL,
-        NULL, '573222209159', NULL, NULL, 'miradadeangel.com.co', 'assets/img/tiendas/mirada-de-angel.jpg', false);
+        (SELECT id FROM zona WHERE nombre = 'Antonia Santos'),
+        'Carrera 23 #35-14, local 1, Edificio Zentri, Antonia Santos', 7.120725, -73.120225,
+        'Lun–Vie 8:30–18:30 · Sáb 9:00–17:00 · Dom 9:00–15:00', '573222209159', NULL, NULL, 'miradadeangel.com.co', 'assets/img/tiendas/mirada-de-angel.jpg', false);
 
 -- ---------------------------------------------------------------------
 -- 4 · PRODUCTOS (49)

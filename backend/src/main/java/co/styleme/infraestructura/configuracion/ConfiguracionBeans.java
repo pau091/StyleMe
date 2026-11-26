@@ -1,11 +1,13 @@
 package co.styleme.infraestructura.configuracion;
 
 import co.styleme.aplicacion.casodeuso.analitica.ConsultarIndicadoresServicio;
+import co.styleme.aplicacion.casodeuso.analitica.ConsultarTendenciasServicio;
 import co.styleme.aplicacion.casodeuso.analitica.RegistrarEventosServicio;
 import co.styleme.aplicacion.casodeuso.comunidad.GestionarFavoritosServicio;
 import co.styleme.aplicacion.casodeuso.comunidad.GestionarResenasServicio;
 import co.styleme.aplicacion.casodeuso.comunidad.ModerarResenasServicio;
 import co.styleme.aplicacion.puerto.entrada.analitica.ConsultarIndicadoresCasoUso;
+import co.styleme.aplicacion.puerto.entrada.analitica.ConsultarTendenciasCasoUso;
 import co.styleme.aplicacion.puerto.entrada.analitica.RegistrarEventosCasoUso;
 import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarFavoritosCasoUso;
 import co.styleme.aplicacion.puerto.entrada.comunidad.GestionarResenasCasoUso;
@@ -16,6 +18,11 @@ import co.styleme.aplicacion.puerto.salida.persistencia.FavoritoRepositorioPuert
 import co.styleme.aplicacion.puerto.salida.persistencia.IndicadorRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.ResenaRepositorioPuerto;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarCategoriasServicio;
+import co.styleme.aplicacion.casodeuso.probador.ProbarPrendaServicio;
+import co.styleme.aplicacion.puerto.entrada.probador.ProbarPrendaCasoUso;
+import co.styleme.aplicacion.puerto.salida.ia.DescargadorImagenPuerto;
+import co.styleme.aplicacion.puerto.salida.ia.GeneradorImagenPuerto;
+import co.styleme.dominio.servicio.InstruccionesProbador;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarProductosServicio;
 import co.styleme.aplicacion.casodeuso.catalogo.ConsultarTiendasServicio;
 import co.styleme.aplicacion.casodeuso.ia.BuscarSemanticoServicio;
@@ -39,6 +46,7 @@ import co.styleme.aplicacion.puerto.salida.persistencia.ConversacionRepositorioP
 import co.styleme.aplicacion.puerto.salida.persistencia.EvaluacionRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.CategoriaRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.ProductoRepositorioPuerto;
+import co.styleme.aplicacion.puerto.salida.persistencia.TendenciaRepositorioPuerto;
 import co.styleme.aplicacion.puerto.salida.persistencia.TiendaRepositorioPuerto;
 import co.styleme.dominio.servicio.CalificadorEvaluacion;
 import co.styleme.dominio.servicio.FragmentadorConocimiento;
@@ -163,6 +171,19 @@ public class ConfiguracionBeans {
         return new GestionarFavoritosServicio(favoritos, tiendas, productos);
     }
 
+    // ---------- Probador con IA (P-017) ----------
+
+    @Bean
+    InstruccionesProbador instruccionesProbador() {
+        return new InstruccionesProbador();
+    }
+
+    @Bean
+    ProbarPrendaCasoUso probarPrenda(ProductoRepositorioPuerto productos, GeneradorImagenPuerto generador,
+            DescargadorImagenPuerto descargador, InstruccionesProbador instrucciones) {
+        return new ProbarPrendaServicio(productos, generador, descargador, instrucciones);
+    }
+
     // ---------- Analítica (eventos e indicadores) ----------
 
     @Bean
@@ -173,5 +194,10 @@ public class ConfiguracionBeans {
     @Bean
     ConsultarIndicadoresCasoUso consultarIndicadores(IndicadorRepositorioPuerto indicadores) {
         return new ConsultarIndicadoresServicio(indicadores);
+    }
+
+    @Bean
+    ConsultarTendenciasCasoUso consultarTendencias(TendenciaRepositorioPuerto tendencias) {
+        return new ConsultarTendenciasServicio(tendencias);
     }
 }

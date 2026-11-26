@@ -110,6 +110,8 @@ Sin registro: la página manda un `sesionId` anónimo del navegador (D-066).
 |---|---|---|
 | GET | `/api/resenas?tienda=bohor` (o `?producto=p049`) | Promedio de corazones, cantidad y reseñas **publicadas** |
 | POST | `/api/resenas` | `{"sesionId","autor","tienda" o "producto","corazones":1-5,"comentario"}` → 201, queda **PENDIENTE** · 404 si no existe · 409 si esa sesión ya la reseñó · 429 si son demasiadas |
+| GET | `/api/resenas/recientes?limite=6` | Últimas reseñas **publicadas** con comentario, de cualquier tienda o producto (portada). Máximo 12 |
+| GET | `/api/tendencias?dias=7` | Portada: búsquedas más hechas (solo si las hicieron **3 personas o más** y tuvieron resultados), tiendas y productos más vistos. Cuenta personas (sesiones distintas), nunca quién · 400 si `dias` no está entre 1 y 90 |
 | GET | `/api/favoritos?sesionId=...` | Favoritos de la sesión |
 | POST | `/api/favoritos` | `{"sesionId","tienda" o "producto"}` → 204 (si ya estaba, no se duplica) |
 | DELETE | `/api/favoritos?sesionId=...&tienda=bohor` | Quita un favorito → 204 |
@@ -117,6 +119,17 @@ Sin registro: la página manda un `sesionId` anónimo del navegador (D-066).
 | GET | `/api/admin/resenas/pendientes?limite=20` | Reseñas por moderar (las más antiguas primero) |
 | PATCH | `/api/admin/resenas/{id}` | `{"estado":"PUBLICADA"}` o `RECHAZADA` (solo desde PENDIENTE) |
 | GET | `/api/admin/indicadores` y `/api/admin/indicadores/{codigo}` | Los 13 indicadores del informe de datos (vistas `v_*` de `basedatos/05-vistas-indicadores.sql`) |
+
+## Probador con IA (P-017)
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| GET | `/api/probador/estado` | Si está activo, con qué proveedor y las 4 poses |
+| POST | `/api/probador` | Multipart: `foto` (cuerpo completo), `producto` (código de una prenda de ropa), `pose` (`FRENTE`, `TRES_CUARTOS`, `PERFIL`, `CAMINANDO`) y `fondo` opcional (foto de la tienda) → la imagen generada |
+
+El proveedor se elige en el `.env`: `STYLEME_PROBADOR_PROVEEDOR=openai` (con `OPENAI_API_KEY`), `gemini` (con la misma
+`GEMINI_API_KEY`) o `ninguno`. **Ninguno de los dos tiene plan gratuito para imágenes**: sin saldo responde 503 y la página
+usa el probador rápido. La foto llega en memoria, se envía al proveedor y se descarta (no se guarda ni se registra).
 
 ## Evaluación de la IA
 

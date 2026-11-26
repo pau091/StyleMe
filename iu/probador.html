@@ -8,26 +8,54 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/css/estilos.css">
-  <link rel="stylesheet" href="assets/css/movimiento.css">
-  <link rel="stylesheet" href="assets/css/intro.css">
-  <link rel="stylesheet" href="assets/css/lia.css">
-  <link rel="stylesheet" href="assets/lia/lia-2d.css">
+  <link rel="stylesheet" href="assets/css/estilos.css?v=20261126">
+  <link rel="stylesheet" href="assets/css/movimiento.css?v=20261126">
+  <link rel="stylesheet" href="assets/css/intro.css?v=20261126">
+  <link rel="stylesheet" href="assets/css/lia.css?v=20261126">
+  <link rel="stylesheet" href="assets/lia/lia-2d.css?v=20261126">
   <!-- Deben ir aquí, en el head: preparan la intro 3D, las puertas entre páginas y las animaciones antes de que se vea la página -->
-  <script src="assets/js/arranque.js"></script>
-  <script src="assets/js/intro.js"></script>
+  <script src="assets/js/arranque.js?v=20261126"></script>
+  <script src="assets/js/intro.js?v=20261126"></script>
 </head>
 <body>
   <header id="encabezado"></header>
 
   <main class="contenedor">
     <h1 data-revelar="rapido">Probador virtual</h1>
-    <p data-revelar="rapido" style="--orden:1">Sube una foto tuya de cuerpo entero o de medio cuerpo, de frente, y mira cómo se vería la prenda.</p>
-    <p class="aviso" data-revelar="rapido" style="--orden:2">
-      <strong>Tu foto no sale de tu dispositivo.</strong> La inteligencia artificial funciona dentro de tu navegador
-      y la foto no se envía ni se guarda en ningún servidor.<br>
-      El resultado es <strong>aproximado</strong>: no reemplaza probarse la prenda ni indica la talla.
-    </p>
+
+    <!-- PROBADOR CON IA (P-017): solo se muestra si el backend lo tiene activado (assets/js/probador-ia.js) -->
+    <section id="probador-ia" class="probador-ia" hidden aria-labelledby="titulo-probador-ia">
+      <h2 id="titulo-probador-ia">Pruébatelo con IA</h2>
+      <p>Sube una foto tuya de <strong>cuerpo completo</strong>, de frente y con buena luz. La IA te muestra dentro de la tienda
+        con la prenda puesta, en <strong>4 poses</strong>.</p>
+
+      <form id="formulario-ia" class="controles">
+        <div>
+          <label for="prenda-ia">1. Elige una prenda</label>
+          <select id="prenda-ia" required></select>
+        </div>
+        <label class="casilla">
+          <input type="checkbox" id="consentimiento-ia" required>
+          <span id="texto-consentimiento-ia">2. Soy mayor de 18 años, la foto es mía (o tengo permiso) y acepto que se envíe al servicio de IA para crear las imágenes.</span>
+        </label>
+        <div>
+          <label for="foto-ia">3. Sube tu foto de cuerpo completo</label>
+          <input type="file" id="foto-ia" accept="image/jpeg,image/png,image/webp" required disabled>
+        </div>
+        <div class="grupo-botones">
+          <button class="boton" type="submit" id="boton-ia" disabled>Probármela en 4 poses</button>
+          <button class="boton boton-secundario" type="button" id="borrar-ia" hidden>Borrar mis imágenes</button>
+        </div>
+        <p class="estado" id="estado-ia" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="poses-ia" id="poses-ia" aria-live="polite"></div>
+      <div id="info-prenda-ia"></div>
+    </section>
+
+    <h2 id="titulo-probador-rapido" hidden>O usa el probador rápido (sin IA)</h2>
+    <p data-revelar="rapido" style="--orden:1">Sube una foto tuya de frente o <strong>usa la cámara</strong> de tu computador o celular:
+      la prenda se acomoda a tus hombros y tu cintura, y con la cámara te sigue en vivo. Tu foto no sale de tu dispositivo.</p>
 
     <div class="probador" data-revelar="rapido" style="--orden:3">
       <div>
@@ -35,6 +63,8 @@
           <canvas id="lienzo" width="600" height="400" aria-label="Vista previa del probador virtual"></canvas>
         </div>
         <p class="estado" id="estado" aria-live="polite"></p>
+        <!-- Fotos tomadas con la cámara (hasta 4): solo existen en este navegador -->
+        <div class="capturas" id="capturas" hidden aria-label="Tus fotos con la prenda"></div>
       </div>
 
       <div class="controles">
@@ -48,9 +78,14 @@
           <span>2. Soy mayor de 18 años y la foto es mía o tengo permiso de la persona que aparece.</span>
         </label>
 
-        <div>
-          <label for="foto">3. Sube tu foto</label>
+        <div class="paso-foto">
+          <label for="foto">3. Sube tu foto…</label>
           <input type="file" id="foto" accept="image/*" disabled>
+          <button class="boton boton-secundario" type="button" id="camara" disabled>…o usa tu cámara</button>
+          <div class="grupo-botones" id="controles-camara" hidden>
+            <button class="boton" type="button" id="capturar">Tomar foto en 3 s</button>
+            <button class="boton boton-secundario" type="button" id="apagar-camara">Apagar cámara</button>
+          </div>
         </div>
 
         <fieldset id="ajustes" disabled style="border:0;padding:0;margin:0;display:grid;gap:12px">
@@ -67,13 +102,9 @@
             <label for="mover-y">Mover arriba o abajo</label>
             <input type="range" id="mover-y" min="-50" max="50" value="0">
           </div>
-          <label class="casilla">
-            <input type="checkbox" id="quitar-blanco">
-            <span>Quitar el fondo blanco de la prenda</span>
-          </label>
           <div class="grupo-botones">
             <button class="boton boton-secundario" type="button" id="reubicar">Ubicar automáticamente</button>
-            <button class="boton boton-secundario" type="button" id="borrar">Borrar mi foto</button>
+            <button class="boton boton-secundario" type="button" id="borrar">Borrar mis fotos</button>
           </div>
         </fieldset>
 
@@ -84,12 +115,13 @@
 
   <footer id="pie"></footer>
 
-  <script src="assets/js/api.js"></script>
-  <script src="assets/js/comun.js"></script>
-  <script type="module" src="assets/js/probador.js"></script>
+  <script src="assets/js/api.js?v=20261126"></script>
+  <script src="assets/js/comun.js?v=20261126"></script>
+  <script type="module" src="assets/js/probador.js?v=20261126"></script>
+  <script src="assets/js/probador-ia.js?v=20261126"></script>
   <!-- Lía, la asesora virtual (personaje con globos de texto) -->
-  <script src="assets/js/lia/plan-b.js"></script>
-  <script src="assets/js/lia/lia.js"></script>
-  <script src="assets/js/movimiento.js"></script>
+  <script src="assets/js/lia/plan-b.js?v=20261126"></script>
+  <script src="assets/js/lia/lia.js?v=20261126"></script>
+  <script src="assets/js/movimiento.js?v=20261126"></script>
 </body>
 </html>

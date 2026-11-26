@@ -23,6 +23,7 @@ import java.util.Objects;
 public class GestionarResenasServicio implements GestionarResenasCasoUso {
 
     static final int MAXIMO_MOSTRADAS = 50;
+    static final int MAXIMO_RECIENTES = 12;
 
     private final ResenaRepositorioPuerto resenas;
     private final TiendaRepositorioPuerto tiendas;
@@ -62,6 +63,11 @@ public class GestionarResenasServicio implements GestionarResenasCasoUso {
     public ResumenCalificacion resumen(Objetivo objetivo) {
         verificarQueExiste(objetivo);
         return resenas.resumen(objetivo);
+    }
+
+    @Override
+    public List<Resena> recientes(int limite) {
+        return resenas.recientes(Math.max(1, Math.min(limite, MAXIMO_RECIENTES)));
     }
 
     private void verificarQueExiste(Objetivo objetivo) {

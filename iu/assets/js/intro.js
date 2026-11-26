@@ -10,7 +10,7 @@
  *      El cielo depende de la hora real en Bucaramanga: día, atardecer o noche.
  *   2. La escena se detiene y dice "Toca la puerta para entrar".
  *      Con el mouse, la calle gira un poquito siguiendo el cursor (se nota el 3D).
- *   3. Al tocar (o hacer clic, o presionar una tecla): suena el timbre (si el sonido
+ *   3. Al tocar (o hacer clic, o presionar una tecla): suena el timbre y el ruido de la calle
  *      está activado), se abren las puertas y la cámara entra por la luz.
  *   4. La luz se desvanece y aparece la página.
  *
@@ -33,7 +33,9 @@
   if (!raiz.classList.contains("con-movimiento")) return;
 
   /* ---------- ✏️ Ajustes ---------- */
-  const ESPERA_AUTOMATICA = 6000; // ms: si nadie toca la puerta, entra sola (0 = esperar siempre)
+  // ✏️ ms: si nadie toca la puerta, entra sola. 0 = espera el toque, así el sonido SIEMPRE suena
+  //    (el navegador no deja sonar nada hasta que la persona toca la página).
+  const ESPERA_AUTOMATICA = 0;
   const GIRO_MAXIMO = { y: 5, x: 2.5 }; // grados que gira la calle con el mouse
 
   // Ropa de los maniquíes de la vitrina (un color por maniquí)
@@ -94,23 +96,19 @@
       </div>
     </div>
     <p class="intro-tocar">Toca la puerta para entrar</p>
-    <div class="intro-destello"></div>
-    <button type="button" class="intro-boton intro-sonido" tabindex="-1" aria-pressed="false"></button>
-    <button type="button" class="intro-boton intro-saltar" tabindex="-1">Saltar intro</button>`;
+    <div class="intro-destello"></div>`;
 
-  // Espera larga: la intro se queda quieta hasta que toquen la puerta
-  A.esperarTelon(ESPERA_AUTOMATICA + 8000);
+  // Las animaciones de la página esperan a que se abra la puerta (seguro de 2 minutos por si algo falla)
+  A.esperarTelon(ESPERA_AUTOMATICA ? ESPERA_AUTOMATICA + 8000 : 120000);
   A.agregar(intro);
 
-  /* ---------- Sonido (opcional, apagado al principio) ---------- */
+  /* ---------- Sonido (siempre activo) ---------- */
   // Se crea con Web Audio: no hay archivos de sonido que descargar ($0).
   // El navegador solo deja sonar después de que la persona toca algo,
-  // por eso arranca al tocar el botón o la puerta.
+  // por eso arranca al tocar la puerta (o presionar una tecla).
   const Sonido = (function () {
     let ctx = null;
     let ambiente = null;
-    let activo = false;
-    try { activo = localStorage.getItem("styleme-sonido") === "si"; } catch (e) { /* nada */ }
 
     function contexto() {
       const Clase = window.AudioContext || window.webkitAudioContext;
@@ -180,34 +178,13 @@
     }
 
     return {
-      get activo() { return activo; },
-      cambiar() {
-        activo = !activo;
-        try { localStorage.setItem("styleme-sonido", activo ? "si" : "no"); } catch (e) { /* nada */ }
-        if (activo) iniciarAmbiente();
-        else detenerAmbiente();
-        return activo;
-      },
       alEntrar() {
-        if (!activo) return;
         iniciarAmbiente();
         timbre();
       },
       terminar() { detenerAmbiente(0.6); }
     };
   })();
-
-  const botonSonido = intro.querySelector(".intro-sonido");
-  function pintarBotonSonido() {
-    botonSonido.textContent = Sonido.activo ? "🔊 Sonido" : "🔇 Sonido";
-    botonSonido.setAttribute("aria-pressed", Sonido.activo);
-  }
-  pintarBotonSonido();
-  botonSonido.addEventListener("click", (e) => {
-    e.stopPropagation(); // tocar el botón no abre la puerta
-    Sonido.cambiar();
-    pintarBotonSonido();
-  });
 
   /* ---------- La calle gira un poquito con el mouse ---------- */
   const giro = intro.querySelector(".intro-giro");
@@ -236,7 +213,7 @@
   let temporizador = null;
 
   function entrar() {
-    if (intro.classList.contains("entrando") || intro.classList.contains("saltar")) return;
+    if (intro.classList.contains("entrando")) return;
     if (!lista) { quiereEntrar = true; return; }
     clearTimeout(temporizador);
     Sonido.alEntrar();
@@ -244,11 +221,6 @@
     giro.style.setProperty("--giro-x", "0deg");
     giro.style.setProperty("--giro-y", "0deg");
     intro.classList.add("entrando");
-  }
-
-  function saltar() {
-    clearTimeout(temporizador);
-    intro.classList.add("saltar");
   }
 
   function empezar() {
@@ -279,16 +251,11 @@
     if (e.animationName === "intro-sale") A.soltarTelon();
   });
 
-  // Tocar en cualquier parte = entrar. Escape o el botón = saltar.
+  // Tocar en cualquier parte o presionar cualquier tecla = entrar (con sonido)
   intro.addEventListener("click", entrar);
-  intro.querySelector(".intro-saltar").addEventListener("click", (e) => {
-    e.stopPropagation();
-    saltar();
-  });
   function tecla(e) {
     if (!intro.isConnected) return window.removeEventListener("keydown", tecla);
-    if (e.key === "Escape") saltar();
-    else entrar();
+    entrar();
   }
   window.addEventListener("keydown", tecla);
 })();

@@ -15,19 +15,19 @@
 - **Público:** todas las edades (D-017). El probador virtual, solo mayores de 18.
 - **Condiciones:** proyecto académico, una sola autora, programadora junior, **costo $0**, **HTML + CSS + JavaScript sin frameworks ni build** (D-013, D-020, D-021).
 - **Datos:** 10 tiendas reales (5 de ropa, 5 de maquillaje) y productos de ejemplo, en la base de datos (`basedatos/03-datos-iniciales.sql`); la página los recibe del backend con `assets/js/api.js` (D-022, D-025).
-- **Principios que el diseño no puede romper:** la IA no diagnostica ni promete tallas; no se inventan precios; privacidad (la foto del probador no sale del celular); experiencia **intuitiva y accesible**; **no agregar cosas solo para que se vea más grande** (01-vision, principio 7).
+- **Principios que el diseño no puede romper:** la IA no diagnostica ni promete tallas; no se inventan precios; privacidad (en el probador rápido la foto y la cámara no salen del dispositivo; en el probador con IA sale solo con consentimiento y no se guarda, D-070); experiencia **intuitiva y accesible**; **no agregar cosas solo para que se vea más grande** (01-vision, principio 7).
 
 ### Páginas
 
 | Página | Archivo | Qué hace | Momento visual estrella 💡 |
 |---|---|---|---|
-| Inicio | `index.html` + `inicio.js` | Portada con buscador, collage, ventajas, categorías, banner de salida, tiendas, herramientas | Portada que "abre el telón": título por líneas + collage que se revela como vitrina |
+| Inicio | `index.html` + `inicio.js`, `inicio-buscador.js`, `inicio-cerca.js`, `inicio-comunidad.js`, `inicio-probador.js` | Portada con "Pregúntale a StyleMe", collage, herramientas con IA (bento: Lía, demo del probador y recomendador), abiertas ahora con mini mapa, categorías, lo más buscado, tiendas y reseñas recientes (D-072) | Portada que "abre el telón": título por líneas + collage que se revela como vitrina |
 | Tiendas | `tiendas.html` + `tiendas.js` | Lista de las 10 tiendas con filtro | Tarjetas que entran en cascada y se reordenan con suavidad al filtrar |
 | Perfil de tienda | `tienda.html` + `tienda.js` | Datos, mini mapa, productos, WhatsApp / Cómo llegar / Instagram | La foto de la tarjeta **viaja** hasta el perfil (View Transition) |
 | Productos | `productos.html` + `productos.js` | Catálogo con buscador y filtros | Resultados que se reacomodan sin saltos; contador que cuenta |
 | Mapa | `mapa.html` + `mapa.js` | Todas las tiendas en Leaflet | Marcadores que "caen" uno por uno; pin que late al pasar el mouse |
 | Salida de compras | `salida.html` + `salida.js` | Recorrido de 2–5 tiendas cercanas | La ruta se **dibuja** sobre el mapa parada por parada |
-| Probador | `probador.html` + `probador.js` | IA en el navegador (MediaPipe) pone la prenda sobre tu foto | Barrido de "escaneo" mientras la IA trabaja; la prenda aparece con un fundido |
+| Probador | `probador.html` + `probador.js` + `probador-prendas.js` | IA en el navegador (MediaPipe) recorta la prenda y la pone sobre tu foto o sobre la cámara en vivo | Barrido de "escaneo" mientras la IA trabaja; la prenda aparece con un fundido |
 | Recomendador | `recomendador.html` + `recomendador.js` | Cuestionario → rutina por pasos | Pasos de la rutina que aparecen como una lista numerada que se va llenando |
 | Acerca de | `acerca.html` | Qué es, privacidad, aviso, contacto | Lectura tranquila: solo revelado suave de secciones |
 
@@ -158,7 +158,7 @@ assets/
 
 Orden de carga en cada página: `estilos.css` → `movimiento.css` → `intro.css` → `arranque.js` → `intro.js` en el `<head>`; `comun.js` → script de la página → `movimiento.js` al final.
 
-`arranque.js` (✅ agregado el 2026-11-20) maneja la **intro 3D "Entrar a la tienda"** (`intro.js` + `intro.css`: calle, tienda, "Toca la puerta para entrar", cámara que entra; cielo de día, atardecer o noche según la hora de Bucaramanga; sonido opcional; una vez por visita o con `?intro`, `?intro=noche`), las **puertas de vidrio entre páginas**, el **título de la pestaña** cuando la persona se va, y pone `.con-movimiento` desde el principio. Mientras la intro o las puertas tapan la página, las entradas esperan (`.esperando-telon`).
+`arranque.js` (✅ agregado el 2026-11-20) maneja la **intro 3D "Entrar a la tienda"** (`intro.js` + `intro.css`: calle, tienda, "Toca la puerta para entrar", cámara que entra; cielo de día, atardecer o noche según la hora de Bucaramanga; sonido siempre activo que arranca al tocar la puerta, sin botones de saltar ni de sonido (D-072); una vez por visita o con `?intro`, `?intro=noche`), las **puertas de vidrio entre páginas**, el **título de la pestaña** cuando la persona se va, y pone `.con-movimiento` desde el principio. Mientras la intro o las puertas tapan la página, las entradas esperan (`.esperando-telon`).
 
 Imágenes: las fotos de categorías se usan desde `assets/img/categorias/` (480 px, ~40 KB). Las fotos de productos enlazadas usan la versión pequeña de cada tienda (ver comentario en `data/productos.js`).
 

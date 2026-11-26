@@ -143,76 +143,74 @@ Cada carpeta tiene su propio `README.md` con el detalle.
 | Pruebas | JUnit, Mockito, ArchUnit, Testcontainers, Postman |
 | Documentación de la API | Swagger (springdoc-openapi) |
 | Mapas | [Leaflet](https://leafletjs.com/) + [OpenStreetMap](https://www.openstreetmap.org/) |
-| Probador virtual | [MediaPipe Pose Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker) (corre en el navegador) |
+| Probador virtual | [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/guide) Pose Landmarker e Image Segmenter (corren en el navegador, también con la cámara) + probador con IA opcional (OpenAI o Gemini) |
 
 ---
 
 ## Requisitos para trabajar en el proyecto
 
-| Herramienta | Versión | Para qué |
-|---|---|---|
-| Java (Temurin) | 21 | Backend |
-| Maven | 3.9 o superior | Compilar el backend (el proyecto también trae `mvnw`) |
-| Docker Desktop | reciente | Base de datos, n8n y el sistema completo |
-| VS Code | reciente | Extensiones: Extension Pack for Java, Spring Boot Extension Pack, Docker, PostgreSQL, Live Server |
+StyleMe funciona igual en **Windows, Mac (Intel o Apple M1/M2/M3) y Linux**: todo corre en Docker
+(las imágenes tienen versión para procesadores Intel/AMD y ARM) y la página se usa desde cualquier navegador
+moderno en computador, tableta o celular.
+
+| Herramienta | Versión | Para qué | Windows | Mac | Linux |
+|---|---|---|---|---|---|
+| Docker | reciente | Base de datos, backend, página y n8n | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | [Docker Desktop](https://www.docker.com/products/docker-desktop/) (elige Apple chip o Intel) | Docker Engine + plugin `docker compose` ([guía](https://docs.docker.com/engine/install/)) |
+| Java (Temurin) | 21 | Solo para **programar** el backend | SDKMAN en Git Bash (abajo) | SDKMAN en la Terminal | SDKMAN en la terminal |
+| Git | reciente | Clonar y subir cambios | [Git for Windows](https://git-scm.com/download/win) (trae Git Bash) | `xcode-select --install` | `sudo apt install git` (o el gestor de tu distribución) |
+| Python | 3.10 o superior | Opcional: regenerar los workflows de n8n o servir la página sin VS Code | [python.org](https://www.python.org/downloads/) | Ya viene (`python3`) | Ya viene (`python3`) |
+| VS Code | reciente | Editor (opcional) | Extensiones: Extension Pack for Java, Spring Boot Extension Pack, Docker, Live Server | igual | igual |
+
+> 🐳 Para **correr** el proyecto solo hace falta Docker: la imagen del backend trae su propio Java.
 
 ---
 
-## ⚠️ IMPORTANTE: versión de Java (SDKMAN)
+## Java 21 con SDKMAN (solo para programar el backend)
 
-El backend usa **Java 21**. Si ya tienes Java 21 instalado y la variable `JAVA_HOME` apunta a él, no necesitas nada más.
-Para instalar Java o **cambiar de versión** cuando haga falta se usa **[SDKMAN](https://sdkman.io/)**.
+Si ya tienes Java 21 y la variable `JAVA_HOME` apunta a él, no necesitas nada más.
+[SDKMAN](https://sdkman.io/) instala Java y permite **cambiar de versión**.
 
-### 1. Instalar SDKMAN en Windows (una sola vez)
-SDKMAN no funciona en PowerShell: se usa desde **Git Bash** (viene con Git).
+### 1. Instalar SDKMAN (una sola vez)
+- **Mac y Linux:** en la Terminal ejecuta `curl -s "https://get.sdkman.io" | bash` y abre una terminal nueva.
+- **Windows:** SDKMAN no funciona en PowerShell, se usa en **Git Bash**. Antes, descarga `zip` y `bzip2` de
+  [GnuWin32](https://gnuwin32.sourceforge.net/packages/zip.htm) y copia `zip.exe` y `bzip2.dll` en
+  `C:\Program Files\Git\usr\bin`. Luego, en Git Bash: `curl -s "https://get.sdkman.io" | bash`.
 
-1. SDKMAN necesita el programa `zip`, que Git Bash no trae:
-   - Descarga `zip` y `bzip2` de [GnuWin32](https://gnuwin32.sourceforge.net/packages/zip.htm) (los "Binaries").
-   - Copia `zip.exe` y `bzip2.dll` en `C:\Program Files\Git\usr\bin`.
-2. Abre **Git Bash** y ejecuta:
-   ```bash
-   curl -s "https://get.sdkman.io" | bash
-   ```
-3. Cierra y vuelve a abrir Git Bash. Comprueba con `sdk version`.
+Comprueba con `sdk version`.
 
 ### 2. Instalar y cambiar la versión de Java
 ```bash
-sdk list java                  # lista las versiones; busca una "21.x.x-tem" (Temurin)
-sdk install java 21.x.x-tem    # cambia 21.x.x por la versión exacta que aparezca
-sdk default java 21.x.x-tem    # versión por defecto, para siempre
-sdk use java 17.x.x-tem        # cambia la versión SOLO en esa terminal
-sdk current java               # qué versión está activa
+sdk list java                  # busca una "21.x.x-tem" (Temurin)
+sdk install java 21.x.x-tem    # cambia 21.x.x por la versión exacta
+sdk default java 21.x.x-tem    # versión por defecto
+cd backend && sdk env          # usa la versión de backend/.sdkmanrc
 java -version                  # confirmar
 ```
 
-### 3. Que el proyecto elija su versión solo
-En la carpeta `backend/` habrá un archivo `.sdkmanrc` con la versión del proyecto. Al entrar a la carpeta:
-```bash
-cd backend
-sdk env          # activa la versión que dice .sdkmanrc
-```
-(Para crearlo: `sdk env init` dentro de `backend/`.)
-
-### 4. Que VS Code y PowerShell usen esa versión
-SDKMAN solo cambia la versión dentro de Git Bash. Para el resto de Windows, crea la variable de entorno **`JAVA_HOME`**:
-- *Inicio → "Editar las variables de entorno del sistema" → Variables de entorno → Nueva (usuario)*
-- Nombre: `JAVA_HOME` · Valor: `C:\Users\TU_USUARIO\.sdkman\candidates\java\21.x.x-tem`
-- Agrega `%JAVA_HOME%\bin` al `Path` y reinicia VS Code.
-
-> 🐳 Con Docker no hace falta Java instalado para **correr** el proyecto: la imagen del backend trae su propio Java. SDKMAN es para **programar** el backend en tu computador.
+### 3. Solo en Windows: que VS Code y PowerShell vean ese Java
+SDKMAN solo cambia la versión dentro de Git Bash. Crea la variable de entorno **`JAVA_HOME`**:
+*Inicio → "Editar las variables de entorno del sistema" → Variables de entorno → Nueva (usuario)*,
+con el valor `C:\Users\TU_USUARIO\.sdkman\candidates\java\21.x.x-tem`; agrega `%JAVA_HOME%\bin` al `Path` y reinicia VS Code.
+En Mac y Linux SDKMAN configura `JAVA_HOME` solo.
 
 ---
 
 ## Cómo ejecutar
 
 ### 1. Variables de entorno
-Copia `.env.example`, llama a la copia **`.env`** y llena los valores (contraseña de la base de datos y clave de Gemini).
-El archivo `.env` está en `.gitignore`: nunca se sube a GitHub.
+Copia `.env.example` con el nombre **`.env`** y llena los valores (contraseña de la base de datos, clave de Gemini y
+clave de administración):
 
+| Mac y Linux | Windows (PowerShell) |
+|---|---|
+| `cp .env.example .env` | `Copy-Item .env.example .env` |
+
+El archivo `.env` está en `.gitignore`: nunca se sube a GitHub.
 La clave de Gemini se saca gratis en [Google AI Studio](https://aistudio.google.com/apikey).
 ⚠️ Es secreta: **nunca** la pegues en un archivo `.js`, `.html` o `.java`.
 
 ### 2. Opción A · Todo con Docker (como se entrega)
+El mismo comando en los tres sistemas:
 ```
 docker compose up -d --build    # base de datos, backend, página y n8n
 ```
@@ -225,24 +223,40 @@ docker compose up -d --build    # base de datos, backend, página y n8n
 La primera vez tarda unos minutos (construye las imágenes). Si la base es nueva, construye el índice de la IA
 desde el panel (botón *Reindexar embeddings*) o desde Swagger. Detalle de n8n: [n8n/README.md](n8n/README.md).
 
+**Solo en Linux:**
+- Si `docker` pide `sudo`, agrega tu usuario al grupo con `sudo usermod -aG docker $USER` y vuelve a iniciar sesión.
+- n8n escribe el reporte semanal en `n8n/reportes/` con el usuario 1000 del contenedor. Si tu usuario no es el 1000
+  (lo ves con `id -u`), dale permiso a la carpeta: `sudo chown -R 1000:1000 n8n/reportes`.
+
 ### 2. Opción B · Para programar (backend en tu computador)
 ```
 docker compose up -d basedatos  # en la raíz: solo PostgreSQL + pgvector
 cd backend
-.\mvnw spring-boot:run          # backend en http://localhost:8090
 ```
-La primera vez, construye el índice de la IA con `POST /api/admin/indexacion` desde Swagger
+| Mac y Linux | Windows (PowerShell) |
+|---|---|
+| `./mvnw spring-boot:run` | `.\mvnw spring-boot:run` |
+
+El backend queda en http://localhost:8090. Si en Mac o Linux sale *"permission denied"*, dale permiso al script una
+sola vez: `chmod +x mvnw`. La primera vez, construye el índice de la IA con `POST /api/admin/indexacion` desde Swagger
 (http://localhost:8090/swagger-ui.html, botón **Authorize** con la clave `STYLEME_ADMIN_CLAVE`).
 
-### 3. La página (interfaz de usuario)
-La página **lee todo del backend** (tiendas, productos, búsqueda, reseñas, favoritos): enciéndelo primero.
-Usa módulos de JavaScript, así que **no funciona con doble clic**. Se abre con un servidor local:
+### 3. La página con un servidor local (cuando programas)
+Con la Opción A la página ya está en http://localhost:8085. Si programas la página, ábrela con un servidor local en el
+puerto **5500** (el backend acepta peticiones desde ahí). Usa módulos de JavaScript, así que **no funciona con doble clic**:
 
-1. En VS Code, toca **Go Live** (barra azul de abajo, a la derecha) o clic derecho sobre `iu/index.html` → **Open with Live Server**.
-2. Se abre en `http://127.0.0.1:5500/`. El archivo `.vscode/settings.json` le indica a Live Server que la página está en `iu/`.
-3. Panel de administración (reseñas pendientes e indicadores): `http://127.0.0.1:5500/admin.html` (pide la clave).
+| Con VS Code (cualquier sistema) | Sin VS Code · Mac y Linux | Sin VS Code · Windows |
+|---|---|---|
+| **Go Live** (barra de abajo) o clic derecho en `iu/index.html` → *Open with Live Server* | `python3 -m http.server 5500 --directory iu` | `python -m http.server 5500 --directory iu` |
+
+Queda en `http://127.0.0.1:5500/` (panel: `/admin.html`, pide la clave).
 
 Si la IA (Gemini) no responde, Lía contesta en **modo básico** (reglas, sin IA) y el buscador busca por palabras.
+
+### 4. Desde un celular o una tableta de tu red
+Con la Opción A, abre en el celular `http://IP-DE-TU-COMPUTADOR:8085`. La IP la ves con `ipconfig` (Windows),
+`ipconfig getifaddr en0` (Mac) o `hostname -I` (Linux). Todo funciona salvo la **cámara** del probador: los navegadores
+solo la permiten en `localhost` o con HTTPS. Desde el celular se puede **subir una foto**.
 
 Detalle: [basedatos/README.md](basedatos/README.md) · [backend/README.md](backend/README.md).
 
