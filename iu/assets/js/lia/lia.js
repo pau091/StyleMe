@@ -145,7 +145,7 @@
         <span class="lia-producto-datos">
           <strong>${escaparHTML(p.nombre)}</strong>
           <span class="precio">${formatoPrecio(p.precio)}</span>
-          <span class="texto-suave">${escaparHTML(tienda?.nombre ?? "")}</span>
+          ${tienda ? `<span class="lia-producto-tienda">${icono("tienda")} En ${escaparHTML(tienda.nombre)}${tienda.zona ? ` · ${escaparHTML(tienda.zona)}` : ""}</span>` : ""}
         </span>
       </a>`;
   }
@@ -184,7 +184,7 @@
       .filter((html) => html && !vistas.has(html) && vistas.add(html))
       .join("");
     extras.innerHTML =
-      (productos ? `<div class="lia-productos">${productos}</div>` : "") +
+      (productos ? `<p class="lia-fuente">Del catálogo de StyleMe: cada producto dice en qué tienda está</p><div class="lia-productos">${productos}</div>` : "") +
       (acciones ? `<div class="lia-acciones">${acciones}</div>` : "") +
       (datos.basico ? `<p class="lia-modo">Modo básico (sin IA por ahora)</p>` : "");
   }
