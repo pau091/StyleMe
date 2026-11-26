@@ -20,6 +20,12 @@ spring:
     username: ${POSTGRES_USER:styleme}
     password: ${POSTGRES_PASSWORD}
 
+  servlet:
+    multipart:
+      # Fotos del probador con IA: la de la persona y la de la tienda (máximo 8 MB cada una)
+      max-file-size: 8MB
+      max-request-size: 20MB
+
   mvc:
     async:
       # Lía responde por partes (streaming): se le da tiempo suficiente para terminar
@@ -79,6 +85,18 @@ styleme:
   n8n:
     # Webhook de n8n que modera las reseñas nuevas con IA. Vacío = no se avisa (sin Docker).
     webhook-resenas: ${N8N_WEBHOOK_RESENAS:}
+  probador:
+    # Quién genera las imágenes del probador con IA: openai, gemini o ninguno (usa el probador local).
+    # Ninguno de los dos tiene plan gratuito para imágenes: hace falta saldo en la cuenta del proveedor.
+    proveedor: ${STYLEME_PROBADOR_PROVEEDOR:ninguno}
+    tiempo-maximo: 120s
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      modelo: ${OPENAI_MODELO_IMAGEN:gpt-image-1}
+      # low, medium o high: más calidad = más costo y más tiempo
+      calidad: ${OPENAI_CALIDAD_IMAGEN:medium}
+    gemini:
+      modelo: ${GEMINI_MODELO_IMAGEN:gemini-2.5-flash-image}
   cors:
     # Desde dónde se permite llamar a la API (Live Server). Separados por coma.
     origenes: ${STYLEME_CORS_ORIGENES:http://127.0.0.1:5500,http://localhost:5500}
