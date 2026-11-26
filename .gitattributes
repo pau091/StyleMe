@@ -1,0 +1,22 @@
+# FINALES DE LÍNEA IGUALES EN WINDOWS, MAC Y LINUX
+# ------------------------------------------------
+# En el repositorio todos los archivos de texto se guardan con LF (el formato de Mac y Linux).
+# Windows los puede abrir con CRLF sin problema, pero los scripts (mvnw, .sh, el comando de n8n,
+# los .sql que lee PostgreSQL) se rompen en Mac/Linux si llegan con CRLF.
+
+* text=auto eol=lf
+
+# Scripts que solo corren en Windows: con CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Archivos binarios: nunca se tocan
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.pdf binary
