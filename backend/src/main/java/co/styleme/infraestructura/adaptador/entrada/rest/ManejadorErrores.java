@@ -14,6 +14,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -55,6 +57,18 @@ public class ManejadorErrores {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorRespuesta> faltaParametro(MissingServletRequestParameterException e, HttpServletRequest peticion) {
         return responder(HttpStatus.BAD_REQUEST, "Falta el parámetro '" + e.getParameterName() + "'", peticion);
+    }
+
+    /** Una foto del probador demasiado pesada (más de 8 MB). */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorRespuesta> archivoGrande(MaxUploadSizeExceededException e, HttpServletRequest peticion) {
+        return responder(HttpStatus.CONTENT_TOO_LARGE, "La foto pesa demasiado (máximo 8 MB)", peticion);
+    }
+
+    /** Falta un archivo obligatorio, por ejemplo la foto del probador. */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorRespuesta> faltaArchivo(MissingServletRequestPartException e, HttpServletRequest peticion) {
+        return responder(HttpStatus.BAD_REQUEST, "Falta el archivo '" + e.getRequestPartName() + "'", peticion);
     }
 
     /** La IA no respondió (sin clave, sin cupo, sin internet): 503 = "servicio no disponible por ahora". */

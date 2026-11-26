@@ -118,6 +118,17 @@ Sin registro: la página manda un `sesionId` anónimo del navegador (D-066).
 | PATCH | `/api/admin/resenas/{id}` | `{"estado":"PUBLICADA"}` o `RECHAZADA` (solo desde PENDIENTE) |
 | GET | `/api/admin/indicadores` y `/api/admin/indicadores/{codigo}` | Los 13 indicadores del informe de datos (vistas `v_*` de `basedatos/05-vistas-indicadores.sql`) |
 
+## Probador con IA (P-017)
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| GET | `/api/probador/estado` | Si está activo, con qué proveedor y las 4 poses |
+| POST | `/api/probador` | Multipart: `foto` (cuerpo completo), `producto` (código de una prenda de ropa), `pose` (`FRENTE`, `TRES_CUARTOS`, `PERFIL`, `CAMINANDO`) y `fondo` opcional (foto de la tienda) → la imagen generada |
+
+El proveedor se elige en el `.env`: `STYLEME_PROBADOR_PROVEEDOR=openai` (con `OPENAI_API_KEY`), `gemini` (con la misma
+`GEMINI_API_KEY`) o `ninguno`. **Ninguno de los dos tiene plan gratuito para imágenes**: sin saldo responde 503 y la página
+usa el probador rápido. La foto llega en memoria, se envía al proveedor y se descarta (no se guarda ni se registra).
+
 ## Evaluación de la IA
 
 `POST /api/admin/evaluacion` ejecuta las 30 preguntas de `src/main/resources/evaluacion/preguntas.json` y devuelve:
