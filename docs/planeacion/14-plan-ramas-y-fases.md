@@ -339,8 +339,19 @@ PR **base: `main`** ← **compare: `develop`**, título `release: fase N - nombr
 | 3 | Documentación (D-069, plan, IAS) | `docs: documentar el catálogo completo` |
 | ⏳ | Pendiente de la autora: reemplazar los 8 productos de ejemplo, Instagram/web que faltan, Samylu (sin teléfono ni horario), confirmar Henar's y Queen, y marcar "verificado" lo que confirme cada tienda | `feat(db): ...` |
 
-#### Rama 13 · `style/iu-visual`
-*Rama dedicada **solo** a la parte visual de la página (D-063). Se planea en detalle cuando empiece.*
+#### Rama 13a · `feature/probador-ia` (D-070)
+
+| # | Qué se hace | Commit |
+|---|---|---|
+| 1 | Dominio: `Imagen`, `Pose` (4 poses) e `InstruccionesProbador` + puertos y caso de uso `ProbarPrendaServicio` | `feat(probador): agregar dominio y caso de uso del probador con ia` |
+| 2 | Adaptadores OpenAI, Gemini, apagado y descarga de la foto de la prenda + endpoint `/api/probador` | `feat(probador): agregar adaptadores y endpoint del probador con ia` |
+| 3 | Página: probador con IA con 4 poses y paso automático al probador rápido + plan B (D-071): la prenda se recorta sola desde la foto de la tienda, se acomoda al torso y hay modo cámara con 4 fotos (computador y celular) | `feat(iu): agregar probador con ia y mejorar el probador rápido` |
+| 4 | Prueba del mapa actualizada con el catálogo completo | `test(catalogo): actualizar la prueba del mapa con el catálogo completo` |
+| 5 | Configuración (`.env.example`, compose, nginx) y documentación | `docs: documentar el probador con ia` |
+| ⏳ | Probarlo de verdad cuando haya una clave con saldo (OpenAI recomendado) | — |
+
+#### Rama 13b · `style/iu-visual`
+*Rama dedicada **solo** a la parte visual de la página (D-063): pulido de lo que entró sin diseño, estados de carga, consistencia, celular, accesibilidad y rendimiento. Después, las ideas visuales de la autora.*
 
 | Tema | Idea |
 |---|---|

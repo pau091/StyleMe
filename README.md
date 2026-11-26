@@ -143,7 +143,7 @@ Cada carpeta tiene su propio `README.md` con el detalle.
 | Pruebas | JUnit, Mockito, ArchUnit, Testcontainers, Postman |
 | Documentación de la API | Swagger (springdoc-openapi) |
 | Mapas | [Leaflet](https://leafletjs.com/) + [OpenStreetMap](https://www.openstreetmap.org/) |
-| Probador virtual | [MediaPipe Pose Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker) (corre en el navegador) |
+| Probador virtual | [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/guide) Pose Landmarker e Image Segmenter (corren en el navegador, también con la cámara) + probador con IA opcional (OpenAI o Gemini) |
 
 ---
 

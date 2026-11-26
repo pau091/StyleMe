@@ -15,7 +15,7 @@
 - **Público:** todas las edades (D-017). El probador virtual, solo mayores de 18.
 - **Condiciones:** proyecto académico, una sola autora, programadora junior, **costo $0**, **HTML + CSS + JavaScript sin frameworks ni build** (D-013, D-020, D-021).
 - **Datos:** 10 tiendas reales (5 de ropa, 5 de maquillaje) y productos de ejemplo, en la base de datos (`basedatos/03-datos-iniciales.sql`); la página los recibe del backend con `assets/js/api.js` (D-022, D-025).
-- **Principios que el diseño no puede romper:** la IA no diagnostica ni promete tallas; no se inventan precios; privacidad (la foto del probador no sale del celular); experiencia **intuitiva y accesible**; **no agregar cosas solo para que se vea más grande** (01-vision, principio 7).
+- **Principios que el diseño no puede romper:** la IA no diagnostica ni promete tallas; no se inventan precios; privacidad (en el probador rápido la foto y la cámara no salen del dispositivo; en el probador con IA sale solo con consentimiento y no se guarda, D-070); experiencia **intuitiva y accesible**; **no agregar cosas solo para que se vea más grande** (01-vision, principio 7).
 
 ### Páginas
 
@@ -27,7 +27,7 @@
 | Productos | `productos.html` + `productos.js` | Catálogo con buscador y filtros | Resultados que se reacomodan sin saltos; contador que cuenta |
 | Mapa | `mapa.html` + `mapa.js` | Todas las tiendas en Leaflet | Marcadores que "caen" uno por uno; pin que late al pasar el mouse |
 | Salida de compras | `salida.html` + `salida.js` | Recorrido de 2–5 tiendas cercanas | La ruta se **dibuja** sobre el mapa parada por parada |
-| Probador | `probador.html` + `probador.js` | IA en el navegador (MediaPipe) pone la prenda sobre tu foto | Barrido de "escaneo" mientras la IA trabaja; la prenda aparece con un fundido |
+| Probador | `probador.html` + `probador.js` + `probador-prendas.js` | IA en el navegador (MediaPipe) recorta la prenda y la pone sobre tu foto o sobre la cámara en vivo | Barrido de "escaneo" mientras la IA trabaja; la prenda aparece con un fundido |
 | Recomendador | `recomendador.html` + `recomendador.js` | Cuestionario → rutina por pasos | Pasos de la rutina que aparecen como una lista numerada que se va llenando |
 | Acerca de | `acerca.html` | Qué es, privacidad, aviso, contacto | Lectura tranquila: solo revelado suave de secciones |
 
